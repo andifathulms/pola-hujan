@@ -1,0 +1,102 @@
+"use client";
+
+import { useState } from "react";
+import type { ArchetypeRecord, Manifest, RegimeRecord } from "@/lib/grid/schema";
+import { FAMILY_LABEL, FAMILY_TEXT_CLASS, MONTH_LABELS_ID, type Family } from "@/lib/family";
+import { RegimeMap } from "@/components/map/RegimeMap";
+import { CycleCurve } from "@/components/curve/CycleCurve";
+import { CycleTable } from "@/components/table/CycleTable";
+import { ArchetypeStrip } from "@/components/archetypes/ArchetypeStrip";
+import { Legend } from "@/components/Legend";
+
+export interface AtlasViewProps {
+  records: RegimeRecord[];
+  archetypes: ArchetypeRecord[];
+  manifest: Manifest;
+}
+
+/**
+ * The atlas spread (DESIGN.md §6): map and curve panel as two co-equal
+ * objects, never overlaid. Desktop puts the map on the left two-thirds
+ * and the curve panel — with the archetype strip along its bottom — on
+ * the right third; mobile stacks map, curve, then archetypes.
+ */
+export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
+  const [selectedId, setSelectedId] = useState<string>(records[0]?.id ?? "");
+  const selected = records.find((r) => r.id === selectedId) ?? records[0];
+
+  if (!selected) {
+    return <p className="p-6">Tidak ada data lokasi.</p>;
+  }
+
+  const family = selected.family as Family;
+  const driestMonthIndex = selected.monthlyMm.reduce(
+    (minIdx, mm, idx, arr) => (mm < (arr[minIdx] ?? Infinity) ? idx : minIdx),
+    0,
+  );
+
+  return (
+    <div className="flex flex-col gap-6 p-4 lg:p-6">
+      <header className="flex flex-col gap-1">
+        <h1 className="font-display text-xl font-semibold lg:text-2xl">Pola Hujan</h1>
+        <p className="text-ink/70">Atlas rezim curah hujan tahunan Indonesia — bukan animasi angin, bukan prakiraan.</p>
+      </header>
+
+      <Legend manifest={manifest} />
+
+      <div className="flex flex-col gap-6 lg:grid lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <RegimeMap records={records} selectedId={selectedId} onSelect={setSelectedId} />
+        </div>
+
+        <div className="flex flex-col gap-4 lg:col-span-1">
+          <div>
+            <h2 className="font-display text-lg font-semibold">{selected.name}</h2>
+            <p className="text-xs text-ink/70">{selected.province}</p>
+            <p className={`text-sm font-medium ${FAMILY_TEXT_CLASS[family]}`}>
+              {FAMILY_LABEL[family]} · {selected.subtype}
+            </p>
+            <p className="font-mono text-xs text-ink/70">
+              Puncak {MONTH_LABELS_ID[Math.round(selected.peakMonth) % 12]} · Terkering{" "}
+              {MONTH_LABELS_ID[driestMonthIndex]}
+            </p>
+            {selected.bmkgFamily && (
+              <p className="font-mono text-xs text-ink/70">
+                BMKG: {FAMILY_LABEL[selected.bmkgFamily as Family]}
+                {selected.agrees === false ? " (berbeda dari klasifikasi turunan)" : " (cocok)"}
+              </p>
+            )}
+          </div>
+
+          <CycleCurve
+            monthlyMm={selected.monthlyMm}
+            annualCurveMm={selected.annualCurveMm}
+            semiAnnualCurveMm={selected.semiAnnualCurveMm}
+            meanMm={selected.fit.meanMm}
+            family={family}
+          />
+
+          <CycleTable monthlyMm={selected.monthlyMm} caption={`Curah hujan bulanan di ${selected.name}, mm`} />
+
+          <ArchetypeStrip archetypes={archetypes} />
+        </div>
+      </div>
+
+      <nav aria-label="Daftar lokasi" className="flex flex-wrap gap-2 border-t border-rule pt-4">
+        {records.map((record) => (
+          <button
+            key={record.id}
+            type="button"
+            onClick={() => setSelectedId(record.id)}
+            aria-pressed={record.id === selectedId}
+            className={`rounded border px-2 py-1 text-xs transition-colors duration-fast ${
+              record.id === selectedId ? "border-ink font-medium" : "border-rule text-ink/70"
+            }`}
+          >
+            {record.name}
+          </button>
+        ))}
+      </nav>
+    </div>
+  );
+}
