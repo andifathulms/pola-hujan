@@ -152,10 +152,14 @@ The site states on the map itself that this is a classification derived from ope
 
 ## Current state
 
-**M2 complete.** `lib/harmonic` (fit, classify, thresholds) is built with
-its full synthetic test suite green, `pnpm test:harmonic` and
-`pnpm test:classify` both pass, and the atlas — regime map, cycle
-curve, archetype strip, legend — is up and builds to a static export.
+**M0 through M6 all have a working first pass.** `lib/harmonic` (fit,
+classify, thresholds) is built with its full synthetic test suite
+green (43 tests total across harmonic, classify, and geo), and the
+site builds to a static export with: the atlas (`/peta` — regime map,
+cycle curve, archetype strip, legend, "your place"), two-place
+comparison with the Jakarta/Ambon preset (`/banding`), the method page
+(`/metode`), and the live harmonic explainer (`/harmonik`). Shareable
+URLs, a skip link, visible focus, and a print stylesheet are in.
 
 **Real caveat: the precipitation source is a placeholder.** GPM
 IMERG/CHIRPS ingestion (`pnpm data:fetch`) is not implemented — it
@@ -165,8 +169,9 @@ is a documented, hand-constructed stand-in for 15 cities (see
 reduced to `locationSourceSchema`, is the next real step and does not
 require touching the pipeline or UI that consume it.
 
-Not yet built: M3 (two-place comparison, "your place"), M4 (method
-page, thresholds/agreement writeup beyond the legend's one-line
-summary), M5 (the live harmonic explainer), M6 (sharing, print,
-further a11y polish). `app/[locale]/` locale routing is also deferred —
-Indonesian is served flat at the app root pending English content.
+Still open: `app/[locale]/` locale routing (English is deferred —
+Indonesian is served flat at the app root), the ZOM-polygon licence
+question (§4, still unverified and still unused), and further
+milestone-6 depth (the disagreement layer is a hatch on point markers,
+not yet a polygon layer; sharing/print/a11y are a first pass, not
+exhaustive).

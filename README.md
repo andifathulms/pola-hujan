@@ -13,12 +13,14 @@ has the working conventions and invariants.
 
 ## Status
 
-**M2 complete**: the pipeline (`lib/harmonic`, `scripts/build-data.ts`)
-and the atlas UI (map, cycle curve, archetype strip) both work end to
-end. The precipitation source is currently a **documented placeholder**
-(`data/source/README.md`) — real GPM IMERG/CHIRPS ingestion, the
-two-place comparison, the method page, and the harmonic explainer are
-not yet built. See `CLAUDE.md`'s milestone table.
+**M0–M6 all have a working first pass**: the pipeline (`lib/harmonic`,
+`scripts/build-data.ts`), the atlas (`/peta`), two-place comparison
+(`/banding`), the method page (`/metode`), and the live harmonic
+explainer (`/harmonik`) all work end to end and build to a static
+export. The precipitation source is currently a **documented
+placeholder** (`data/source/README.md`) — real GPM IMERG/CHIRPS
+ingestion is the next real step. See `CLAUDE.md`'s "Current state" for
+what's still open.
 
 ## Setup
 
