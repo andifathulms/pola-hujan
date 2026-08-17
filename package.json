@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "pnpm data:validate && next build",
-    "preview": "next start",
+    "preview": "mkdir -p .preview && ln -sfn ../out .preview/pola-hujan && serve .preview -l 3000",
     "test": "vitest",
     "test:run": "vitest run",
     "test:harmonic": "vitest run tests/harmonic",
@@ -31,6 +31,7 @@
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.5",
     "postcss": "8.4.39",
+    "serve": "14.2.6",
     "tailwindcss": "3.4.4",
     "tsx": "4.16.2",
     "typescript": "5.5.3",
