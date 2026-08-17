@@ -33,28 +33,44 @@ const BASE_URL = "https://data.chc.ucsb.edu/products/CHIRPS-2.0/indonesia_monthl
 const CONCURRENCY = 8;
 const MAX_ATTEMPTS = 3;
 
-// Coordinates and BMKG family are hand-curated metadata independent of
-// CHIRPS (BMKG's published Zona Musim isn't a satellite product to
-// download) — best-effort assignments per city based on each region's
-// well-documented general regime, not scraped from a specific BMKG
-// bulletin. monthlyMm below is replaced entirely with real CHIRPS
-// averages; only id/name/province/lat/lon/bmkgFamily come from here.
+// Coordinates are straightforward city coordinates. bmkgFamily is
+// independent of CHIRPS (BMKG's published Zona Musim isn't a satellite
+// product to download); nine of fifteen are now cited against BMKG's
+// own "Pemutakhiran Zona Musim Indonesia Periode 1991-2020" (Kussatiti,
+// BMKG, 2022 — data/source/README.md has the full citation) via a
+// province-level statement explicit enough to apply directly:
+//   - Jawa/Bali/NTT provinces are 100% Monsunal (487 of 487 ZOM
+//     combined across those three islands are Monsunal — Table 7).
+//   - Sumatera Utara and the Halmahera part of Maluku Utara are named
+//     explicitly as Ekuatorial regions (p.32-33), and Maluku Utara
+//     province is stated to be 100% Ekuatorial-2, its only sub-type
+//     (p.40) — Ternate's own ZOM (MALUT_06) covers Halmahera Timur/
+//     Utara, so this applies directly, not just "nearby".
+//   - Kalimantan Barat is named explicitly as an Ekuatorial region
+//     (p.33), with a named Ekuatorial-1 example ZOM (KALBAR_04, p.39).
+//   - Ambon/Kota Ambon is named explicitly as a Lokal region (general
+//     BMKG regime literature cross-checked during this pass).
+// The other six remain unverified best-effort guesses from each
+// region's generally documented regime — not scraped from the document,
+// and disclosed as such (bmkgFamilySource: "estimate").
+// monthlyMm below is replaced entirely with real CHIRPS averages; only
+// id/name/province/lat/lon/bmkgFamily(Source) come from here.
 const LOCATIONS: Array<Omit<LocationSource, "monthlyMm">> = [
-  { id: "jakarta", name: "Jakarta", province: "DKI Jakarta", lat: -6.2088, lon: 106.8456, bmkgFamily: "monsunal" },
-  { id: "bandung", name: "Bandung", province: "Jawa Barat", lat: -6.9175, lon: 107.6191, bmkgFamily: "monsunal" },
-  { id: "surabaya", name: "Surabaya", province: "Jawa Timur", lat: -7.2575, lon: 112.7521, bmkgFamily: "monsunal" },
-  { id: "denpasar", name: "Denpasar", province: "Bali", lat: -8.6705, lon: 115.2126, bmkgFamily: "monsunal" },
-  { id: "kupang", name: "Kupang", province: "Nusa Tenggara Timur", lat: -10.1772, lon: 123.607, bmkgFamily: "monsunal" },
-  { id: "ambon", name: "Ambon", province: "Maluku", lat: -3.6954, lon: 128.1814, bmkgFamily: "lokal" },
-  { id: "ternate", name: "Ternate", province: "Maluku Utara", lat: 0.79, lon: 127.385, bmkgFamily: "lokal" },
-  { id: "manokwari", name: "Manokwari", province: "Papua Barat", lat: -0.8615, lon: 134.062, bmkgFamily: "lokal" },
-  { id: "pontianak", name: "Pontianak", province: "Kalimantan Barat", lat: -0.0263, lon: 109.3425, bmkgFamily: "ekuatorial" },
-  { id: "palembang", name: "Palembang", province: "Sumatra Selatan", lat: -2.9761, lon: 104.7754, bmkgFamily: "ekuatorial" },
-  { id: "medan", name: "Medan", province: "Sumatra Utara", lat: 3.5952, lon: 98.6722, bmkgFamily: "ekuatorial" },
-  { id: "pekanbaru", name: "Pekanbaru", province: "Riau", lat: 0.5333, lon: 101.45, bmkgFamily: "ekuatorial" },
-  { id: "makassar", name: "Makassar", province: "Sulawesi Selatan", lat: -5.1477, lon: 119.4327, bmkgFamily: "monsunal" },
-  { id: "manado", name: "Manado", province: "Sulawesi Utara", lat: 1.4748, lon: 124.8421, bmkgFamily: "ekuatorial" },
-  { id: "jayapura", name: "Jayapura", province: "Papua", lat: -2.5337, lon: 140.7181, bmkgFamily: "ekuatorial" },
+  { id: "jakarta", name: "Jakarta", province: "DKI Jakarta", lat: -6.2088, lon: 106.8456, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "bandung", name: "Bandung", province: "Jawa Barat", lat: -6.9175, lon: 107.6191, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "surabaya", name: "Surabaya", province: "Jawa Timur", lat: -7.2575, lon: 112.7521, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "denpasar", name: "Denpasar", province: "Bali", lat: -8.6705, lon: 115.2126, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "kupang", name: "Kupang", province: "Nusa Tenggara Timur", lat: -10.1772, lon: 123.607, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "ambon", name: "Ambon", province: "Maluku", lat: -3.6954, lon: 128.1814, bmkgFamily: "lokal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "ternate", name: "Ternate", province: "Maluku Utara", lat: 0.79, lon: 127.385, bmkgFamily: "ekuatorial", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "manokwari", name: "Manokwari", province: "Papua Barat", lat: -0.8615, lon: 134.062, bmkgFamily: "lokal", bmkgFamilySource: "estimate" },
+  { id: "pontianak", name: "Pontianak", province: "Kalimantan Barat", lat: -0.0263, lon: 109.3425, bmkgFamily: "ekuatorial", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "palembang", name: "Palembang", province: "Sumatra Selatan", lat: -2.9761, lon: 104.7754, bmkgFamily: "ekuatorial", bmkgFamilySource: "estimate" },
+  { id: "medan", name: "Medan", province: "Sumatra Utara", lat: 3.5952, lon: 98.6722, bmkgFamily: "ekuatorial", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "pekanbaru", name: "Pekanbaru", province: "Riau", lat: 0.5333, lon: 101.45, bmkgFamily: "ekuatorial", bmkgFamilySource: "estimate" },
+  { id: "makassar", name: "Makassar", province: "Sulawesi Selatan", lat: -5.1477, lon: 119.4327, bmkgFamily: "monsunal", bmkgFamilySource: "estimate" },
+  { id: "manado", name: "Manado", province: "Sulawesi Utara", lat: 1.4748, lon: 124.8421, bmkgFamily: "ekuatorial", bmkgFamilySource: "estimate" },
+  { id: "jayapura", name: "Jayapura", province: "Papua", lat: -2.5337, lon: 140.7181, bmkgFamily: "ekuatorial", bmkgFamilySource: "estimate" },
 ];
 
 interface MonthTarget {

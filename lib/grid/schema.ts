@@ -16,6 +16,13 @@ export const locationSourceSchema = z.object({
   monthlyMm: z.array(z.number().min(0)).length(12),
   /** BMKG's published Zona Musim family for this location, for the agreement report only — never used as classification input. */
   bmkgFamily: z.enum(["monsunal", "ekuatorial", "lokal"]).optional(),
+  /**
+   * Whether bmkgFamily is cited against BMKG's actual "Pemutakhiran Zona
+   * Musim Indonesia Periode 1991-2020" document (province/region named
+   * explicitly, or a province-wide single-sub-type statement) or is
+   * still an unverified best-effort guess. See data/source/README.md.
+   */
+  bmkgFamilySource: z.enum(["bmkg-zom9120", "estimate"]).optional(),
 });
 export type LocationSource = z.infer<typeof locationSourceSchema>;
 
@@ -51,6 +58,7 @@ export const regimeRecordSchema = z.object({
   subtype: z.string(),
   peakMonth: z.number(),
   bmkgFamily: regimeFamilySchema.optional(),
+  bmkgFamilySource: z.enum(["bmkg-zom9120", "estimate"]).optional(),
   agrees: z.boolean().optional(),
 });
 export type RegimeRecord = z.infer<typeof regimeRecordSchema>;
@@ -88,6 +96,8 @@ export const manifestSchema = z.object({
     comparedLocations: z.number().int(),
     agreeingLocations: z.number().int(),
     agreementRate: z.number().min(0).max(1),
+    /** How many of comparedLocations have bmkgFamilySource === "bmkg-zom9120" (cited against the real document) rather than an unverified estimate. */
+    verifiedComparisons: z.number().int(),
   }),
 });
 export type Manifest = z.infer<typeof manifestSchema>;

@@ -15,18 +15,53 @@ period a production climatology would use. Every value is still genuine
 measured/satellite-estimated precipitation; the window is just shorter
 than ideal.
 
-**`bmkgFamily` is a best-effort, unverified approximation**, hand-assigned
-per city in `scripts/fetch-data.ts` from each region's generally
-documented regime — it is not scraped or transcribed from an actual BMKG
-Zona Musim bulletin. Two labels (Surabaya, Makassar) were corrected from
-an earlier guess after the real CHIRPS shape made the original placeholder
-guess look wrong; that correction is disclosed here rather than quietly
-folded in, since ground-truth labels are exactly the kind of input a
-project like this should be careful not to adjust after the fact without
-saying so. The current reported agreement rate (see the method page) is
-real and lower than the placeholder version's, which is itself a small
-piece of evidence that the placeholder was too agreeable — genuine BMKG
-verification is still the real next step, not this file.
+## `bmkgFamily`: nine verified, six still estimated
+
+Each location's `bmkgFamily` (the comparison family used only for the
+agreement report — never a classification input) now carries a
+`bmkgFamilySource`: `"bmkg-zom9120"` when it's cited against BMKG's own
+**"Pemutakhiran Zona Musim Indonesia Periode 1991-2020"** (Kussatiti, D.F.,
+BMKG, 2022 — 139pp, publicly hosted at
+<https://iklim.bmkg.go.id/bmkgadmin/storage/buletin/Buku_ZOM9120_versi_cetak.pdf>),
+or `"estimate"` when it's still an unverified best-effort guess. Verifying
+meant text-extracting the PDF (`pdftotext -layout`) and finding a
+statement specific enough to apply directly — a whole-province single-type
+table, or a region named by name — not just "this general area tends to
+be X":
+
+| City | Family | Citation |
+|---|---|---|
+| Jakarta, Bandung, Surabaya | Monsunal | Table 7 (p.34): Jawa is 487/487 Monsunal — every ZOM on the island. |
+| Denpasar | Monsunal | Table 7: Bali is 20/20 Monsunal. |
+| Kupang | Monsunal | Table 7: NTT is 28/28 Monsunal. |
+| Ambon | Lokal | Named explicitly as a Lokal-type example region. |
+| Medan | Ekuatorial | p.32–33: "Sumatera Utara" named explicitly as an Ekuatorial region. |
+| Pontianak | Ekuatorial | p.33: "Kalimantan Barat" named explicitly; p.39 names KALBAR_04 as its Ekuatorial-1 example ZOM. |
+| Ternate | Ekuatorial | p.40: Maluku Utara province is stated to consist of exactly one sub-type, Ekuatorial-2 — and Ternate's own ZOM (MALUT_06) covers Halmahera Timur/Utara, the region named explicitly as Ekuatorial on p.33. This **overturned an earlier "Lokal" guess** — see below. |
+| Manokwari, Palembang, Pekanbaru, Makassar, Manado, Jayapura | — | Still `"estimate"`: the document confirms these provinces are a *mix* of sub-types (e.g. Papua Barat has seven) without a city-level breakdown this pass extracted. |
+
+Two labels were corrected as a *result* of this pass, both disclosed
+rather than quietly folded in, since ground-truth labels are exactly the
+kind of input a project like this should never adjust after the fact
+without saying so:
+
+- **Ternate**: `lokal` → `ekuatorial` (verified, see table above — this
+  was wrong in the original hand-guessed placeholder).
+- **Surabaya, Makassar**: corrected from an earlier `lokal` guess to
+  `monsunal` in the previous data pass, before real BMKG text was
+  available — that correction was reasoned from the real CHIRPS shape
+  (both are clearly DJF-peaking) plus general geographic knowledge, and
+  is now independently consistent with Table 7 (Surabaya: Jawa is 100%
+  Monsunal) though Makassar itself is still an `"estimate"`.
+
+**Reported agreement moved 53% → 60%** purely from the Ternate
+correction — a fact fix, not a tuning pass; see CLAUDE.md's rule against
+adjusting anything to raise this number. One verified comparison
+(Medan) still *disagrees*: BMKG's Sumatera Utara is Ekuatorial, but the
+harmonic fit at Medan's exact coordinates lands as Lokal. That's left as
+a reported disagreement, not "fixed" — see the method page.
+
+## Precipitation source
 
 Source: <https://data.chc.ucsb.edu/products/CHIRPS-2.0/indonesia_monthly/bils/>.
 Funk, C. et al. (2015), "The climate hazards infrared precipitation with

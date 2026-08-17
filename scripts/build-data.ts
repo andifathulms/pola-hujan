@@ -71,6 +71,7 @@ const records: RegimeRecord[] = source.locations.map((location) => {
     subtype: classification.subtype,
     peakMonth: classification.peakMonth,
     bmkgFamily: location.bmkgFamily,
+    bmkgFamilySource: location.bmkgFamilySource,
     agrees,
   };
 });
@@ -130,6 +131,7 @@ for (const record of records) {
 
 const compared = records.filter((r) => r.agrees !== undefined);
 const agreeing = compared.filter((r) => r.agrees === true);
+const verifiedComparisons = compared.filter((r) => r.bmkgFamilySource === "bmkg-zom9120");
 
 const manifest = {
   datasetName: source._datasetName,
@@ -152,6 +154,7 @@ const manifest = {
     comparedLocations: compared.length,
     agreeingLocations: agreeing.length,
     agreementRate: compared.length > 0 ? agreeing.length / compared.length : 0,
+    verifiedComparisons: verifiedComparisons.length,
   },
 };
 

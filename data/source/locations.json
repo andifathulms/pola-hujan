@@ -10,6 +10,7 @@
       "lat": -6.2088,
       "lon": 106.8456,
       "bmkgFamily": "monsunal",
+      "bmkgFamilySource": "bmkg-zom9120",
       "monthlyMm": [
         432.1,
         337.6,
@@ -32,6 +33,7 @@
       "lat": -6.9175,
       "lon": 107.6191,
       "bmkgFamily": "monsunal",
+      "bmkgFamilySource": "bmkg-zom9120",
       "monthlyMm": [
         235.6,
         203.6,
@@ -54,6 +56,7 @@
       "lat": -7.2575,
       "lon": 112.7521,
       "bmkgFamily": "monsunal",
+      "bmkgFamilySource": "bmkg-zom9120",
       "monthlyMm": [
         338,
         302.9,
@@ -76,6 +79,7 @@
       "lat": -8.6705,
       "lon": 115.2126,
       "bmkgFamily": "monsunal",
+      "bmkgFamilySource": "bmkg-zom9120",
       "monthlyMm": [
         286,
         224.4,
@@ -98,6 +102,7 @@
       "lat": -10.1772,
       "lon": 123.607,
       "bmkgFamily": "monsunal",
+      "bmkgFamilySource": "bmkg-zom9120",
       "monthlyMm": [
         358,
         283.5,
@@ -120,6 +125,7 @@
       "lat": -3.6954,
       "lon": 128.1814,
       "bmkgFamily": "lokal",
+      "bmkgFamilySource": "bmkg-zom9120",
       "monthlyMm": [
         135,
         120,
@@ -141,7 +147,8 @@
       "province": "Maluku Utara",
       "lat": 0.79,
       "lon": 127.385,
-      "bmkgFamily": "lokal",
+      "bmkgFamily": "ekuatorial",
+      "bmkgFamilySource": "bmkg-zom9120",
       "monthlyMm": [
         210.2,
         221.4,
@@ -164,6 +171,7 @@
       "lat": -0.8615,
       "lon": 134.062,
       "bmkgFamily": "lokal",
+      "bmkgFamilySource": "estimate",
       "monthlyMm": [
         338.4,
         309.3,
@@ -186,6 +194,7 @@
       "lat": -0.0263,
       "lon": 109.3425,
       "bmkgFamily": "ekuatorial",
+      "bmkgFamilySource": "bmkg-zom9120",
       "monthlyMm": [
         263.9,
         163.1,
@@ -208,6 +217,7 @@
       "lat": -2.9761,
       "lon": 104.7754,
       "bmkgFamily": "ekuatorial",
+      "bmkgFamilySource": "estimate",
       "monthlyMm": [
         275,
         235.6,
@@ -230,6 +240,7 @@
       "lat": 3.5952,
       "lon": 98.6722,
       "bmkgFamily": "ekuatorial",
+      "bmkgFamilySource": "bmkg-zom9120",
       "monthlyMm": [
         110,
         68.8,
@@ -252,6 +263,7 @@
       "lat": 0.5333,
       "lon": 101.45,
       "bmkgFamily": "ekuatorial",
+      "bmkgFamilySource": "estimate",
       "monthlyMm": [
         265.6,
         159.3,
@@ -274,6 +286,7 @@
       "lat": -5.1477,
       "lon": 119.4327,
       "bmkgFamily": "monsunal",
+      "bmkgFamilySource": "estimate",
       "monthlyMm": [
         745.2,
         507.7,
@@ -296,6 +309,7 @@
       "lat": 1.4748,
       "lon": 124.8421,
       "bmkgFamily": "ekuatorial",
+      "bmkgFamilySource": "estimate",
       "monthlyMm": [
         461,
         407.5,
@@ -318,6 +332,7 @@
       "lat": -2.5337,
       "lon": 140.7181,
       "bmkgFamily": "ekuatorial",
+      "bmkgFamilySource": "estimate",
       "monthlyMm": [
         288,
         325.3,
