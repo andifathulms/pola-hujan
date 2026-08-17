@@ -38,7 +38,9 @@ export function Legend({ manifest }: LegendProps) {
       </ul>
       <p className="font-mono text-ink/70">
         Kecocokan dengan BMKG (dilaporkan, bukan diuji): {manifest.agreement.agreeingLocations}/
-        {manifest.agreement.comparedLocations} ({Math.round(manifest.agreement.agreementRate * 100)}%).
+        {manifest.agreement.comparedLocations} ({Math.round(manifest.agreement.agreementRate * 100)}%) —{" "}
+        {manifest.agreement.verifiedComparisons} di antaranya terverifikasi terhadap dokumen ZOM9120 BMKG, sisanya
+        perkiraan (lihat Metode).
       </p>
       <p className="border-t border-rule pt-2 text-ink/70">{manifest.datasetStatus}</p>
     </section>

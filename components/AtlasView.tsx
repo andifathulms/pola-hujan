@@ -86,7 +86,8 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
             </p>
             {selected.bmkgFamily && (
               <p className="font-mono text-xs text-ink/70">
-                Perkiraan BMKG: {FAMILY_LABEL[selected.bmkgFamily as Family]}
+                BMKG {selected.bmkgFamilySource === "bmkg-zom9120" ? "(terverifikasi ZOM9120)" : "(perkiraan)"}:{" "}
+                {FAMILY_LABEL[selected.bmkgFamily as Family]}
                 {selected.agrees === false ? " (berbeda dari klasifikasi turunan)" : " (cocok)"}
               </p>
             )}

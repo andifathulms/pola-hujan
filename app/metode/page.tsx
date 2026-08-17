@@ -148,15 +148,20 @@ export default function MetodePage() {
               {manifest.agreement.agreeingLocations}/{manifest.agreement.comparedLocations}
             </span>{" "}
             lokasi ({Math.round(manifest.agreement.agreementRate * 100)}%) memiliki keluarga turunan yang sama
-            dengan perkiraan keluarga BMKG untuk lokasi tersebut.
+            dengan keluarga BMKG pembanding untuk lokasi tersebut —{" "}
+            <span className="font-mono tabular-nums">{manifest.agreement.verifiedComparisons}</span> dari{" "}
+            {manifest.agreement.comparedLocations} pembanding itu dikutip langsung dari{" "}
+            <em>Pemutakhiran Zona Musim Indonesia Periode 1991-2020</em> (BMKG, 2022), sisanya masih perkiraan
+            terbaik yang belum diverifikasi (lihat <code className="font-mono">data/source/README.md</code> untuk
+            kutipan lengkap per lokasi).
           </p>
           <p className="text-xs text-ink/70">
-            <strong>Ini adalah metrik yang dilaporkan, bukan uji lulus/gagal</strong> — dan perlu dibaca dengan hati-hati
-            ganda di sini: keluarga BMKG pembanding adalah <strong>perkiraan terbaik per kota, belum diverifikasi
-            terhadap buletin ZOM resmi</strong> (lihat <code className="font-mono">data/source/README.md</code>), bukan
-            hanya klasifikasi turunan yang mungkin berbeda dari peta ahli. Memaksakan kecocokan — baik dengan
-            menyetel ambang maupun menyetel label pembanding — berarti berhenti menganalisis. Lokasi yang berbeda
-            ditandai arsir di peta, bukan warna keempat.
+            <strong>Ini adalah metrik yang dilaporkan, bukan uji lulus/gagal.</strong> Bahkan untuk pembanding yang
+            terverifikasi, lokasi turunan bisa sah berbeda dari peta BMKG — Medan, misalnya, keluarga BMKG-nya
+            terverifikasi Ekuatorial, tetapi klasifikasi turunan di titik koordinat kota itu jatuh sebagai Lokal.
+            Itu bukan bug yang perlu diperbaiki; itu perbedaan nyata antara metode. Memaksakan kecocokan — baik
+            dengan menyetel ambang maupun menyetel label pembanding — berarti berhenti menganalisis. Lokasi yang
+            berbeda ditandai arsir di peta, bukan warna keempat.
           </p>
         </section>
 
