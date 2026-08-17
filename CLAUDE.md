@@ -170,16 +170,21 @@ preset (`/banding`), the method page (`/metode`), and the live
 harmonic explainer (`/harmonik`). Shareable URLs, a skip link, visible
 focus, and a print stylesheet are in.
 
-**Real caveat, now the main one: `bmkgFamily` is still a hand-guessed,
-unverified approximation**, not transcribed from an actual BMKG Zona
-Musim bulletin — see `data/source/README.md`. The reported agreement
-rate against it is a genuine 53% (down from the placeholder's
-engineered-looking 87%), which reflects real classification complexity
-at some locations *and* the comparison label's own uncertainty; UI
-copy throughout says "perkiraan BMKG" rather than implying it's
-official. Actually verifying against a real BMKG bulletin, if the
-licence question in PRD.md §4 resolves favourably, is the next real
-step for this specific gap.
+**`bmkgFamily` is now 9/15 verified against BMKG's real "Pemutakhiran
+Zona Musim Indonesia Periode 1991-2020"** (2022, publicly hosted PDF,
+text-extracted and cited — see `data/source/README.md` for the
+per-city citation table), up from 0/15. Reported agreement is a
+genuine 60% (up from 53% after fixing one wrong fact — Ternate was
+mislabeled Lokal, the document states its province is 100%
+Ekuatorial-2 — and up from the original placeholder's engineered-
+looking 87%). One verified comparison (Medan) still disagrees even
+against the real document; that's left as a reported finding, not
+smoothed over. The remaining 6 locations (Manokwari, Palembang,
+Pekanbaru, Makassar, Manado, Jayapura) are still unverified best-effort
+guesses — the province-level statements this pass extracted don't
+resolve to a single type for them. UI copy distinguishes "(terverifikasi
+ZOM9120)" from "(perkiraan)" throughout rather than treating all
+comparisons as equally authoritative.
 
 Still open: `app/[locale]/` locale routing (English is deferred —
 Indonesian is served flat at the app root), the ZOM-polygon licence

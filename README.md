@@ -20,10 +20,11 @@ public Indonesia-region product for all 15 locations (see
 `scripts/build-data.ts`) classifies it, and the atlas (`/peta`),
 two-place comparison (`/banding`), the method page (`/metode`), and
 the live harmonic explainer (`/harmonik`) all work end to end and build
-to a static export. The main open caveat now is that the BMKG
-comparison label per city is still a hand-guessed approximation, not
-verified against an actual bulletin — see `CLAUDE.md`'s "Current
-state" for that and everything else still open.
+to a static export. 9 of the 15 BMKG comparison labels are now cited
+against BMKG's real "Pemutakhiran Zona Musim Indonesia Periode
+1991-2020" (see `data/source/README.md`); the other 6 are still
+unverified estimates. See `CLAUDE.md`'s "Current state" for that and
+everything else still open.
 
 ## Setup
 
