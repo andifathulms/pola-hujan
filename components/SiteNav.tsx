@@ -4,6 +4,7 @@ const LINKS = [
   { href: "/peta/", label: "Peta" },
   { href: "/banding/", label: "Banding" },
   { href: "/metode/", label: "Metode" },
+  { href: "/harmonik/", label: "Harmonik" },
 ];
 
 export function SiteNav() {
