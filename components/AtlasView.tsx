@@ -67,7 +67,9 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
       <YourPlace records={records} onFound={setSelectedId} />
 
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-3">
-        <div className="lg:col-span-2">
+        {/* Mobile: map fixed at 45vh (DESIGN.md §6); desktop: natural
+            height within the left two-thirds column. */}
+        <div className="h-[45vh] lg:h-auto lg:col-span-2">
           <RegimeMap records={records} selectedId={selectedId} onSelect={setSelectedId} />
         </div>
 

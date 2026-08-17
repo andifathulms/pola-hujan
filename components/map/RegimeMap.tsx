@@ -33,7 +33,13 @@ function project(lat: number, lon: number) {
  */
 export function RegimeMap({ records, selectedId, onSelect }: RegimeMapProps) {
   return (
-    <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="group" aria-label="Peta rezim curah hujan, per lokasi" className="w-full">
+    <svg
+      viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+      preserveAspectRatio="xMidYMid meet"
+      role="group"
+      aria-label="Peta rezim curah hujan, per lokasi"
+      className="h-full w-full"
+    >
       <defs>
         <pattern id="disagree-hatch" width={4} height={4} patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
           <line x1={0} y1={0} x2={0} y2={4} className="stroke-ink" strokeWidth={1.5} />

@@ -82,8 +82,18 @@ export function CycleCurve({ monthlyMm, annualCurveMm, semiAnnualCurveMm, meanMm
             y={HEIGHT - PAD_BOTTOM - height}
             width={barWidth}
             height={height}
-            className={`${FAMILY_FILL_CLASS[family]} transition-[height,y] duration-curve ease`}
-            style={{ transitionDelay: `${t * 40}ms` }}
+            className={FAMILY_FILL_CLASS[family]}
+            // Tailwind's transition-[height,y] arbitrary value is invalid
+            // (it doesn't support a comma-separated property list there)
+            // and was silently dropped, so the bars never actually
+            // animated — transitionProperty via inline style is the
+            // reliable way to transition SVG presentation attributes.
+            style={{
+              transitionProperty: "height, y",
+              transitionDuration: "600ms",
+              transitionTimingFunction: "cubic-bezier(0.2,0,0,1)",
+              transitionDelay: `${t * 40}ms`,
+            }}
           />
         );
       })}
