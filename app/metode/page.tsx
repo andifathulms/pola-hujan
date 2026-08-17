@@ -89,11 +89,7 @@ export default function MetodePage() {
             <dt className="text-ink/70">Jumlah lokasi</dt>
             <dd>{manifest.generatedFromLocations}</dd>
           </dl>
-          {manifest.datasetStatus.startsWith("PLACEHOLDER") && (
-            <p className="border border-rule bg-stock p-3 text-xs text-ink/70">
-              <strong>Status data saat ini:</strong> {manifest.datasetStatus}
-            </p>
-          )}
+          <p className="border border-rule bg-stock p-3 text-xs text-ink/70">{manifest.datasetStatus}</p>
         </section>
 
         <section className="flex flex-col gap-2">
@@ -152,13 +148,15 @@ export default function MetodePage() {
               {manifest.agreement.agreeingLocations}/{manifest.agreement.comparedLocations}
             </span>{" "}
             lokasi ({Math.round(manifest.agreement.agreementRate * 100)}%) memiliki keluarga turunan yang sama
-            dengan keluarga Zona Musim BMKG yang dipublikasikan untuk lokasi tersebut.
+            dengan perkiraan keluarga BMKG untuk lokasi tersebut.
           </p>
           <p className="text-xs text-ink/70">
-            <strong>Ini adalah metrik yang dilaporkan, bukan uji lulus/gagal.</strong> Metode turunan secara sah
-            bisa berbeda dari peta yang digambar ahli, dan memaksakan kecocokan berarti menyetel ambang sampai
-            jawabannya cocok — itu bukan analisis. Lokasi yang berbeda ditandai arsir di peta, bukan warna
-            keempat.
+            <strong>Ini adalah metrik yang dilaporkan, bukan uji lulus/gagal</strong> — dan perlu dibaca dengan hati-hati
+            ganda di sini: keluarga BMKG pembanding adalah <strong>perkiraan terbaik per kota, belum diverifikasi
+            terhadap buletin ZOM resmi</strong> (lihat <code className="font-mono">data/source/README.md</code>), bukan
+            hanya klasifikasi turunan yang mungkin berbeda dari peta ahli. Memaksakan kecocokan — baik dengan
+            menyetel ambang maupun menyetel label pembanding — berarti berhenti menganalisis. Lokasi yang berbeda
+            ditandai arsir di peta, bukan warna keempat.
           </p>
         </section>
 

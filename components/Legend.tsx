@@ -33,18 +33,14 @@ export function Legend({ manifest }: LegendProps) {
         ))}
         <li className="flex items-center gap-2">
           <span aria-hidden className="inline-block h-2 w-2 rounded-full bg-ink" style={{ backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 1px, currentColor 1px, currentColor 2px)" }} />
-          <span>Arsir — klasifikasi turunan berbeda dari keluarga Zona Musim BMKG yang dipublikasikan.</span>
+          <span>Arsir — klasifikasi turunan berbeda dari perkiraan keluarga BMKG (lihat Metode).</span>
         </li>
       </ul>
       <p className="font-mono text-ink/70">
         Kecocokan dengan BMKG (dilaporkan, bukan diuji): {manifest.agreement.agreeingLocations}/
         {manifest.agreement.comparedLocations} ({Math.round(manifest.agreement.agreementRate * 100)}%).
       </p>
-      {manifest.datasetStatus.startsWith("PLACEHOLDER") && (
-        <p className="border-t border-rule pt-2 text-ink/70">
-          <strong>Data contoh:</strong> {manifest.datasetStatus}
-        </p>
-      )}
+      <p className="border-t border-rule pt-2 text-ink/70">{manifest.datasetStatus}</p>
     </section>
   );
 }
