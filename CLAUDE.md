@@ -152,4 +152,21 @@ The site states on the map itself that this is a classification derived from ope
 
 ## Current state
 
-M0 — not yet scaffolded. Next: the precipitation pipeline, the monthly climatology, and the harmonic fit with its synthetic test suite. **No classification work until `pnpm test:harmonic` passes; no UI until `pnpm test:classify` does.**
+**M2 complete.** `lib/harmonic` (fit, classify, thresholds) is built with
+its full synthetic test suite green, `pnpm test:harmonic` and
+`pnpm test:classify` both pass, and the atlas — regime map, cycle
+curve, archetype strip, legend — is up and builds to a static export.
+
+**Real caveat: the precipitation source is a placeholder.** GPM
+IMERG/CHIRPS ingestion (`pnpm data:fetch`) is not implemented — it
+requires credentials this environment doesn't have. `data/source/locations.json`
+is a documented, hand-constructed stand-in for 15 cities (see
+`data/source/README.md`); replacing it with real gridded climatology,
+reduced to `locationSourceSchema`, is the next real step and does not
+require touching the pipeline or UI that consume it.
+
+Not yet built: M3 (two-place comparison, "your place"), M4 (method
+page, thresholds/agreement writeup beyond the legend's one-line
+summary), M5 (the live harmonic explainer), M6 (sharing, print,
+further a11y polish). `app/[locale]/` locale routing is also deferred —
+Indonesian is served flat at the app root pending English content.
