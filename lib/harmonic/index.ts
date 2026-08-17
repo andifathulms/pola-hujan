@@ -2,7 +2,7 @@ export { fitHarmonics, annualHarmonicMm, semiAnnualHarmonicMm, MONTHS_PER_YEAR }
 export type { HarmonicFit } from "./fit";
 export { amplitudeAndPhase } from "./amplitude";
 export type { AmplitudePhase } from "./amplitude";
-export { wrapMonths, circularMonthDistance } from "./phase";
+export { wrapMonths, wrapToPeriod, circularMonthDistance } from "./phase";
 export { classifyRegime } from "./classify";
 export type {
   RegimeClassification,

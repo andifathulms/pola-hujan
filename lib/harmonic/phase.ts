@@ -5,10 +5,19 @@
  * invariant 8 and the working-style note on the December–January boundary.
  */
 
+/**
+ * Wrap an arbitrary value into [0, period). Double modulo, not a single
+ * conditional add: a negative value within a float epsilon of zero (e.g.
+ * -3.8e-17) rounds up to exactly `period` after a naive `+ period`, and a
+ * second `% period` is what folds that back to 0.
+ */
+export function wrapToPeriod(value: number, period: number): number {
+  return ((value % period) + period) % period;
+}
+
 /** Wrap an arbitrary month value into [0, 12). */
 export function wrapMonths(monthValue: number): number {
-  const wrapped = monthValue % 12;
-  return wrapped < 0 ? wrapped + 12 : wrapped;
+  return wrapToPeriod(monthValue, 12);
 }
 
 /**

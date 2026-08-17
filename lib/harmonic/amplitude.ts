@@ -1,4 +1,4 @@
-import { wrapMonths } from "./phase";
+import { wrapToPeriod } from "./phase";
 
 export interface AmplitudePhase {
   ampMm: number;
@@ -19,6 +19,6 @@ export function amplitudeAndPhase(
   const ampMm = Math.hypot(cosCoeff, sinCoeff);
   // a*cos(wt) + b*sin(wt) = amp*cos(wt - phaseRad), phaseRad = atan2(b, a)
   const phaseRad = Math.atan2(sinCoeff, cosCoeff);
-  const peakMonth = wrapMonths((phaseRad / (2 * Math.PI)) * periodMonths);
+  const peakMonth = wrapToPeriod((phaseRad / (2 * Math.PI)) * periodMonths, periodMonths);
   return { ampMm, peakMonth };
 }
