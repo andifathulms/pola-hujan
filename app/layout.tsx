@@ -40,7 +40,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="id" className={`${alegreya.variable} ${alegreyaSans.variable} ${plexMono.variable}`}>
-      <body className="bg-stock text-ink font-sans text-base antialiased">{children}</body>
+      <body className="bg-stock text-ink font-sans text-base antialiased">
+        <a href="#main-content" className="skip-link">
+          Lompat ke konten utama
+        </a>
+        {children}
+      </body>
     </html>
   );
 }

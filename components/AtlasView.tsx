@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ArchetypeRecord, Manifest, RegimeRecord } from "@/lib/grid/schema";
 import { FAMILY_LABEL, FAMILY_TEXT_CLASS, MONTH_LABELS_ID, type Family } from "@/lib/family";
 import { RegimeMap } from "@/components/map/RegimeMap";
@@ -24,6 +24,26 @@ export interface AtlasViewProps {
  */
 export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
   const [selectedId, setSelectedId] = useState<string>(records[0]?.id ?? "");
+
+  // Read the initial selection from ?lokasi= on mount (window, not a
+  // Next.js hook, so no Suspense boundary is needed for a static
+  // export), and keep the URL in sync afterwards — this is the M6
+  // "sharing" feature: a location's URL is enough to reproduce the view.
+  useEffect(() => {
+    const fromUrl = new URLSearchParams(window.location.search).get("lokasi");
+    if (fromUrl && records.some((r) => r.id === fromUrl)) {
+      setSelectedId(fromUrl);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!selectedId) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set("lokasi", selectedId);
+    window.history.replaceState(null, "", url);
+  }, [selectedId]);
+
   const selected = records.find((r) => r.id === selectedId) ?? records[0];
 
   if (!selected) {
@@ -37,7 +57,7 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
   );
 
   return (
-    <div className="flex flex-col gap-6 p-4 lg:p-6">
+    <div id="main-content" className="flex flex-col gap-6 p-4 lg:p-6">
       <header className="flex flex-col gap-1">
         <h1 className="font-display text-xl font-semibold lg:text-2xl">Pola Hujan</h1>
         <p className="text-ink/70">Atlas rezim curah hujan tahunan Indonesia — bukan animasi angin, bukan prakiraan.</p>

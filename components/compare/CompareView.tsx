@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { RegimeRecord } from "@/lib/grid/schema";
 import { FAMILY_LABEL, FAMILY_TEXT_CLASS, type Family } from "@/lib/family";
 import { CycleCurve } from "@/components/curve/CycleCurve";
@@ -73,6 +73,25 @@ export function CompareView({ records, defaultLeftId, defaultRightId }: CompareV
   const [leftId, setLeftId] = useState(defaultLeftId);
   const [rightId, setRightId] = useState(defaultRightId);
 
+  // Same URL-sync approach as AtlasView: read ?kiri=&kanan= on mount,
+  // keep them in sync afterwards, so a comparison can be shared as a
+  // link (M6 "sharing" — see the note in components/AtlasView.tsx).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const kiri = params.get("kiri");
+    const kanan = params.get("kanan");
+    if (kiri && records.some((r) => r.id === kiri)) setLeftId(kiri);
+    if (kanan && records.some((r) => r.id === kanan)) setRightId(kanan);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("kiri", leftId);
+    url.searchParams.set("kanan", rightId);
+    window.history.replaceState(null, "", url);
+  }, [leftId, rightId]);
+
   const left = records.find((r) => r.id === leftId) ?? records[0];
   const right = records.find((r) => r.id === rightId) ?? records[1] ?? records[0];
 
@@ -81,7 +100,7 @@ export function CompareView({ records, defaultLeftId, defaultRightId }: CompareV
   }
 
   return (
-    <div className="flex flex-col gap-6 p-4 lg:p-6">
+    <div id="main-content" className="flex flex-col gap-6 p-4 lg:p-6">
       <header className="flex flex-col gap-1">
         <h1 className="font-display text-xl font-semibold lg:text-2xl">Banding dua tempat</h1>
         <p className="text-ink/70">

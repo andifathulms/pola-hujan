@@ -11,7 +11,7 @@ export default function HarmonikPage() {
   return (
     <>
       <SiteNav />
-      <div className="flex flex-col gap-6 p-4 lg:p-6">
+      <div id="main-content" className="flex flex-col gap-6 p-4 lg:p-6">
         <header className="flex flex-col gap-1">
           <h1 className="font-display text-xl font-semibold lg:text-2xl">Bagaimana klasifikasi bekerja</h1>
           <p className="text-ink/70">

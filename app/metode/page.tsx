@@ -54,7 +54,7 @@ export default function MetodePage() {
   return (
     <>
       <SiteNav />
-      <div className="flex flex-col gap-8 p-4 lg:p-6">
+      <div id="main-content" className="flex flex-col gap-8 p-4 lg:p-6">
         <header className="flex flex-col gap-1">
           <h1 className="font-display text-xl font-semibold lg:text-2xl">Metode</h1>
           <p className="text-ink/70">Bagaimana klasifikasi ini dibuat, dan apa yang tidak bisa ia klaim.</p>
