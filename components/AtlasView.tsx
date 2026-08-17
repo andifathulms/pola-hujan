@@ -8,6 +8,7 @@ import { CycleCurve } from "@/components/curve/CycleCurve";
 import { CycleTable } from "@/components/table/CycleTable";
 import { ArchetypeStrip } from "@/components/archetypes/ArchetypeStrip";
 import { Legend } from "@/components/Legend";
+import { YourPlace } from "@/components/YourPlace";
 
 export interface AtlasViewProps {
   records: RegimeRecord[];
@@ -43,6 +44,7 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
       </header>
 
       <Legend manifest={manifest} />
+      <YourPlace records={records} onFound={setSelectedId} />
 
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-3">
         <div className="lg:col-span-2">
