@@ -3,6 +3,7 @@ import Link from "next/link";
 const LINKS = [
   { href: "/peta/", label: "Peta" },
   { href: "/banding/", label: "Banding" },
+  { href: "/metode/", label: "Metode" },
 ];
 
 export function SiteNav() {
