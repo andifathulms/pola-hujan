@@ -152,22 +152,34 @@ The site states on the map itself that this is a classification derived from ope
 
 ## Current state
 
-**M0 through M6 all have a working first pass.** `lib/harmonic` (fit,
-classify, thresholds) is built with its full synthetic test suite
-green (43 tests total across harmonic, classify, and geo), and the
-site builds to a static export with: the atlas (`/peta` — regime map,
-cycle curve, archetype strip, legend, "your place"), two-place
-comparison with the Jakarta/Ambon preset (`/banding`), the method page
-(`/metode`), and the live harmonic explainer (`/harmonik`). Shareable
-URLs, a skip link, visible focus, and a print stylesheet are in.
+**M0 through M6 all have a working first pass, and the precipitation
+source is real, not a placeholder.** `pnpm data:fetch` downloads 120
+monthly rasters from CHIRPS 2.0's public, no-auth Indonesia-region
+product (2006-01 to 2015-12), decodes them with `lib/geo/bil` +
+`lib/geo/tar` (no GDAL, no new runtime dependency), and samples all 15
+locations into a genuine 10-year climatology — see
+`data/source/README.md` for the full method and its real limitation
+(a 10-year window, not the 30-year WMO-normal period, because the
+regional archive stops updating at 2016-10). `lib/harmonic` (fit,
+classify, thresholds) has its full synthetic test suite green (54
+tests total across harmonic, classify, and geo — geo now covers the
+raster/archive decoders too), and the site builds to a static export
+with: the atlas (`/peta` — regime map, cycle curve, archetype strip,
+legend, "your place"), two-place comparison with the Jakarta/Ambon
+preset (`/banding`), the method page (`/metode`), and the live
+harmonic explainer (`/harmonik`). Shareable URLs, a skip link, visible
+focus, and a print stylesheet are in.
 
-**Real caveat: the precipitation source is a placeholder.** GPM
-IMERG/CHIRPS ingestion (`pnpm data:fetch`) is not implemented — it
-requires credentials this environment doesn't have. `data/source/locations.json`
-is a documented, hand-constructed stand-in for 15 cities (see
-`data/source/README.md`); replacing it with real gridded climatology,
-reduced to `locationSourceSchema`, is the next real step and does not
-require touching the pipeline or UI that consume it.
+**Real caveat, now the main one: `bmkgFamily` is still a hand-guessed,
+unverified approximation**, not transcribed from an actual BMKG Zona
+Musim bulletin — see `data/source/README.md`. The reported agreement
+rate against it is a genuine 53% (down from the placeholder's
+engineered-looking 87%), which reflects real classification complexity
+at some locations *and* the comparison label's own uncertainty; UI
+copy throughout says "perkiraan BMKG" rather than implying it's
+official. Actually verifying against a real BMKG bulletin, if the
+licence question in PRD.md §4 resolves favourably, is the next real
+step for this specific gap.
 
 Still open: `app/[locale]/` locale routing (English is deferred —
 Indonesian is served flat at the app root), the ZOM-polygon licence

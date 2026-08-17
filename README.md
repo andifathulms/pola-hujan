@@ -13,19 +13,23 @@ has the working conventions and invariants.
 
 ## Status
 
-**M0–M6 all have a working first pass**: the pipeline (`lib/harmonic`,
-`scripts/build-data.ts`), the atlas (`/peta`), two-place comparison
-(`/banding`), the method page (`/metode`), and the live harmonic
-explainer (`/harmonik`) all work end to end and build to a static
-export. The precipitation source is currently a **documented
-placeholder** (`data/source/README.md`) — real GPM IMERG/CHIRPS
-ingestion is the next real step. See `CLAUDE.md`'s "Current state" for
-what's still open.
+**M0–M6 all have a working first pass, on real data**: `pnpm data:fetch`
+pulls a genuine 10-year (2006–2015) climatology from CHIRPS 2.0's
+public Indonesia-region product for all 15 locations (see
+`data/source/README.md`), the pipeline (`lib/harmonic`,
+`scripts/build-data.ts`) classifies it, and the atlas (`/peta`),
+two-place comparison (`/banding`), the method page (`/metode`), and
+the live harmonic explainer (`/harmonik`) all work end to end and build
+to a static export. The main open caveat now is that the BMKG
+comparison label per city is still a hand-guessed approximation, not
+verified against an actual bulletin — see `CLAUDE.md`'s "Current
+state" for that and everything else still open.
 
 ## Setup
 
 ```bash
 pnpm install
+pnpm data:fetch      # downloads real CHIRPS rasters (~120 files); takes a minute or two
 pnpm data:build      # generates data/grids/ (gitignored, not committed)
 pnpm dev
 ```
