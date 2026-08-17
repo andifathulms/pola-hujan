@@ -1,25 +1,187 @@
 /**
- * DEV/CI: pull precipitation source data.
+ * DEV/CI: pull real precipitation source data.
  *
- * Not yet implemented against a real source. GPM IMERG requires a NASA
- * Earthdata login and CHIRPS a bulk download from UCSB/CHC (PRD.md §4);
- * neither is wired up here. Until then this only checks that the
- * placeholder dataset (`data/source/locations.json`, see
- * `data/source/README.md`) is present, so `pnpm data:build` always has
- * something valid to read.
+ * CHIRPS (Climate Hazards Center, UC Santa Barbara) publishes a public,
+ * no-login-required Indonesia-region monthly product at 0.05° as small
+ * per-month tar.gz archives, each containing a signed-16-bit BIL raster
+ * (mm, direct — not scaled) and its .hdr sidecar. That's what this
+ * script downloads, decodes with lib/geo/bil + lib/geo/tar (no GDAL, no
+ * new npm dependency), and samples at each of this build's locations.
+ *
+ * The regional archive stops at 2016-10 (it isn't being updated), so
+ * the climatology period here is 2006-01 through 2015-12 — ten full
+ * years, not the 30-year WMO-normal period a production climatology
+ * would use. That's a real, disclosed limitation, not a placeholder:
+ * every value below is genuine measured/satellite-estimated
+ * precipitation, averaged over a shorter window than ideal.
+ *
+ * Source: https://data.chc.ucsb.edu/products/CHIRPS-2.0/indonesia_monthly/bils/
+ * Funk, C. et al. (2015), "The climate hazards infrared precipitation
+ * with stations—a new environmental record for monitoring extremes",
+ * Sci. Data 2, 150066.
  */
-import { existsSync } from "node:fs";
+import { gunzipSync } from "node:zlib";
+import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { parseBilHeader, sampleBilNearest, type BilHeader } from "../lib/geo/bil";
+import { extractTarEntries } from "../lib/geo/tar";
+import { locationSourceFileSchema, type LocationSource } from "../lib/grid/schema";
 
-const sourcePath = path.join(process.cwd(), "data", "source", "locations.json");
+const FIRST_YEAR = 2006;
+const LAST_YEAR = 2015; // inclusive; the regional archive itself stops at 2016-10
+const BASE_URL = "https://data.chc.ucsb.edu/products/CHIRPS-2.0/indonesia_monthly/bils";
+const CONCURRENCY = 8;
+const MAX_ATTEMPTS = 3;
 
-if (!existsSync(sourcePath)) {
-  console.error(
-    `data:fetch — ${sourcePath} is missing. Real IMERG/CHIRPS ingestion is not yet implemented; ` +
-      "see data/source/README.md for what's expected there.",
-  );
-  process.exit(1);
+// Coordinates and BMKG family are hand-curated metadata independent of
+// CHIRPS (BMKG's published Zona Musim isn't a satellite product to
+// download) — best-effort assignments per city based on each region's
+// well-documented general regime, not scraped from a specific BMKG
+// bulletin. monthlyMm below is replaced entirely with real CHIRPS
+// averages; only id/name/province/lat/lon/bmkgFamily come from here.
+const LOCATIONS: Array<Omit<LocationSource, "monthlyMm">> = [
+  { id: "jakarta", name: "Jakarta", province: "DKI Jakarta", lat: -6.2088, lon: 106.8456, bmkgFamily: "monsunal" },
+  { id: "bandung", name: "Bandung", province: "Jawa Barat", lat: -6.9175, lon: 107.6191, bmkgFamily: "monsunal" },
+  { id: "surabaya", name: "Surabaya", province: "Jawa Timur", lat: -7.2575, lon: 112.7521, bmkgFamily: "monsunal" },
+  { id: "denpasar", name: "Denpasar", province: "Bali", lat: -8.6705, lon: 115.2126, bmkgFamily: "monsunal" },
+  { id: "kupang", name: "Kupang", province: "Nusa Tenggara Timur", lat: -10.1772, lon: 123.607, bmkgFamily: "monsunal" },
+  { id: "ambon", name: "Ambon", province: "Maluku", lat: -3.6954, lon: 128.1814, bmkgFamily: "lokal" },
+  { id: "ternate", name: "Ternate", province: "Maluku Utara", lat: 0.79, lon: 127.385, bmkgFamily: "lokal" },
+  { id: "manokwari", name: "Manokwari", province: "Papua Barat", lat: -0.8615, lon: 134.062, bmkgFamily: "lokal" },
+  { id: "pontianak", name: "Pontianak", province: "Kalimantan Barat", lat: -0.0263, lon: 109.3425, bmkgFamily: "ekuatorial" },
+  { id: "palembang", name: "Palembang", province: "Sumatra Selatan", lat: -2.9761, lon: 104.7754, bmkgFamily: "ekuatorial" },
+  { id: "medan", name: "Medan", province: "Sumatra Utara", lat: 3.5952, lon: 98.6722, bmkgFamily: "ekuatorial" },
+  { id: "pekanbaru", name: "Pekanbaru", province: "Riau", lat: 0.5333, lon: 101.45, bmkgFamily: "ekuatorial" },
+  { id: "makassar", name: "Makassar", province: "Sulawesi Selatan", lat: -5.1477, lon: 119.4327, bmkgFamily: "monsunal" },
+  { id: "manado", name: "Manado", province: "Sulawesi Utara", lat: 1.4748, lon: 124.8421, bmkgFamily: "ekuatorial" },
+  { id: "jayapura", name: "Jayapura", province: "Papua", lat: -2.5337, lon: 140.7181, bmkgFamily: "ekuatorial" },
+];
+
+interface MonthTarget {
+  year: number;
+  month: number; // 1-12
 }
 
-console.log(`data:fetch — using placeholder source at ${sourcePath} (see data/source/README.md).`);
-console.log("data:fetch — no real fetch performed. This is expected until IMERG/CHIRPS ingestion is built.");
+function buildMonthTargets(): MonthTarget[] {
+  const targets: MonthTarget[] = [];
+  for (let year = FIRST_YEAR; year <= LAST_YEAR; year += 1) {
+    for (let month = 1; month <= 12; month += 1) targets.push({ year, month });
+  }
+  return targets;
+}
+
+function urlFor({ year, month }: MonthTarget): string {
+  const ym = `${year}${String(month).padStart(2, "0")}`;
+  return `${BASE_URL}/chirps-v2.0_${ym}.tar.gz`;
+}
+
+async function fetchMonth(target: MonthTarget): Promise<{ header: BilHeader; data: Buffer } | undefined> {
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
+    try {
+      const response = await fetch(urlFor(target));
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const gz = Buffer.from(await response.arrayBuffer());
+      const tar = gunzipSync(gz);
+      const entries = extractTarEntries(tar);
+
+      const hdrEntry = [...entries.entries()].find(([name]) => name.endsWith(".hdr"));
+      const bilEntry = [...entries.entries()].find(([name]) => name.endsWith(".bil"));
+      if (!hdrEntry || !bilEntry) throw new Error("archive missing .hdr or .bil entry");
+
+      const header = parseBilHeader(hdrEntry[1].toString("utf-8"));
+      return { header, data: Buffer.from(bilEntry[1]) };
+    } catch (error) {
+      if (attempt === MAX_ATTEMPTS) {
+        console.warn(`data:fetch — giving up on ${target.year}-${String(target.month).padStart(2, "0")}: ${error}`);
+        return undefined;
+      }
+    }
+  }
+  return undefined;
+}
+
+async function runPool<T>(items: T[], concurrency: number, worker: (item: T) => Promise<void>): Promise<void> {
+  let cursor = 0;
+  async function next(): Promise<void> {
+    while (cursor < items.length) {
+      const item = items[cursor];
+      cursor += 1;
+      if (item !== undefined) await worker(item);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, next));
+}
+
+async function main() {
+  const targets = buildMonthTargets();
+  console.log(`data:fetch — downloading ${targets.length} monthly CHIRPS rasters (${FIRST_YEAR}-${LAST_YEAR})...`);
+
+  // sums[locationId][monthIndex] and counts[locationId][monthIndex], monthIndex Jan=0.
+  const sums = new Map<string, number[]>(LOCATIONS.map((l) => [l.id, Array(12).fill(0)]));
+  const counts = new Map<string, number[]>(LOCATIONS.map((l) => [l.id, Array(12).fill(0)]));
+
+  let completed = 0;
+  await runPool(targets, CONCURRENCY, async (target) => {
+    const result = await fetchMonth(target);
+    if (result) {
+      const { header, data } = result;
+      for (const location of LOCATIONS) {
+        const value = sampleBilNearest(data, header, location.lat, location.lon);
+        if (value !== null) {
+          const monthIdx = target.month - 1;
+          const locSums = sums.get(location.id)!;
+          const locCounts = counts.get(location.id)!;
+          locSums[monthIdx] = (locSums[monthIdx] ?? 0) + value;
+          locCounts[monthIdx] = (locCounts[monthIdx] ?? 0) + 1;
+        }
+      }
+    }
+    completed += 1;
+    if (completed % 24 === 0 || completed === targets.length) {
+      console.log(`data:fetch — ${completed}/${targets.length} months processed`);
+    }
+  });
+
+  const MIN_SAMPLES_PER_MONTH = Math.floor((LAST_YEAR - FIRST_YEAR + 1) * 0.7);
+  const locations: LocationSource[] = LOCATIONS.map((location) => {
+    const locSums = sums.get(location.id)!;
+    const locCounts = counts.get(location.id)!;
+    const monthlyMm = locSums.map((sum, i) => {
+      const count = locCounts[i] ?? 0;
+      if (count < MIN_SAMPLES_PER_MONTH) {
+        throw new Error(
+          `data:fetch — ${location.id} month ${i + 1} only has ${count}/${LAST_YEAR - FIRST_YEAR + 1} samples ` +
+            `(need >= ${MIN_SAMPLES_PER_MONTH}). Coordinates may be over CHIRPS nodata (ocean) or too many downloads failed.`,
+        );
+      }
+      return Math.round((sum / count) * 10) / 10;
+    });
+    return { ...location, monthlyMm };
+  });
+
+  const status =
+    `CHIRPS 2.0 (Climate Hazards Center, UCSB), Indonesia-region monthly product, ${FIRST_YEAR}-01 to ${LAST_YEAR}-12 ` +
+    `(${LAST_YEAR - FIRST_YEAR + 1}-year average, not the 30-year WMO-normal period — the regional archive itself stops ` +
+    `at 2016-10). Real satellite-gauge-blended precipitation at each city's coordinates, nearest-cell sampled at 0.05°. ` +
+    `bmkgFamily is a best-effort per-city assignment based on each region's documented regime, not scraped from a ` +
+    `specific BMKG bulletin. See data/source/README.md.`;
+
+  const outFile = {
+    _status: status,
+    _datasetName: "CHIRPS 2.0, Indonesia-region monthly (Climate Hazards Center, UCSB)",
+    _climatologyPeriod: `${FIRST_YEAR}-01 to ${LAST_YEAR}-12 (${LAST_YEAR - FIRST_YEAR + 1}-year average; shorter than a 30-year WMO-normal period — see data/source/README.md)`,
+    locations,
+  };
+  locationSourceFileSchema.parse(outFile); // fail fast if something drifted from the schema
+
+  const outPath = path.join(process.cwd(), "data", "source", "locations.json");
+  mkdirSync(path.dirname(outPath), { recursive: true });
+  writeFileSync(outPath, JSON.stringify(outFile, null, 2));
+
+  console.log(`data:fetch — wrote real CHIRPS climatology for ${locations.length} locations to ${outPath}`);
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

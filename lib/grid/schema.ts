@@ -21,6 +21,8 @@ export type LocationSource = z.infer<typeof locationSourceSchema>;
 
 export const locationSourceFileSchema = z.object({
   _status: z.string(),
+  _datasetName: z.string(),
+  _climatologyPeriod: z.string(),
   locations: z.array(locationSourceSchema).min(1),
 });
 export type LocationSourceFile = z.infer<typeof locationSourceFileSchema>;

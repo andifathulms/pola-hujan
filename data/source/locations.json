@@ -1,5 +1,7 @@
 {
-  "_status": "PLACEHOLDER — illustrative demo climatology, not derived from GPM IMERG or CHIRPS. Hand-tuned to plausibly represent each family for demonstration pending real satellite data integration (PRD.md M0). Do not treat as measured data.",
+  "_status": "CHIRPS 2.0 (Climate Hazards Center, UCSB), Indonesia-region monthly product, 2006-01 to 2015-12 (10-year average, not the 30-year WMO-normal period — the regional archive itself stops at 2016-10). Real satellite-gauge-blended precipitation at each city's coordinates, nearest-cell sampled at 0.05°. bmkgFamily is a best-effort per-city assignment based on each region's documented regime, not scraped from a specific BMKG bulletin. See data/source/README.md.",
+  "_datasetName": "CHIRPS 2.0, Indonesia-region monthly (Climate Hazards Center, UCSB)",
+  "_climatologyPeriod": "2006-01 to 2015-12 (10-year average; shorter than a 30-year WMO-normal period — see data/source/README.md)",
   "locations": [
     {
       "id": "jakarta",
@@ -7,21 +9,21 @@
       "province": "DKI Jakarta",
       "lat": -6.2088,
       "lon": 106.8456,
+      "bmkgFamily": "monsunal",
       "monthlyMm": [
-        340,
-        340,
-        295,
-        210,
-        115,
-        50,
-        40,
+        432.1,
+        337.6,
+        207.3,
+        168.1,
+        133,
+        92.5,
+        57.6,
+        51.2,
+        40.6,
         80,
-        145,
-        210,
-        265,
-        310
-      ],
-      "bmkgFamily": "monsunal"
+        129.9,
+        269.5
+      ]
     },
     {
       "id": "bandung",
@@ -29,21 +31,21 @@
       "province": "Jawa Barat",
       "lat": -6.9175,
       "lon": 107.6191,
+      "bmkgFamily": "monsunal",
       "monthlyMm": [
-        328,
-        343,
-        317,
-        251,
-        169,
-        103,
-        77,
-        92,
-        133,
-        184,
-        236,
-        287
-      ],
-      "bmkgFamily": "monsunal"
+        235.6,
+        203.6,
+        225.6,
+        279.6,
+        251.9,
+        76.9,
+        65.7,
+        44.1,
+        85.1,
+        124.4,
+        226.4,
+        308
+      ]
     },
     {
       "id": "surabaya",
@@ -51,21 +53,21 @@
       "province": "Jawa Timur",
       "lat": -7.2575,
       "lon": 112.7521,
+      "bmkgFamily": "monsunal",
       "monthlyMm": [
-        280,
-        289,
-        290,
-        240,
-        130,
-        11,
-        0,
-        11,
-        130,
-        240,
-        290,
-        289
-      ],
-      "bmkgFamily": "lokal"
+        338,
+        302.9,
+        295.6,
+        203,
+        142.4,
+        62.5,
+        29.4,
+        6.5,
+        16.5,
+        30.7,
+        100.3,
+        249.2
+      ]
     },
     {
       "id": "denpasar",
@@ -73,21 +75,21 @@
       "province": "Bali",
       "lat": -8.6705,
       "lon": 115.2126,
+      "bmkgFamily": "monsunal",
       "monthlyMm": [
-        340,
-        329,
-        278,
-        195,
-        108,
-        46,
-        30,
-        61,
-        122,
-        195,
-        263,
-        314
-      ],
-      "bmkgFamily": "monsunal"
+        286,
+        224.4,
+        207.1,
+        103.8,
+        127.8,
+        54.7,
+        52,
+        24.8,
+        49.6,
+        82.5,
+        119.2,
+        261.8
+      ]
     },
     {
       "id": "kupang",
@@ -95,21 +97,21 @@
       "province": "Nusa Tenggara Timur",
       "lat": -10.1772,
       "lon": 123.607,
+      "bmkgFamily": "monsunal",
       "monthlyMm": [
-        268,
-        255,
-        210,
-        143,
-        73,
-        22,
+        358,
+        283.5,
+        173.3,
+        69,
+        6.2,
+        24.9,
+        23.4,
+        3.1,
         7,
-        30,
-        80,
-        142,
-        203,
-        248
-      ],
-      "bmkgFamily": "monsunal"
+        25,
+        56.3,
+        255.2
+      ]
     },
     {
       "id": "ambon",
@@ -117,21 +119,21 @@
       "province": "Maluku",
       "lat": -3.6954,
       "lon": 128.1814,
+      "bmkgFamily": "lokal",
       "monthlyMm": [
-        130,
-        159,
-        200,
-        250,
-        310,
-        371,
-        410,
-        401,
-        340,
-        250,
-        170,
-        129
-      ],
-      "bmkgFamily": "lokal"
+        135,
+        120,
+        156.1,
+        303.2,
+        576.6,
+        740.7,
+        579.4,
+        496.3,
+        228.3,
+        133.3,
+        89.4,
+        161.3
+      ]
     },
     {
       "id": "ternate",
@@ -139,21 +141,21 @@
       "province": "Maluku Utara",
       "lat": 0.79,
       "lon": 127.385,
+      "bmkgFamily": "lokal",
       "monthlyMm": [
-        128,
-        150,
-        183,
-        223,
-        270,
-        318,
-        348,
-        340,
-        293,
-        223,
+        210.2,
+        221.4,
+        216.4,
+        284.2,
+        305.2,
+        261.6,
         160,
-        127
-      ],
-      "bmkgFamily": "lokal"
+        165.1,
+        113.5,
+        150.3,
+        251.6,
+        299.5
+      ]
     },
     {
       "id": "manokwari",
@@ -161,21 +163,21 @@
       "province": "Papua Barat",
       "lat": -0.8615,
       "lon": 134.062,
+      "bmkgFamily": "lokal",
       "monthlyMm": [
-        173,
-        206,
-        237,
-        263,
-        294,
-        327,
-        347,
-        334,
-        283,
-        217,
-        166,
-        153
-      ],
-      "bmkgFamily": "lokal"
+        338.4,
+        309.3,
+        386.2,
+        336.5,
+        212.2,
+        204.2,
+        156.9,
+        159.4,
+        133.6,
+        117.7,
+        138,
+        259.2
+      ]
     },
     {
       "id": "pontianak",
@@ -183,21 +185,21 @@
       "province": "Kalimantan Barat",
       "lat": -0.0263,
       "lon": 109.3425,
+      "bmkgFamily": "ekuatorial",
       "monthlyMm": [
-        202,
-        276,
-        343,
-        328,
-        235,
-        146,
-        142,
-        224,
-        313,
-        328,
-        265,
-        198
-      ],
-      "bmkgFamily": "ekuatorial"
+        263.9,
+        163.1,
+        227.7,
+        274.1,
+        265.5,
+        234.3,
+        214.6,
+        170.9,
+        200.4,
+        342.4,
+        366,
+        331.7
+      ]
     },
     {
       "id": "palembang",
@@ -205,21 +207,21 @@
       "province": "Sumatra Selatan",
       "lat": -2.9761,
       "lon": 104.7754,
+      "bmkgFamily": "ekuatorial",
       "monthlyMm": [
-        253,
-        319,
-        335,
-        268,
-        163,
-        103,
-        132,
-        216,
         275,
-        268,
-        223,
-        207
-      ],
-      "bmkgFamily": "ekuatorial"
+        235.6,
+        352.7,
+        323.1,
+        214.4,
+        147,
+        106.5,
+        89.8,
+        91.3,
+        180.6,
+        278.2,
+        375.1
+      ]
     },
     {
       "id": "medan",
@@ -227,21 +229,21 @@
       "province": "Sumatra Utara",
       "lat": 3.5952,
       "lon": 98.6722,
+      "bmkgFamily": "ekuatorial",
       "monthlyMm": [
-        144,
-        180,
-        222,
-        216,
-        165,
-        124,
-        144,
-        220,
-        291,
-        296,
-        235,
-        164
-      ],
-      "bmkgFamily": "ekuatorial"
+        110,
+        68.8,
+        119.4,
+        169.4,
+        215.1,
+        155.4,
+        202.1,
+        240,
+        263.9,
+        295.1,
+        215.5,
+        188.6
+      ]
     },
     {
       "id": "pekanbaru",
@@ -249,21 +251,21 @@
       "province": "Riau",
       "lat": 0.5333,
       "lon": 101.45,
+      "bmkgFamily": "ekuatorial",
       "monthlyMm": [
-        218,
-        309,
-        348,
-        288,
-        180,
-        123,
-        167,
-        266,
-        323,
-        288,
-        205,
-        167
-      ],
-      "bmkgFamily": "ekuatorial"
+        265.6,
+        159.3,
+        320.9,
+        251,
+        226.5,
+        123.1,
+        126.4,
+        205.8,
+        223.2,
+        309.4,
+        292.2,
+        367.5
+      ]
     },
     {
       "id": "makassar",
@@ -271,21 +273,21 @@
       "province": "Sulawesi Selatan",
       "lat": -5.1477,
       "lon": 119.4327,
+      "bmkgFamily": "monsunal",
       "monthlyMm": [
-        375,
-        382,
-        335,
-        235,
-        120,
-        43,
-        35,
-        88,
-        165,
-        235,
-        290,
-        337
-      ],
-      "bmkgFamily": "lokal"
+        745.2,
+        507.7,
+        425.8,
+        166.5,
+        108.9,
+        72.5,
+        30.4,
+        3.8,
+        13.5,
+        51,
+        168.3,
+        779.7
+      ]
     },
     {
       "id": "manado",
@@ -293,21 +295,21 @@
       "province": "Sulawesi Utara",
       "lat": 1.4748,
       "lon": 124.8421,
+      "bmkgFamily": "ekuatorial",
       "monthlyMm": [
-        235,
-        298,
-        315,
-        255,
-        160,
-        107,
-        135,
-        212,
-        265,
-        255,
-        210,
-        193
-      ],
-      "bmkgFamily": "ekuatorial"
+        461,
+        407.5,
+        321.8,
+        278.4,
+        251.8,
+        239.2,
+        169.6,
+        147.2,
+        150.2,
+        149.1,
+        298.2,
+        330.7
+      ]
     },
     {
       "id": "jayapura",
@@ -315,21 +317,21 @@
       "province": "Papua",
       "lat": -2.5337,
       "lon": 140.7181,
+      "bmkgFamily": "ekuatorial",
       "monthlyMm": [
-        191,
-        259,
-        282,
-        253,
-        217,
-        223,
-        269,
-        304,
-        282,
-        208,
-        139,
-        133
-      ],
-      "bmkgFamily": "ekuatorial"
+        288,
+        325.3,
+        345.6,
+        226.6,
+        155,
+        189.5,
+        119.9,
+        133.5,
+        154.6,
+        126.9,
+        165.2,
+        236.5
+      ]
     }
   ]
 }

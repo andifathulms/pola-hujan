@@ -132,9 +132,9 @@ const compared = records.filter((r) => r.agrees !== undefined);
 const agreeing = compared.filter((r) => r.agrees === true);
 
 const manifest = {
-  datasetName: "Pola Hujan placeholder climatology",
+  datasetName: source._datasetName,
   datasetStatus: source._status,
-  climatologyPeriod: "N/A — placeholder, not a measured climatological period",
+  climatologyPeriod: source._climatologyPeriod,
   generatedFromLocations: records.length,
   thresholds: {
     monsoonPeakCenterMonth: MONSOON_PEAK_CENTER_MONTH,
