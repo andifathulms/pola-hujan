@@ -42,6 +42,9 @@ export const regimeRecordSchema = z.object({
     semiAnnualAmpMm: z.number(),
     semiAnnualPeakMonth: z.number(),
   }),
+  /** The two fitted harmonics evaluated at each month, drawn separately per CLAUDE.md invariant 9 — components plot these, they never evaluate the fit themselves (invariant 15). */
+  annualCurveMm: z.array(z.number()).length(12),
+  semiAnnualCurveMm: z.array(z.number()).length(12),
   family: regimeFamilySchema,
   subtype: z.string(),
   peakMonth: z.number(),
@@ -49,6 +52,18 @@ export const regimeRecordSchema = z.object({
   agrees: z.boolean().optional(),
 });
 export type RegimeRecord = z.infer<typeof regimeRecordSchema>;
+
+/** One family's reference cycle for the always-visible archetype strip (PRD.md §6.3). Same shape as a location record, minus location fields. */
+export const archetypeRecordSchema = regimeRecordSchema.omit({
+  id: true,
+  name: true,
+  province: true,
+  lat: true,
+  lon: true,
+  bmkgFamily: true,
+  agrees: true,
+});
+export type ArchetypeRecord = z.infer<typeof archetypeRecordSchema>;
 
 export const manifestSchema = z.object({
   datasetName: z.string(),

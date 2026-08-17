@@ -15,7 +15,7 @@ import {
   MONSUNAL_MAX_DISPLACEMENT_MONTHS,
   SECONDARY_HARMONIC_SUBTYPE_RATIO,
 } from "../lib/harmonic";
-import { manifestSchema, regimeRecordSchema } from "../lib/grid/schema";
+import { archetypeRecordSchema, manifestSchema, regimeRecordSchema } from "../lib/grid/schema";
 import { z } from "zod";
 
 const gridsDir = path.join(process.cwd(), "data", "grids");
@@ -33,6 +33,15 @@ function readJson(fileName: string): unknown {
 
 const manifest = manifestSchema.parse(readJson("manifest.json"));
 const records = z.array(regimeRecordSchema).parse(readJson("regime.json"));
+const archetypes = z.array(archetypeRecordSchema).parse(readJson("archetypes.json"));
+
+const archetypeFamilies = new Set(archetypes.map((a) => a.family));
+for (const family of ["monsunal", "ekuatorial", "lokal"] as const) {
+  if (!archetypeFamilies.has(family)) {
+    console.error(`data:validate — missing archetype for family "${family}" in archetypes.json.`);
+    process.exit(1);
+  }
+}
 
 const currentThresholds = {
   monsoonPeakCenterMonth: MONSOON_PEAK_CENTER_MONTH,
