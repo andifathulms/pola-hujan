@@ -6,7 +6,10 @@ from **real CHIRPS 2.0 precipitation data** — not a placeholder. CHIRPS
 no-login-required Indonesia-region monthly product at 0.05° as small
 per-month archives; the fetch script downloads, decodes (`lib/geo/bil.ts`,
 `lib/geo/tar.ts` — no GDAL, no new dependency), and nearest-cell-samples
-each of the 15 cities below.
+each of the 34 cities below. Download cost is dominated by the number of
+months (120 archives, fixed), not locations — adding a city is just
+another coordinate sampled from rasters already being fetched, so this
+list grew from an initial 15 at effectively no extra cost.
 
 **Real limitation, disclosed rather than hidden:** the regional archive
 stops being updated at 2016-10, so the climatology period here is
@@ -15,7 +18,7 @@ period a production climatology would use. Every value is still genuine
 measured/satellite-estimated precipitation; the window is just shorter
 than ideal.
 
-## `bmkgFamily`: nine verified, six still estimated
+## `bmkgFamily`: fourteen verified, twenty still estimated
 
 Each location's `bmkgFamily` (the comparison family used only for the
 agreement report — never a classification input) now carries a
@@ -38,7 +41,11 @@ be X":
 | Medan | Ekuatorial | p.32–33: "Sumatera Utara" named explicitly as an Ekuatorial region. |
 | Pontianak | Ekuatorial | p.33: "Kalimantan Barat" named explicitly; p.39 names KALBAR_04 as its Ekuatorial-1 example ZOM. |
 | Ternate | Ekuatorial | p.40: Maluku Utara province is stated to consist of exactly one sub-type, Ekuatorial-2 — and Ternate's own ZOM (MALUT_06) covers Halmahera Timur/Utara, the region named explicitly as Ekuatorial on p.33. This **overturned an earlier "Lokal" guess** — see below. |
-| Manokwari, Palembang, Pekanbaru, Makassar, Manado, Jayapura | — | Still `"estimate"`: the document confirms these provinces are a *mix* of sub-types (e.g. Papua Barat has seven) without a city-level breakdown this pass extracted. |
+| Semarang, Yogyakarta | Monsunal | Table 7: same Jawa citation as Jakarta/Bandung/Surabaya above. |
+| Mataram | Monsunal | Table 7: NTB is 27/27 Monsunal, the same single-sub-type pattern as Bali/NTT. |
+| Palu | Lokal | p.32: named explicitly ("di sekitar Palu") as a Lokal-type example region. Disagrees with the derived classification anyway (see below) — plausibly because Palu's famous rain-shadow valley effect is a very local topographic signature a single 0.05° point can miss part of. |
+| Sorong | Lokal | p.32: named explicitly, alongside Raja Ampat/Teluk Bintuni/Fak-fak, as a Lokal-type example region. |
+| Manokwari, Palembang, Pekanbaru, Makassar, Manado, Jayapura, and 14 more added in the coverage-expansion pass | — | Still `"estimate"`: the document confirms these provinces are a *mix* of sub-types (e.g. Papua Barat has seven) without a city-level breakdown this pass extracted. |
 
 Two labels were corrected as a *result* of this pass, both disclosed
 rather than quietly folded in, since ground-truth labels are exactly the
@@ -54,12 +61,13 @@ without saying so:
   is now independently consistent with Table 7 (Surabaya: Jawa is 100%
   Monsunal) though Makassar itself is still an `"estimate"`.
 
-**Reported agreement moved 53% → 60%** purely from the Ternate
-correction — a fact fix, not a tuning pass; see CLAUDE.md's rule against
-adjusting anything to raise this number. One verified comparison
-(Medan) still *disagrees*: BMKG's Sumatera Utara is Ekuatorial, but the
-harmonic fit at Medan's exact coordinates lands as Lokal. That's left as
-a reported disagreement, not "fixed" — see the method page.
+**Reported agreement moved 53% → 60% → 62%** across the two passes
+(fixing the Ternate fact, then adding 19 more locations) — never from
+tuning anything; see CLAUDE.md's rule against adjusting a threshold or a
+comparison label to raise this number. Two verified comparisons now
+*disagree*: Medan (BMKG Ekuatorial, derived Lokal) and Palu (BMKG Lokal,
+derived Monsunal — see the table above for a plausible reason). Both are
+left as reported disagreements, not "fixed" — see the method page.
 
 ## Precipitation source
 

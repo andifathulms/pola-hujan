@@ -71,6 +71,33 @@ const LOCATIONS: Array<Omit<LocationSource, "monthlyMm">> = [
   { id: "makassar", name: "Makassar", province: "Sulawesi Selatan", lat: -5.1477, lon: 119.4327, bmkgFamily: "monsunal", bmkgFamilySource: "estimate" },
   { id: "manado", name: "Manado", province: "Sulawesi Utara", lat: 1.4748, lon: 124.8421, bmkgFamily: "ekuatorial", bmkgFamilySource: "estimate" },
   { id: "jayapura", name: "Jayapura", province: "Papua", lat: -2.5337, lon: 140.7181, bmkgFamily: "ekuatorial", bmkgFamilySource: "estimate" },
+
+  // Second pass: more locations for map density. CHIRPS download cost
+  // is dominated by number of months (already fetched above), not
+  // locations, so widening coverage here is nearly free — every value
+  // added is sampled from rasters this script downloads regardless.
+  // A few more are BMKG-cited (Table 7: Jawa/NTB are also 100%
+  // Monsunal province-wide; Palu and Sorong are both named explicitly
+  // as Lokal-type examples, p.32); the rest are estimates, same as above.
+  { id: "semarang", name: "Semarang", province: "Jawa Tengah", lat: -6.9667, lon: 110.4167, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "yogyakarta", name: "Yogyakarta", province: "DI Yogyakarta", lat: -7.7956, lon: 110.3695, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "mataram", name: "Mataram", province: "Nusa Tenggara Barat", lat: -8.5833, lon: 116.1167, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "palu", name: "Palu", province: "Sulawesi Tengah", lat: -0.8917, lon: 119.8707, bmkgFamily: "lokal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "sorong", name: "Sorong", province: "Papua Barat Daya", lat: -0.8762, lon: 131.2558, bmkgFamily: "lokal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "banda-aceh", name: "Banda Aceh", province: "Aceh", lat: 5.5483, lon: 95.3238, bmkgFamily: "ekuatorial", bmkgFamilySource: "estimate" },
+  { id: "padang", name: "Padang", province: "Sumatra Barat", lat: -0.9471, lon: 100.4172, bmkgFamily: "ekuatorial", bmkgFamilySource: "estimate" },
+  { id: "bengkulu", name: "Bengkulu", province: "Bengkulu", lat: -3.7928, lon: 102.2608, bmkgFamily: "ekuatorial", bmkgFamilySource: "estimate" },
+  { id: "jambi", name: "Jambi", province: "Jambi", lat: -1.6, lon: 103.6167, bmkgFamily: "ekuatorial", bmkgFamilySource: "estimate" },
+  { id: "bandar-lampung", name: "Bandar Lampung", province: "Lampung", lat: -5.4292, lon: 105.2611, bmkgFamily: "monsunal", bmkgFamilySource: "estimate" },
+  { id: "banjarmasin", name: "Banjarmasin", province: "Kalimantan Selatan", lat: -3.3186, lon: 114.5944, bmkgFamily: "monsunal", bmkgFamilySource: "estimate" },
+  { id: "palangkaraya", name: "Palangka Raya", province: "Kalimantan Tengah", lat: -2.2161, lon: 113.9172, bmkgFamily: "monsunal", bmkgFamilySource: "estimate" },
+  { id: "samarinda", name: "Samarinda", province: "Kalimantan Timur", lat: -0.5022, lon: 117.1536, bmkgFamily: "monsunal", bmkgFamilySource: "estimate" },
+  { id: "tarakan", name: "Tarakan", province: "Kalimantan Utara", lat: 3.3, lon: 117.6333, bmkgFamily: "ekuatorial", bmkgFamilySource: "estimate" },
+  { id: "kendari", name: "Kendari", province: "Sulawesi Tenggara", lat: -3.9778, lon: 122.5089, bmkgFamily: "lokal", bmkgFamilySource: "estimate" },
+  { id: "gorontalo", name: "Gorontalo", province: "Gorontalo", lat: 0.5435, lon: 123.0568, bmkgFamily: "ekuatorial", bmkgFamilySource: "estimate" },
+  { id: "tual", name: "Tual", province: "Maluku", lat: -5.6323, lon: 132.7517, bmkgFamily: "lokal", bmkgFamilySource: "estimate" },
+  { id: "merauke", name: "Merauke", province: "Papua Selatan", lat: -8.4667, lon: 140.4, bmkgFamily: "monsunal", bmkgFamilySource: "estimate" },
+  { id: "timika", name: "Timika", province: "Papua Tengah", lat: -4.5453, lon: 136.8874, bmkgFamily: "ekuatorial", bmkgFamilySource: "estimate" },
 ];
 
 interface MonthTarget {
