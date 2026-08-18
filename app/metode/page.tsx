@@ -132,10 +132,10 @@ export default function MetodePage() {
             <table className="w-full min-w-[480px] border-collapse text-xs">
               <thead>
                 <tr className="border-b border-rule text-left">
-                  <th className="py-1 pr-4 font-medium">Ambang</th>
-                  <th className="py-1 pr-4 font-medium">Nilai</th>
-                  <th className="py-1 pr-4 font-medium">Satuan</th>
-                  <th className="py-1 font-medium">Catatan</th>
+                  <th scope="col" className="py-1 pr-4 font-medium">Ambang</th>
+                  <th scope="col" className="py-1 pr-4 font-medium">Nilai</th>
+                  <th scope="col" className="py-1 pr-4 font-medium">Satuan</th>
+                  <th scope="col" className="py-1 font-medium">Catatan</th>
                 </tr>
               </thead>
               <tbody className="font-mono">
