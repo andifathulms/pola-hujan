@@ -58,13 +58,19 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
 
   return (
     <div id="main-content" className="flex flex-col gap-6 p-4 lg:p-6">
-      <header className="flex flex-col gap-1">
-        <h1 className="font-display text-xl font-semibold lg:text-2xl">Pola Hujan</h1>
-        <p className="text-ink/70">Atlas rezim curah hujan tahunan Indonesia — bukan animasi angin, bukan prakiraan.</p>
+      <header className="flex flex-col gap-2">
+        <h1 className="font-display text-2xl font-semibold lg:text-3xl">Pola Hujan</h1>
+        <p className="max-w-prose text-lg">
+          Setiap kota di peta ini diklasifikasikan ke salah satu dari tiga pola musim hujan tahunan, dihitung
+          langsung dari data curah hujan asli — lalu dibandingkan dengan peta resmi BMKG.
+        </p>
+        <p className="text-sm text-ink/70">Atlas rezim curah hujan tahunan Indonesia — bukan animasi angin, bukan prakiraan.</p>
       </header>
 
       <Legend manifest={manifest} />
       <YourPlace records={records} onFound={setSelectedId} />
+
+      <p className="text-sm text-ink/70">Pilih kota di peta, atau dari daftar lokasi di bagian bawah halaman.</p>
 
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-3">
         {/* Mobile: map fixed at 45vh (DESIGN.md §6); desktop: natural
