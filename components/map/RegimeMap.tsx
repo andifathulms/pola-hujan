@@ -58,7 +58,10 @@ export function RegimeMap({ records, selectedId, onSelect }: RegimeMapProps) {
               cx={x}
               cy={y}
               r={isSelected ? 9 : 7}
-              className={`${FAMILY_FILL_CLASS[family]} cursor-pointer transition-[r] duration-fast`}
+              className={`${FAMILY_FILL_CLASS[family]} cursor-pointer transition-[r] duration-fast ${
+                isSelected ? "stroke-ink" : ""
+              }`}
+              strokeWidth={isSelected ? 3 : 0}
               tabIndex={0}
               role="button"
               aria-label={`${record.name}, ${FAMILY_LABEL[family]}${record.agrees === false ? ", berbeda dari klasifikasi BMKG" : ""}`}
@@ -70,7 +73,6 @@ export function RegimeMap({ records, selectedId, onSelect }: RegimeMapProps) {
                   onSelect(record.id);
                 }
               }}
-              style={isSelected ? { outline: "3px solid #23211C", outlineOffset: 2 } : undefined}
             />
             {record.agrees === false && (
               <circle cx={x} cy={y} r={isSelected ? 9 : 7} fill="url(#disagree-hatch)" className="pointer-events-none" />
