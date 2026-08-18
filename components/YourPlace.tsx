@@ -57,15 +57,20 @@ export function YourPlace({ records, onFound }: YourPlaceProps) {
       >
         Gunakan lokasi saya
       </button>
-      {status.kind === "loading" && <p className="text-ink/70">Mencari lokasi terdekat…</p>}
-      {status.kind === "error" && <p className="text-ink/70">{status.message}</p>}
-      {status.kind === "found" && nearest && (
-        <p className="text-ink/70">
-          Lokasi pembanding terdekat: <strong>{nearest.name}</strong> (~{Math.round(status.distanceKm)} km) —{" "}
-          {FAMILY_LABEL[nearest.family as Family]}, puncak {MONTH_LABELS_ID[Math.round(nearest.peakMonth) % 12]}.
-          Ini adalah pembanding terdekat dari data yang tersedia, bukan hasil interpolasi tepat di titikmu.
-        </p>
-      )}
+      {/* role="status" is an implicit polite live region — the loading,
+          error and found text below is announced to screen readers as
+          it appears, without moving focus away from the button. */}
+      <div role="status">
+        {status.kind === "loading" && <p className="text-ink/70">Mencari lokasi terdekat…</p>}
+        {status.kind === "error" && <p className="text-ink/70">{status.message}</p>}
+        {status.kind === "found" && nearest && (
+          <p className="text-ink/70">
+            Lokasi pembanding terdekat: <strong>{nearest.name}</strong> (~{Math.round(status.distanceKm)} km) —{" "}
+            {FAMILY_LABEL[nearest.family as Family]}, puncak {MONTH_LABELS_ID[Math.round(nearest.peakMonth) % 12]}.
+            Ini adalah pembanding terdekat dari data yang tersedia, bukan hasil interpolasi tepat di titikmu.
+          </p>
+        )}
+      </div>
     </div>
   );
 }

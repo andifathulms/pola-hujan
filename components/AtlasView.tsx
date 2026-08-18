@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ArchetypeRecord, Manifest, RegimeRecord } from "@/lib/grid/schema";
 import { FAMILY_LABEL, FAMILY_TEXT_CLASS, MONTH_LABELS_ID, type Family } from "@/lib/family";
 import { RegimeMap } from "@/components/map/RegimeMap";
@@ -25,6 +25,7 @@ export interface AtlasViewProps {
  */
 export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
   const [selectedId, setSelectedId] = useState<string>(records[0]?.id ?? "");
+  const selected = records.find((r) => r.id === selectedId) ?? records[0];
 
   // Read the initial selection from ?lokasi= on mount (window, not a
   // Next.js hook, so no Suspense boundary is needed for a static
@@ -45,7 +46,23 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
     window.history.replaceState(null, "", url);
   }, [selectedId]);
 
-  const selected = records.find((r) => r.id === selectedId) ?? records[0];
+  // Announces the selection change to screen readers (see the sr-only
+  // <p> below) — but not on first mount/page load, where it would just
+  // duplicate what's already read from the visible panel.
+  const isFirstSelection = useRef(true);
+  const [announcement, setAnnouncement] = useState("");
+  useEffect(() => {
+    if (isFirstSelection.current) {
+      isFirstSelection.current = false;
+      return;
+    }
+    if (!selected) return;
+    const selectedFamily = selected.family as Family;
+    setAnnouncement(
+      `${selected.name}, ${FAMILY_LABEL[selectedFamily]}, puncak ${MONTH_LABELS_ID[Math.round(selected.peakMonth) % 12]}.`,
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId]);
 
   if (!selected) {
     return <p className="p-6">Tidak ada data lokasi.</p>;
@@ -74,6 +91,16 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
       <YourPlace records={records} onFound={setSelectedId} />
 
       <p className="text-sm text-ink/70">Pilih kota di peta, atau dari daftar lokasi di bagian bawah halaman.</p>
+
+      {/* Selecting a city (map dot, bottom button list, the nearest-
+          opposite-pair callout, or "your place") rewrites the panel
+          below without moving focus there — this announces what changed
+          for screen reader users, who'd otherwise get no signal that
+          anything happened. Visually hidden; sighted users already see
+          the panel update. */}
+      <p aria-live="polite" className="sr-only">
+        {announcement}
+      </p>
 
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-3">
         {/* Mobile: map fixed at 45vh (DESIGN.md §6); desktop: natural

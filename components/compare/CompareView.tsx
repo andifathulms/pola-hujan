@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { RegimeRecord } from "@/lib/grid/schema";
 import { FAMILY_LABEL, FAMILY_TEXT_CLASS, type Family } from "@/lib/family";
 import { CycleCurve } from "@/components/curve/CycleCurve";
@@ -95,6 +95,23 @@ export function CompareView({ records, defaultLeftId, defaultRightId }: CompareV
   const left = records.find((r) => r.id === leftId) ?? records[0];
   const right = records.find((r) => r.id === rightId) ?? records[1] ?? records[0];
 
+  // Announces which two places are now being compared to screen
+  // readers when either picker (or the preset button) changes — not on
+  // first mount, where it'd duplicate the visible panel content.
+  const isFirstSelection = useRef(true);
+  const [announcement, setAnnouncement] = useState("");
+  useEffect(() => {
+    if (isFirstSelection.current) {
+      isFirstSelection.current = false;
+      return;
+    }
+    if (!left || !right) return;
+    setAnnouncement(
+      `Membandingkan ${left.name} (${FAMILY_LABEL[left.family as Family]}) dengan ${right.name} (${FAMILY_LABEL[right.family as Family]}).`,
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [leftId, rightId]);
+
   if (!left || !right) {
     return <p className="p-6">Tidak ada data lokasi.</p>;
   }
@@ -111,6 +128,10 @@ export function CompareView({ records, defaultLeftId, defaultRightId }: CompareV
           Sumbu bulan tidak pernah digeser untuk menyelaraskan puncak — perbedaan letak puncak adalah temuannya.
         </p>
       </header>
+
+      <p aria-live="polite" className="sr-only">
+        {announcement}
+      </p>
 
       <div className="flex flex-wrap items-end gap-4">
         <LocationPicker records={records} value={leftId} onChange={setLeftId} label="Tempat pertama" />
