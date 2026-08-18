@@ -9,6 +9,7 @@ import { CycleTable } from "@/components/table/CycleTable";
 import { ArchetypeStrip } from "@/components/archetypes/ArchetypeStrip";
 import { Legend } from "@/components/Legend";
 import { YourPlace } from "@/components/YourPlace";
+import { NearestOppositeFinding } from "@/components/NearestOppositeFinding";
 
 export interface AtlasViewProps {
   records: RegimeRecord[];
@@ -66,6 +67,8 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
         </p>
         <p className="text-sm text-ink/70">Atlas rezim curah hujan tahunan Indonesia — bukan animasi angin, bukan prakiraan.</p>
       </header>
+
+      <NearestOppositeFinding pair={manifest.nearestOppositePair} onSelect={setSelectedId} />
 
       <Legend manifest={manifest} />
       <YourPlace records={records} onFound={setSelectedId} />
