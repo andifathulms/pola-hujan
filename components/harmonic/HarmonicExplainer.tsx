@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { classifyRegime, fitHarmonics, MONTHS_PER_YEAR } from "@/lib/harmonic";
 import { FAMILY_FILL_CLASS, FAMILY_LABEL, FAMILY_TEXT_CLASS, MONTH_LABELS_ID, type Family } from "@/lib/family";
 
@@ -24,6 +24,7 @@ function Slider({
   step,
   onChange,
   unit,
+  valueText,
 }: {
   label: string;
   value: number;
@@ -32,12 +33,19 @@ function Slider({
   step: number;
   onChange: (v: number) => void;
   unit: string;
+  valueText: string;
 }) {
+  const labelId = useId();
   return (
-    <label className="flex flex-col gap-1 text-sm">
+    // A plain div, not <label> wrapping the input: <label> would fold
+    // the live value readout into the input's accessible NAME, so it'd
+    // change on every drag tick. aria-labelledby points at only the
+    // static label text instead; the live value is aria-hidden since
+    // aria-valuetext (below) already gives the input's accessible value.
+    <div className="flex flex-col gap-1 text-sm">
       <span className="flex justify-between">
-        <span>{label}</span>
-        <span className="font-mono tabular-nums text-ink/70">
+        <span id={labelId}>{label}</span>
+        <span aria-hidden="true" className="font-mono tabular-nums text-ink/70">
           {value.toFixed(1)} {unit}
         </span>
       </span>
@@ -47,10 +55,12 @@ function Slider({
         max={max}
         step={step}
         value={value}
+        aria-labelledby={labelId}
+        aria-valuetext={valueText}
         onChange={(e) => onChange(Number(e.target.value))}
         className="accent-ink"
       />
-    </label>
+    </div>
   );
 }
 
@@ -83,7 +93,16 @@ export function HarmonicExplainer() {
   return (
     <div className="flex flex-col gap-6 lg:grid lg:grid-cols-2">
       <div className="flex flex-col gap-4">
-        <Slider label="Amplitudo tahunan" value={annualAmpMm} min={0} max={200} step={1} unit="mm" onChange={setAnnualAmpMm} />
+        <Slider
+          label="Amplitudo tahunan"
+          value={annualAmpMm}
+          min={0}
+          max={200}
+          step={1}
+          unit="mm"
+          valueText={`${annualAmpMm.toFixed(0)} mm`}
+          onChange={setAnnualAmpMm}
+        />
         <Slider
           label="Bulan puncak tahunan"
           value={annualPeakMonth}
@@ -91,9 +110,19 @@ export function HarmonicExplainer() {
           max={11.9}
           step={0.1}
           unit={MONTH_LABELS_ID[Math.round(annualPeakMonth) % 12] ?? ""}
+          valueText={MONTH_LABELS_ID[Math.round(annualPeakMonth) % 12] ?? ""}
           onChange={setAnnualPeakMonth}
         />
-        <Slider label="Amplitudo semi-tahunan" value={semiAnnualAmpMm} min={0} max={200} step={1} unit="mm" onChange={setSemiAnnualAmpMm} />
+        <Slider
+          label="Amplitudo semi-tahunan"
+          value={semiAnnualAmpMm}
+          min={0}
+          max={200}
+          step={1}
+          unit="mm"
+          valueText={`${semiAnnualAmpMm.toFixed(0)} mm`}
+          onChange={setSemiAnnualAmpMm}
+        />
         <Slider
           label="Bulan puncak semi-tahunan"
           value={semiAnnualPeakMonth}
@@ -101,6 +130,7 @@ export function HarmonicExplainer() {
           max={5.9}
           step={0.1}
           unit={MONTH_LABELS_ID[Math.round(semiAnnualPeakMonth) % 12] ?? ""}
+          valueText={MONTH_LABELS_ID[Math.round(semiAnnualPeakMonth) % 12] ?? ""}
           onChange={setSemiAnnualPeakMonth}
         />
 
