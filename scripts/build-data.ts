@@ -29,13 +29,26 @@ import {
   semiAnnualHarmonicMm,
   type HarmonicFit,
 } from "../lib/harmonic";
-import { locationSourceFileSchema, type ArchetypeRecord, type RegimeRecord } from "../lib/grid/schema";
+import { locationSourceFileSchema, type ArchetypeRecord, type Manifest, type RegimeRecord } from "../lib/grid/schema";
+import { haversineDistanceKm } from "../lib/geo/nearest";
 
 const sourcePath = path.join(process.cwd(), "data", "source", "locations.json");
 const gridsDir = path.join(process.cwd(), "data", "grids");
 
 const rawSource = JSON.parse(readFileSync(sourcePath, "utf-8"));
 const source = locationSourceFileSchema.parse(rawSource);
+
+// The same ratio and displacement classifyRegime compared against
+// lib/harmonic/thresholds.ts to decide family/subtype, re-derived here
+// (not re-classified) purely so the record can carry the traceable
+// numbers alongside the decision. Guards the zero-annual-amplitude
+// degenerate case, which is not JSON-serialisable as Infinity.
+function classificationDetailFor(fit: HarmonicFit, classification: ReturnType<typeof classifyRegime>) {
+  return {
+    semiToAnnualRatio: fit.annualAmpMm === 0 ? null : fit.semiAnnualAmpMm / fit.annualAmpMm,
+    displacementMonths: "displacementMonths" in classification ? classification.displacementMonths : undefined,
+  };
+}
 
 function evaluateCurves(fit: HarmonicFit) {
   const annualCurveMm: number[] = [];
@@ -70,6 +83,7 @@ const records: RegimeRecord[] = source.locations.map((location) => {
     family: classification.family,
     subtype: classification.subtype,
     peakMonth: classification.peakMonth,
+    classificationDetail: classificationDetailFor(fit, classification),
     bmkgFamily: location.bmkgFamily,
     bmkgFamilySource: location.bmkgFamilySource,
     agrees,
@@ -120,13 +134,41 @@ const archetypes: ArchetypeRecord[] = (Object.keys(REFERENCE_PARAMS) as Array<ke
       family: classification.family,
       subtype: classification.subtype,
       peakMonth: classification.peakMonth,
+      classificationDetail: classificationDetailFor(fit, classification),
     };
   },
 );
 
 const byFamily: Record<string, number> = {};
+const bySubtype: Record<string, number> = {};
 for (const record of records) {
   byFamily[record.family] = (byFamily[record.family] ?? 0) + 1;
+  bySubtype[record.subtype] = (bySubtype[record.subtype] ?? 0) + 1;
+}
+
+// The closest pair of locations whose derived families differ (PRD.md
+// §1's claim made local and specific, not just national) — computed
+// over every pair, not picked by hand, so it can't quietly go stale as
+// coverage grows.
+let nearestOppositePair: Manifest["nearestOppositePair"];
+let nearestOppositeDistanceKm = Infinity;
+for (const [i, a] of records.entries()) {
+  for (const b of records.slice(i + 1)) {
+    if (a.family === b.family) continue;
+    const distanceKm = haversineDistanceKm(a.lat, a.lon, b.lat, b.lon);
+    if (distanceKm < nearestOppositeDistanceKm) {
+      nearestOppositeDistanceKm = distanceKm;
+      nearestOppositePair = {
+        aId: a.id,
+        aName: a.name,
+        aFamily: a.family,
+        bId: b.id,
+        bName: b.name,
+        bFamily: b.family,
+        distanceKm,
+      };
+    }
+  }
 }
 
 const compared = records.filter((r) => r.agrees !== undefined);
@@ -149,6 +191,7 @@ const manifest = {
   coverage: {
     totalLocations: records.length,
     byFamily,
+    bySubtype,
   },
   agreement: {
     comparedLocations: compared.length,
@@ -156,6 +199,7 @@ const manifest = {
     agreementRate: compared.length > 0 ? agreeing.length / compared.length : 0,
     verifiedComparisons: verifiedComparisons.length,
   },
+  nearestOppositePair,
 };
 
 mkdirSync(gridsDir, { recursive: true });

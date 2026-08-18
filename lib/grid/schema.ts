@@ -57,6 +57,20 @@ export const regimeRecordSchema = z.object({
   family: regimeFamilySchema,
   subtype: z.string(),
   peakMonth: z.number(),
+  /**
+   * The numbers `classifyRegime` actually compared against
+   * `lib/harmonic/thresholds.ts` to reach `family`/`subtype` — emitted so
+   * a reader can trace the label back to a rule instead of taking it on
+   * trust. `semiToAnnualRatio` is null only in the degenerate case of a
+   * zero annual amplitude (flat cycle). `displacementMonths` is the
+   * annual peak's circular distance from the monsoon-peak centre; it's
+   * absent for ekuatorial records, where the ratio — not phase — is the
+   * decisive quantity.
+   */
+  classificationDetail: z.object({
+    semiToAnnualRatio: z.number().nullable(),
+    displacementMonths: z.number().optional(),
+  }),
   bmkgFamily: regimeFamilySchema.optional(),
   bmkgFamilySource: z.enum(["bmkg-zom9120", "estimate"]).optional(),
   agrees: z.boolean().optional(),
@@ -91,6 +105,8 @@ export const manifestSchema = z.object({
   coverage: z.object({
     totalLocations: z.number().int(),
     byFamily: z.record(regimeFamilySchema, z.number().int()),
+    /** Sub-type counts (e.g. "monsunal-1", "ekuatorial-4") — families aren't internally uniform, and this is the pipeline-generated proof. */
+    bySubtype: z.record(z.string(), z.number().int()),
   }),
   agreement: z.object({
     comparedLocations: z.number().int(),
@@ -99,5 +115,24 @@ export const manifestSchema = z.object({
     /** How many of comparedLocations have bmkgFamilySource === "bmkg-zom9120" (cited against the real document) rather than an unverified estimate. */
     verifiedComparisons: z.number().int(),
   }),
+  /**
+   * The closest pair of this build's locations whose *derived* families
+   * differ — the sharpest local instance of PRD.md §1's founding claim
+   * ("a person in a Lokal zone and a person in Java mean opposite halves
+   * of the year"), computed over every pair, not picked by hand.
+   * Undefined only if fewer than two locations classify into different
+   * families.
+   */
+  nearestOppositePair: z
+    .object({
+      aId: z.string(),
+      aName: z.string(),
+      aFamily: regimeFamilySchema,
+      bId: z.string(),
+      bName: z.string(),
+      bFamily: regimeFamilySchema,
+      distanceKm: z.number(),
+    })
+    .optional(),
 });
 export type Manifest = z.infer<typeof manifestSchema>;
