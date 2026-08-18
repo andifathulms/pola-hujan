@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { manifest, regimeRecords } from "@/lib/grid/lookup";
 import { SiteNav } from "@/components/SiteNav";
+import { DownloadData } from "@/components/DownloadData";
 
 export const metadata: Metadata = {
   title: "Metode — Pola Hujan",
@@ -91,6 +92,7 @@ export default function MetodePage() {
             <dd>{manifest.generatedFromLocations}</dd>
           </dl>
           <p className="border border-rule bg-stock p-3 text-xs text-ink/70">{manifest.datasetStatus}</p>
+          <DownloadData records={regimeRecords} />
         </section>
 
         <section className="flex flex-col gap-2">
