@@ -156,35 +156,41 @@ The site states on the map itself that this is a classification derived from ope
 source is real, not a placeholder.** `pnpm data:fetch` downloads 120
 monthly rasters from CHIRPS 2.0's public, no-auth Indonesia-region
 product (2006-01 to 2015-12), decodes them with `lib/geo/bil` +
-`lib/geo/tar` (no GDAL, no new runtime dependency), and samples all 15
+`lib/geo/tar` (no GDAL, no new runtime dependency), and samples all 34
 locations into a genuine 10-year climatology — see
 `data/source/README.md` for the full method and its real limitation
 (a 10-year window, not the 30-year WMO-normal period, because the
-regional archive stops updating at 2016-10). `lib/harmonic` (fit,
-classify, thresholds) has its full synthetic test suite green (54
-tests total across harmonic, classify, and geo — geo now covers the
-raster/archive decoders too), and the site builds to a static export
-with: the atlas (`/peta` — regime map, cycle curve, archetype strip,
-legend, "your place"), two-place comparison with the Jakarta/Ambon
-preset (`/banding`), the method page (`/metode`), and the live
-harmonic explainer (`/harmonik`). Shareable URLs, a skip link, visible
-focus, and a print stylesheet are in.
+regional archive stops updating at 2016-10). Coverage grew from an
+initial 15 cities to 34 in a second pass — download cost is dominated
+by months fetched (fixed at 120), not locations sampled from them, so
+this was nearly free. `lib/harmonic` (fit, classify, thresholds) has
+its full synthetic test suite green (54 tests total across harmonic,
+classify, and geo — geo now covers the raster/archive decoders too),
+and the site builds to a static export with: the atlas (`/peta` —
+regime map, cycle curve, archetype strip, legend, "your place"),
+two-place comparison with the Jakarta/Ambon preset (`/banding`), the
+method page (`/metode`), and the live harmonic explainer
+(`/harmonik`). Shareable URLs, a skip link, visible focus, and a print
+stylesheet are in. **Live at <https://andifathulms.github.io/pola-hujan/>**,
+deployed via GitHub Actions on push to `main`.
 
-**`bmkgFamily` is now 9/15 verified against BMKG's real "Pemutakhiran
+**`bmkgFamily` is now 14/34 verified against BMKG's real "Pemutakhiran
 Zona Musim Indonesia Periode 1991-2020"** (2022, publicly hosted PDF,
 text-extracted and cited — see `data/source/README.md` for the
-per-city citation table), up from 0/15. Reported agreement is a
-genuine 60% (up from 53% after fixing one wrong fact — Ternate was
-mislabeled Lokal, the document states its province is 100%
-Ekuatorial-2 — and up from the original placeholder's engineered-
-looking 87%). One verified comparison (Medan) still disagrees even
-against the real document; that's left as a reported finding, not
-smoothed over. The remaining 6 locations (Manokwari, Palembang,
-Pekanbaru, Makassar, Manado, Jayapura) are still unverified best-effort
-guesses — the province-level statements this pass extracted don't
-resolve to a single type for them. UI copy distinguishes "(terverifikasi
-ZOM9120)" from "(perkiraan)" throughout rather than treating all
-comparisons as equally authoritative.
+per-city citation table), up from 0/15 originally. Reported agreement
+moved 53% → 60% → 62% across two passes (fixing one wrong fact —
+Ternate was mislabeled Lokal, the document states its province is
+100% Ekuatorial-2 — then adding 19 more locations), never from tuning
+anything. Two verified comparisons still disagree even against the
+real document — Medan (BMKG Ekuatorial, derived Lokal) and Palu (BMKG
+Lokal, derived Monsunal, plausibly because Palu's famous rain-shadow
+valley is a very local effect a single 0.05° point can miss) — both
+left as reported findings, not smoothed over. The other 20 locations
+are still unverified best-effort guesses — the province-level
+statements this pass extracted don't resolve to a single type for
+them. UI copy distinguishes "(terverifikasi ZOM9120)" from
+"(perkiraan)" throughout rather than treating all comparisons as
+equally authoritative.
 
 Still open: `app/[locale]/` locale routing (English is deferred —
 Indonesian is served flat at the app root), the ZOM-polygon licence

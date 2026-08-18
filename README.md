@@ -11,18 +11,21 @@ Read [`PRD.md`](PRD.md) for what this is and why, and
 [`DESIGN.md`](DESIGN.md) before touching any UI. [`CLAUDE.md`](CLAUDE.md)
 has the working conventions and invariants.
 
+**Live at <https://andifathulms.github.io/pola-hujan/>** — auto-deployed
+via GitHub Actions on push to `main`.
+
 ## Status
 
 **M0–M6 all have a working first pass, on real data**: `pnpm data:fetch`
 pulls a genuine 10-year (2006–2015) climatology from CHIRPS 2.0's
-public Indonesia-region product for all 15 locations (see
+public Indonesia-region product for 34 locations (see
 `data/source/README.md`), the pipeline (`lib/harmonic`,
 `scripts/build-data.ts`) classifies it, and the atlas (`/peta`),
 two-place comparison (`/banding`), the method page (`/metode`), and
 the live harmonic explainer (`/harmonik`) all work end to end and build
-to a static export. 9 of the 15 BMKG comparison labels are now cited
+to a static export. 14 of the 34 BMKG comparison labels are now cited
 against BMKG's real "Pemutakhiran Zona Musim Indonesia Periode
-1991-2020" (see `data/source/README.md`); the other 6 are still
+1991-2020" (see `data/source/README.md`); the other 20 are still
 unverified estimates. See `CLAUDE.md`'s "Current state" for that and
 everything else still open.
 
