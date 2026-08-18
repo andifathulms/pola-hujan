@@ -103,7 +103,7 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
 
             <details className="mt-1 text-sm text-ink/70">
               <summary className="cursor-pointer select-none font-medium text-ink">Kenapa {selected.name} diklasifikasi {FAMILY_LABEL[family]}?</summary>
-              <dl className="mt-1 flex flex-col gap-0.5 font-mono text-xs">
+              <dl className="mt-1 flex flex-col gap-1 font-mono text-xs">
                 <div>
                   <dt className="inline">Rasio semi-tahunan/tahunan: </dt>
                   <dd className="inline tabular-nums">

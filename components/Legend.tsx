@@ -23,17 +23,17 @@ export function Legend({ manifest }: LegendProps) {
       <p className="font-mono text-xs text-ink/70">
         {manifest.datasetName} · {manifest.climatologyPeriod}
       </p>
-      <ul className="flex flex-col gap-1.5">
+      <ul className="flex flex-col gap-2">
         {FAMILIES.map((family) => (
           <li key={family} className="flex items-center gap-2">
-            <span aria-hidden className={`inline-block h-2.5 w-2.5 shrink-0 rounded-full ${FAMILY_BG_CLASS[family]}`} />
+            <span aria-hidden className={`inline-block h-2 w-2 shrink-0 rounded-full ${FAMILY_BG_CLASS[family]}`} />
             <span>
               <strong>{FAMILY_LABEL[family]}</strong> — {FAMILY_DESCRIPTION[family]}
             </span>
           </li>
         ))}
         <li className="flex items-center gap-2">
-          <span aria-hidden className="inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-ink" style={{ backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 1px, currentColor 1px, currentColor 2px)" }} />
+          <span aria-hidden className="inline-block h-2 w-2 shrink-0 rounded-full bg-ink" style={{ backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 1px, currentColor 1px, currentColor 2px)" }} />
           <span>Arsir — klasifikasi turunan berbeda dari perkiraan keluarga BMKG (lihat Metode).</span>
         </li>
       </ul>
