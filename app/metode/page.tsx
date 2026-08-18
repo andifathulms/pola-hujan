@@ -57,9 +57,13 @@ export default function MetodePage() {
     <>
       <SiteNav />
       <div id="main-content" className="flex flex-col gap-8 p-4 lg:p-6">
-        <header className="flex flex-col gap-1">
+        <header className="flex flex-col gap-2">
           <h1 className="font-display text-xl font-semibold lg:text-2xl">Metode</h1>
-          <p className="text-ink/70">Bagaimana klasifikasi ini dibuat, dan apa yang tidak bisa ia klaim.</p>
+          <p className="max-w-prose text-lg">
+            Ini bukti kerjanya: dataset, ambang klasifikasi, dan tingkat kecocokan dengan BMKG — semua bisa
+            diperiksa, bukan sekadar diklaim.
+          </p>
+          <p className="text-sm text-ink/70">Bagaimana klasifikasi ini dibuat, dan apa yang tidak bisa ia klaim.</p>
         </header>
 
         <section className="flex flex-col gap-2">
