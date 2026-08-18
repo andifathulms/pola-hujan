@@ -20,6 +20,12 @@ export default function HarmonikPage() {
             mencobanya sendiri.
           </p>
           <p className="text-sm text-ink/70">
+            Sebuah <strong>harmonik</strong> di sini adalah gelombang naik-turun yang dicocokkan ke data curah
+            hujan — <strong>amplitudo</strong>-nya seberapa tinggi gelombang itu, <strong>bulan puncak</strong>-nya
+            kapan gelombang itu berada di titik tertinggi. Setiap siklus tahunan adalah dua gelombang begini
+            dijumlahkan: satu yang naik-turun sekali setahun, satu lagi dua kali setahun.
+          </p>
+          <p className="text-sm text-ink/70">
             Tarik amplitudo dan bulan puncak harmonik tahunan dan semi-tahunan, dan lihat siklus sintetis berubah
             keluarga — monsunal, ekuatorial, atau lokal — secara langsung.
           </p>
