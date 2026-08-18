@@ -25,6 +25,11 @@
   --color-ekuatorial: #4a7c59;
   --color-lokal: #b5652e;
   --color-you: #8b3a62;
+  /* Text-only variants: --color-ekuatorial and --color-lokal are 4.26:1
+     and 3.78:1 against --color-stock — fine for a map-dot fill (3:1) but
+     below the 4.5:1 floor for text. These are 5.0:1 and 4.99:1. */
+  --color-ekuatorial-text: #437050;
+  --color-lokal-text: #99552a;
 
   /* Type scale — one scale, applied everywhere; body copy never below
      --text-sm (16px) per the house minimum. */

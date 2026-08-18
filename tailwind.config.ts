@@ -14,6 +14,13 @@ const config: Config = {
         ekuatorial: "#4A7C59",
         lokal: "#B5652E",
         you: "#8B3A62",
+        // Darker variants of ekuatorial/lokal for TEXT use only — the
+        // canonical hues above are 4.26:1 and 3.78:1 against `stock`,
+        // below the 4.5:1 floor for normal-weight text (they're fine as
+        // map-dot/swatch fills, which only need 3:1). These are 5.0:1
+        // and 4.99:1. `monsunal` needs no variant (5.0:1 already).
+        "ekuatorial-text": "#437050",
+        "lokal-text": "#99552A",
       },
       fontFamily: {
         display: ["var(--font-alegreya)", "serif"],

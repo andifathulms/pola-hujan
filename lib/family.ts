@@ -21,10 +21,17 @@ export const FAMILY_DESCRIPTION: Record<Family, string> = {
   lokal: "Satu puncak hujan, tapi di luar musim monsun Asia — kebalikan dari Jawa.",
 };
 
+/**
+ * Text color per family. `ekuatorial` and `lokal` point at darker
+ * text-only variants (tailwind.config.ts) — the canonical hues used for
+ * map dots and swatches fall below 4.5:1 against `stock` when rendered
+ * as small/medium text. `monsunal` already clears 4.5:1 and uses its
+ * canonical hue directly.
+ */
 export const FAMILY_TEXT_CLASS: Record<Family, string> = {
   monsunal: "text-monsunal",
-  ekuatorial: "text-ekuatorial",
-  lokal: "text-lokal",
+  ekuatorial: "text-ekuatorial-text",
+  lokal: "text-lokal-text",
 };
 
 export const FAMILY_BG_CLASS: Record<Family, string> = {
