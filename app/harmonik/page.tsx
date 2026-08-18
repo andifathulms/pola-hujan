@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { regimeRecords } from "@/lib/grid/lookup";
 import { SiteNav } from "@/components/SiteNav";
 import { HarmonicExplainer } from "@/components/harmonic/HarmonicExplainer";
 
@@ -23,7 +24,7 @@ export default function HarmonikPage() {
             keluarga — monsunal, ekuatorial, atau lokal — secara langsung.
           </p>
         </header>
-        <HarmonicExplainer />
+        <HarmonicExplainer records={regimeRecords} />
       </div>
     </>
   );

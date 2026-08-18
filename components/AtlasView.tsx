@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import type { ArchetypeRecord, Manifest, RegimeRecord } from "@/lib/grid/schema";
 import { FAMILY_LABEL, FAMILY_TEXT_CLASS, MONTH_LABELS_ID, type Family } from "@/lib/family";
 import { RegimeMap } from "@/components/map/RegimeMap";
@@ -10,6 +11,35 @@ import { ArchetypeStrip } from "@/components/archetypes/ArchetypeStrip";
 import { Legend } from "@/components/Legend";
 import { YourPlace } from "@/components/YourPlace";
 import { NearestOppositeFinding } from "@/components/NearestOppositeFinding";
+
+/**
+ * The plain-language bridge from a raw ratio/displacement number to
+ * what it actually means — the disclosure below cites the exact number
+ * and its threshold (so the label is checkable), but a number alone
+ * doesn't explain why crossing it means "two peaks" or "wrong half of
+ * the year." Exhaustive switch, never default, per CLAUDE.md
+ * Conventions — adding a family surfaces this as a compile error.
+ */
+function classificationReason(family: Family, detail: RegimeRecord["classificationDetail"], thresholds: Manifest["thresholds"]): string {
+  switch (family) {
+    case "ekuatorial": {
+      const ratioText = detail.semiToAnnualRatio === null ? "tak terhingga" : detail.semiToAnnualRatio.toFixed(2);
+      return `Harmonik dua-puncak-per-tahunnya lebih kuat dari yang satu-puncak (rasio ${ratioText}, ambang ${thresholds.ekuatorialDominanceRatio.toFixed(2)}) — dua musim hujan dalam setahun, bukan satu.`;
+    }
+    case "monsunal": {
+      const displacement = (detail.displacementMonths ?? 0).toFixed(1);
+      return `Puncak hujannya jatuh ${displacement} bulan dari pusat monsun Asia, masih dalam ambang Monsunal (≤${thresholds.monsunalMaxDisplacementMonths} bulan) — musim hujannya bertepatan dengan sebagian besar Indonesia.`;
+    }
+    case "lokal": {
+      const displacement = (detail.displacementMonths ?? 0).toFixed(1);
+      return `Puncak hujannya jatuh ${displacement} bulan dari pusat monsun Asia, melewati ambang Lokal (>${thresholds.lokalMinDisplacementMonths} bulan) — musim hujannya justru di luar musim hujan Asia.`;
+    }
+    default: {
+      const exhaustive: never = family;
+      return exhaustive;
+    }
+  }
+}
 
 export interface AtlasViewProps {
   records: RegimeRecord[];
@@ -128,8 +158,15 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
               </p>
             )}
 
+            {/* Plain-language bridge is always visible, not behind a
+                click — a reader shouldn't have to seek out why a label
+                says what it says. The exact numbers it's paraphrasing
+                stay in the disclosure below for anyone checking the
+                arithmetic itself. */}
+            <p className="mt-1 text-sm text-ink/70">{classificationReason(family, selected.classificationDetail, manifest.thresholds)}</p>
+
             <details className="mt-1 text-sm text-ink/70">
-              <summary className="cursor-pointer select-none font-medium text-ink">Kenapa {selected.name} diklasifikasi {FAMILY_LABEL[family]}?</summary>
+              <summary className="cursor-pointer select-none font-medium text-ink">Lihat angka pastinya</summary>
               <dl className="mt-1 flex flex-col gap-1 font-mono text-xs">
                 <div>
                   <dt className="inline">Rasio semi-tahunan/tahunan: </dt>
@@ -153,6 +190,10 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
                 )}
               </dl>
             </details>
+
+            <Link href={`/harmonik/?dari=${selected.id}`} className="mt-1 inline-block text-sm text-ink underline decoration-ink/30 underline-offset-2 hover:decoration-ink">
+              Coba ubah angka {selected.name} sendiri di penjelas harmonik →
+            </Link>
           </div>
 
           <CycleCurve

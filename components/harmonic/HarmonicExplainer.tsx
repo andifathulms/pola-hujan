@@ -1,17 +1,20 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
+import type { RegimeRecord } from "@/lib/grid/schema";
 import { annualHarmonicMm, classifyRegime, fitHarmonics, MONTHS_PER_YEAR, semiAnnualHarmonicMm } from "@/lib/harmonic";
 import { FAMILY_FILL_CLASS, FAMILY_LABEL, FAMILY_TEXT_CLASS, MONTH_LABELS_ID, type Family } from "@/lib/family";
 
-const MEAN_MM = 200;
+export interface HarmonicExplainerProps {
+  records: RegimeRecord[];
+}
 
-function buildCycle(annualAmpMm: number, annualPeakMonth: number, semiAnnualAmpMm: number, semiAnnualPeakMonth: number) {
+function buildCycle(meanMm: number, annualAmpMm: number, annualPeakMonth: number, semiAnnualAmpMm: number, semiAnnualPeakMonth: number) {
   const months: number[] = [];
   for (let t = 0; t < MONTHS_PER_YEAR; t += 1) {
     const annual = annualAmpMm * Math.cos((2 * Math.PI * (t - annualPeakMonth)) / 12);
     const semi = semiAnnualAmpMm * Math.cos((2 * Math.PI * (t - semiAnnualPeakMonth)) / 6);
-    months.push(Math.max(0, MEAN_MM + annual + semi));
+    months.push(Math.max(0, meanMm + annual + semi));
   }
   return months;
 }
@@ -64,6 +67,9 @@ function Slider({
   );
 }
 
+const FALLBACK_MEAN_MM = 200;
+const FALLBACK_SEED = { annualAmpMm: 120, annualPeakMonth: 0, semiAnnualAmpMm: 20, semiAnnualPeakMonth: 2, meanMm: FALLBACK_MEAN_MM };
+
 /**
  * The method made playable (PRD.md §6.7): drag the annual and
  * semi-annual amplitude/phase and watch a synthetic cycle become
@@ -74,16 +80,54 @@ function Slider({
  * one deliberate, documented exception to "nothing is computed in a
  * component" (CLAUDE.md invariant 15), which otherwise governs every
  * data-driven page.
+ *
+ * Starts from a real location's actual fit — Jakarta by default, or
+ * whichever id the atlas linked here with via ?dari= — rather than an
+ * arbitrary made-up cycle, so there's a worked, real example to look at
+ * before anyone drags anything. `records` (from the pipeline, not
+ * computed here) is only ever read for that starting point; every value
+ * on screen afterward comes from what the sliders are set to.
  */
-export function HarmonicExplainer() {
-  const [annualAmpMm, setAnnualAmpMm] = useState(120);
-  const [annualPeakMonth, setAnnualPeakMonth] = useState(0);
-  const [semiAnnualAmpMm, setSemiAnnualAmpMm] = useState(20);
-  const [semiAnnualPeakMonth, setSemiAnnualPeakMonth] = useState(2);
+export function HarmonicExplainer({ records }: HarmonicExplainerProps) {
+  const defaultSeed = records.find((r) => r.id === "jakarta") ?? records[0];
+  const seedValues = defaultSeed
+    ? {
+        annualAmpMm: defaultSeed.fit.annualAmpMm,
+        annualPeakMonth: defaultSeed.fit.annualPeakMonth,
+        semiAnnualAmpMm: defaultSeed.fit.semiAnnualAmpMm,
+        semiAnnualPeakMonth: defaultSeed.fit.semiAnnualPeakMonth,
+        meanMm: defaultSeed.fit.meanMm,
+      }
+    : FALLBACK_SEED;
+
+  const [meanMm, setMeanMm] = useState(seedValues.meanMm);
+  const [annualAmpMm, setAnnualAmpMm] = useState(seedValues.annualAmpMm);
+  const [annualPeakMonth, setAnnualPeakMonth] = useState(seedValues.annualPeakMonth);
+  const [semiAnnualAmpMm, setSemiAnnualAmpMm] = useState(seedValues.semiAnnualAmpMm);
+  const [semiAnnualPeakMonth, setSemiAnnualPeakMonth] = useState(seedValues.semiAnnualPeakMonth);
+  const [seedLabel, setSeedLabel] = useState(defaultSeed ? `${defaultSeed.name} (${FAMILY_LABEL[defaultSeed.family as Family]})` : null);
+
+  // ?dari=<id> (linked from a location's "kenapa diklasifikasi begini?"
+  // disclosure on the atlas) overrides the default Jakarta starting
+  // point with that location's real numbers. Read on mount only, same
+  // pattern as AtlasView's ?lokasi= — window isn't available during the
+  // static-export server render.
+  useEffect(() => {
+    const fromUrl = new URLSearchParams(window.location.search).get("dari");
+    const seed = fromUrl ? records.find((r) => r.id === fromUrl) : undefined;
+    if (!seed) return;
+    setMeanMm(seed.fit.meanMm);
+    setAnnualAmpMm(seed.fit.annualAmpMm);
+    setAnnualPeakMonth(seed.fit.annualPeakMonth);
+    setSemiAnnualAmpMm(seed.fit.semiAnnualAmpMm);
+    setSemiAnnualPeakMonth(seed.fit.semiAnnualPeakMonth);
+    setSeedLabel(`${seed.name} (${FAMILY_LABEL[seed.family as Family]})`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const monthlyMm = useMemo(
-    () => buildCycle(annualAmpMm, annualPeakMonth, semiAnnualAmpMm, semiAnnualPeakMonth),
-    [annualAmpMm, annualPeakMonth, semiAnnualAmpMm, semiAnnualPeakMonth],
+    () => buildCycle(meanMm, annualAmpMm, annualPeakMonth, semiAnnualAmpMm, semiAnnualPeakMonth),
+    [meanMm, annualAmpMm, annualPeakMonth, semiAnnualAmpMm, semiAnnualPeakMonth],
   );
   const classification = useMemo(() => classifyRegime(fitHarmonics(monthlyMm)), [monthlyMm]);
   const family = classification.family as Family;
@@ -93,8 +137,8 @@ export function HarmonicExplainer() {
   // clamps a negative value), so what's drawn is exactly what the two
   // amplitude/phase sliders above are constructing. Same shape as
   // CycleCurve.tsx: annualHarmonicMm carries the mean; semiAnnualHarmonicMm
-  // is zero-mean and shifted by MEAN_MM only for display.
-  const syntheticFit = { meanMm: MEAN_MM, annualAmpMm, annualPeakMonth, semiAnnualAmpMm, semiAnnualPeakMonth };
+  // is zero-mean and shifted by meanMm only for display.
+  const syntheticFit = { meanMm, annualAmpMm, annualPeakMonth, semiAnnualAmpMm, semiAnnualPeakMonth };
   // Twelve values apiece — cheap enough every render, no memoization needed.
   const annualCurveMm = Array.from({ length: MONTHS_PER_YEAR }, (_, t) => annualHarmonicMm(syntheticFit, t));
   const semiAnnualCurveMm = Array.from({ length: MONTHS_PER_YEAR }, (_, t) => semiAnnualHarmonicMm(syntheticFit, t));
@@ -158,7 +202,9 @@ export function HarmonicExplainer() {
 
       <figure className="flex flex-col gap-1">
         <p className="text-xs font-medium text-ink/70">
-          Kurva buatan — dibangun langsung dari keempat nilai di kiri, bukan data cuaca asli manapun.
+          {seedLabel
+            ? `Titik awal: data nyata ${seedLabel}. Begitu kamu menggeser slider di atas, kurva ini jadi buatan — hipotetis, bukan lagi data asli.`
+            : "Kurva buatan — dibangun langsung dari keempat nilai di kiri, bukan data cuaca asli manapun."}
         </p>
         <svg viewBox="0 0 480 240" role="img" aria-label="Kurva sintetis dari parameter yang dipilih, dengan harmonik tahunan dan semi-tahunan" className="w-full">
           <line x1={40} y1={216} x2={480} y2={216} className="stroke-ink" strokeWidth={0.5} />
@@ -186,7 +232,7 @@ export function HarmonicExplainer() {
           />
           <path
             d={semiAnnualCurveMm
-              .map((mm, t) => `${t === 0 ? "M" : "L"} ${40 + ((480 - 48) / 12) * t + ((480 - 48) / 12) / 2} ${216 - 190 * ((MEAN_MM + mm) / maxMm)}`)
+              .map((mm, t) => `${t === 0 ? "M" : "L"} ${40 + ((480 - 48) / 12) * t + ((480 - 48) / 12) / 2} ${216 - 190 * ((meanMm + mm) / maxMm)}`)
               .join(" ")}
             fill="none"
             className="stroke-ink/50"
