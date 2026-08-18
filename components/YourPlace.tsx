@@ -49,7 +49,7 @@ export function YourPlace({ records, onFound }: YourPlaceProps) {
   }
 
   return (
-    <div className="flex flex-col gap-2 border border-rule bg-stock p-3 text-xs">
+    <div className="flex flex-col gap-2 border border-rule bg-stock p-3 text-sm">
       <button
         type="button"
         onClick={locate}

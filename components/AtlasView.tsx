@@ -86,12 +86,12 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
             <p className={`text-sm font-medium ${FAMILY_TEXT_CLASS[family]}`}>
               {FAMILY_LABEL[family]} · {selected.subtype}
             </p>
-            <p className="font-mono text-xs text-ink/70">
+            <p className="font-mono text-sm text-ink/70">
               Puncak {MONTH_LABELS_ID[Math.round(selected.peakMonth) % 12]} · Terkering{" "}
               {MONTH_LABELS_ID[driestMonthIndex]}
             </p>
             {selected.bmkgFamily && (
-              <p className="font-mono text-xs text-ink/70">
+              <p className="font-mono text-sm text-ink/70">
                 BMKG {selected.bmkgFamilySource === "bmkg-zom9120" ? "(terverifikasi ZOM9120)" : "(perkiraan)"}:{" "}
                 {FAMILY_LABEL[selected.bmkgFamily as Family]}
                 {selected.agrees === false ? " (berbeda dari klasifikasi turunan)" : " (cocok)"}
@@ -120,7 +120,7 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
             type="button"
             onClick={() => setSelectedId(record.id)}
             aria-pressed={record.id === selectedId}
-            className={`rounded border px-2 py-1 text-xs transition-colors duration-fast ${
+            className={`rounded border px-2 py-1 text-sm transition-colors duration-fast ${
               record.id === selectedId ? "border-ink font-medium" : "border-rule text-ink/70"
             }`}
           >
