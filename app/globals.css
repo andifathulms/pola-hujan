@@ -2,13 +2,55 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Design tokens — the single source of truth for colour, type scale and
+ * spacing. Values mirror tailwind.config.ts exactly (Tailwind can't read
+ * CSS custom properties at build time, so the two are kept in sync by
+ * hand); anything drawn outside a Tailwind class — inline SVG styles,
+ * hatch patterns — reads from here instead of a raw hex.
+ *
+ * Contrast, checked against WCAG 2.1 SC 1.4.3 (text ≥4.5:1):
+ *   --color-ink        on --color-stock = 14.1:1
+ *   --color-ink-muted   on --color-stock =  5.6:1  (equivalent to ink/70%)
+ * Both clear the 4.5:1 floor for normal-weight body text.
+ */
 :root {
   color-scheme: light;
+
+  --color-stock: #f2f0e7;
+  --color-ink: #23211c;
+  --color-ink-muted: #615f59;
+  --color-rule: #d6d2c4;
+  --color-monsunal: #3a6b8a;
+  --color-ekuatorial: #4a7c59;
+  --color-lokal: #b5652e;
+  --color-you: #8b3a62;
+
+  /* Type scale — one scale, applied everywhere; body copy never below
+     --text-sm (16px) per the house minimum. */
+  --text-xs: 14px; /* micro-labels, table figures, axis ticks only — never prose */
+  --text-sm: 16px; /* body copy floor */
+  --text-base: 18px; /* default body */
+  --text-lg: 22px;
+  --text-xl: 28px;
+  --text-2xl: 36px;
+  --text-3xl: 46px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+  --space-32: 128px;
 }
 
 body {
-  background-color: #f2f0e7;
-  color: #23211c;
+  background-color: var(--color-stock);
+  color: var(--color-ink);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -23,7 +65,7 @@ body {
 
 /* Focus visible at 3px (DESIGN.md §10), keyboard-operable everywhere. */
 :focus-visible {
-  outline: 3px solid #23211c;
+  outline: 3px solid var(--color-ink);
   outline-offset: 2px;
 }
 
@@ -32,10 +74,10 @@ body {
   left: -9999px;
   top: 0;
   z-index: 50;
-  background: #f2f0e7;
-  color: #23211c;
-  padding: 8px 12px;
-  border: 0.5px solid #23211c;
+  background: var(--color-stock);
+  color: var(--color-ink);
+  padding: var(--space-2) var(--space-3);
+  border: 0.5px solid var(--color-ink);
 }
 
 .skip-link:focus {
