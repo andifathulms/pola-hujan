@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
-import { classifyRegime, fitHarmonics, MONTHS_PER_YEAR } from "@/lib/harmonic";
+import { annualHarmonicMm, classifyRegime, fitHarmonics, MONTHS_PER_YEAR, semiAnnualHarmonicMm } from "@/lib/harmonic";
 import { FAMILY_FILL_CLASS, FAMILY_LABEL, FAMILY_TEXT_CLASS, MONTH_LABELS_ID, type Family } from "@/lib/family";
 
 const MEAN_MM = 200;
@@ -88,7 +88,18 @@ export function HarmonicExplainer() {
   const classification = useMemo(() => classifyRegime(fitHarmonics(monthlyMm)), [monthlyMm]);
   const family = classification.family as Family;
 
-  const maxMm = Math.max(...monthlyMm, 1);
+  // The two harmonics as the sliders define them directly — not a
+  // re-fit of monthlyMm (which would drift slightly once the 0mm floor
+  // clamps a negative value), so what's drawn is exactly what the two
+  // amplitude/phase sliders above are constructing. Same shape as
+  // CycleCurve.tsx: annualHarmonicMm carries the mean; semiAnnualHarmonicMm
+  // is zero-mean and shifted by MEAN_MM only for display.
+  const syntheticFit = { meanMm: MEAN_MM, annualAmpMm, annualPeakMonth, semiAnnualAmpMm, semiAnnualPeakMonth };
+  // Twelve values apiece — cheap enough every render, no memoization needed.
+  const annualCurveMm = Array.from({ length: MONTHS_PER_YEAR }, (_, t) => annualHarmonicMm(syntheticFit, t));
+  const semiAnnualCurveMm = Array.from({ length: MONTHS_PER_YEAR }, (_, t) => semiAnnualHarmonicMm(syntheticFit, t));
+
+  const maxMm = Math.max(...monthlyMm, ...annualCurveMm, 1);
 
   return (
     <div className="flex flex-col gap-6 lg:grid lg:grid-cols-2">
@@ -145,29 +156,66 @@ export function HarmonicExplainer() {
         </div>
       </div>
 
-      <svg viewBox="0 0 480 240" role="img" aria-label="Kurva sintetis dari parameter yang dipilih" className="w-full">
-        <line x1={40} y1={216} x2={480} y2={216} className="stroke-ink" strokeWidth={0.5} />
-        {monthlyMm.map((mm, t) => {
-          const barWidth = (480 - 48) / 12 - 4;
-          const x = 40 + ((480 - 48) / 12) * t + 2;
-          const height = 190 * (mm / maxMm);
-          return (
-            <rect
-              key={t}
-              x={x}
-              y={216 - height}
-              width={barWidth}
-              className={FAMILY_FILL_CLASS[family]}
-              height={height}
-            />
-          );
-        })}
-        {MONTH_LABELS_ID.map((label, t) => (
-          <text key={label} x={40 + ((480 - 48) / 12) * t + ((480 - 48) / 12) / 2} y={232} textAnchor="middle" className="fill-ink font-mono text-[10px]">
-            {label}
-          </text>
-        ))}
-      </svg>
+      <figure className="flex flex-col gap-1">
+        <p className="text-xs font-medium text-ink/70">
+          Kurva buatan — dibangun langsung dari keempat nilai di kiri, bukan data cuaca asli manapun.
+        </p>
+        <svg viewBox="0 0 480 240" role="img" aria-label="Kurva sintetis dari parameter yang dipilih, dengan harmonik tahunan dan semi-tahunan" className="w-full">
+          <line x1={40} y1={216} x2={480} y2={216} className="stroke-ink" strokeWidth={0.5} />
+          {monthlyMm.map((mm, t) => {
+            const barWidth = (480 - 48) / 12 - 4;
+            const x = 40 + ((480 - 48) / 12) * t + 2;
+            const height = 190 * (mm / maxMm);
+            return (
+              <rect
+                key={t}
+                x={x}
+                y={216 - height}
+                width={barWidth}
+                className={FAMILY_FILL_CLASS[family]}
+                height={height}
+              />
+            );
+          })}
+
+          <path
+            d={annualCurveMm.map((mm, t) => `${t === 0 ? "M" : "L"} ${40 + ((480 - 48) / 12) * t + ((480 - 48) / 12) / 2} ${216 - 190 * (mm / maxMm)}`).join(" ")}
+            fill="none"
+            className="stroke-ink"
+            strokeWidth={1.5}
+          />
+          <path
+            d={semiAnnualCurveMm
+              .map((mm, t) => `${t === 0 ? "M" : "L"} ${40 + ((480 - 48) / 12) * t + ((480 - 48) / 12) / 2} ${216 - 190 * ((MEAN_MM + mm) / maxMm)}`)
+              .join(" ")}
+            fill="none"
+            className="stroke-ink/50"
+            strokeWidth={1}
+            strokeDasharray="3 2"
+          />
+
+          {MONTH_LABELS_ID.map((label, t) => (
+            <text key={label} x={40 + ((480 - 48) / 12) * t + ((480 - 48) / 12) / 2} y={232} textAnchor="middle" className="fill-ink font-mono text-[10px]">
+              {label}
+            </text>
+          ))}
+        </svg>
+
+        <figcaption className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink/70">
+          <span className="flex items-center gap-1.5">
+            <span aria-hidden className={`inline-block h-2 w-3 shrink-0 ${FAMILY_FILL_CLASS[family]}`} />
+            Batang — kedua harmonik dijumlahkan
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span aria-hidden className="inline-block h-0 w-3 shrink-0 border-t-[1.5px] border-ink" />
+            Garis penuh — harmonik tahunan sendiri
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span aria-hidden className="inline-block h-0 w-3 shrink-0 border-t border-dashed border-ink/50" />
+            Garis putus-putus — harmonik semi-tahunan sendiri
+          </span>
+        </figcaption>
+      </figure>
     </div>
   );
 }
