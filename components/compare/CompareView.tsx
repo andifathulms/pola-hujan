@@ -24,7 +24,7 @@ function LocationPicker({
   label: string;
 }) {
   return (
-    <label className="flex flex-col gap-1 text-xs">
+    <label className="flex flex-col gap-1 text-sm">
       <span className="text-ink/70">{label}</span>
       <select
         value={value}
@@ -118,7 +118,7 @@ export function CompareView({ records, defaultLeftId, defaultRightId }: CompareV
             setLeftId(defaultLeftId);
             setRightId(defaultRightId);
           }}
-          className="rounded border border-ink px-3 py-1 text-xs font-medium transition-colors duration-fast hover:bg-ink hover:text-stock"
+          className="rounded border border-ink px-3 py-1 text-sm font-medium transition-colors duration-fast hover:bg-ink hover:text-stock"
         >
           Jawa vs Maluku
         </button>

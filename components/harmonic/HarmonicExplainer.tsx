@@ -34,7 +34,7 @@ function Slider({
   unit: string;
 }) {
   return (
-    <label className="flex flex-col gap-1 text-xs">
+    <label className="flex flex-col gap-1 text-sm">
       <span className="flex justify-between">
         <span>{label}</span>
         <span className="font-mono tabular-nums text-ink/70">
@@ -108,7 +108,7 @@ export function HarmonicExplainer() {
           <p className={`text-lg font-semibold ${FAMILY_TEXT_CLASS[family]}`}>
             {FAMILY_LABEL[family]} · {classification.subtype}
           </p>
-          <p className="text-xs text-ink/70">
+          <p className="text-sm text-ink/70">
             Diklasifikasikan langsung oleh <code className="font-mono">lib/harmonic</code> yang sama dengan yang
             memproses data nyata — ambang yang sama, kode yang sama.
           </p>

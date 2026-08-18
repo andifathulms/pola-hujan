@@ -169,7 +169,7 @@ export default function MetodePage() {
             terbaik yang belum diverifikasi (lihat <code className="font-mono">data/source/README.md</code> untuk
             kutipan lengkap per lokasi).
           </p>
-          <p className="text-xs text-ink/70">
+          <p className="text-sm text-ink/70">
             <strong>Ini adalah metrik yang dilaporkan, bukan uji lulus/gagal.</strong> Bahkan untuk pembanding yang
             terverifikasi, lokasi turunan bisa sah berbeda dari peta BMKG — Medan, misalnya, keluarga BMKG-nya
             terverifikasi Ekuatorial, tetapi klasifikasi turunan di titik koordinat kota itu jatuh sebagai Lokal.
