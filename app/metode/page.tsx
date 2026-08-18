@@ -159,7 +159,10 @@ export default function MetodePage() {
             <strong>Ini adalah metrik yang dilaporkan, bukan uji lulus/gagal.</strong> Bahkan untuk pembanding yang
             terverifikasi, lokasi turunan bisa sah berbeda dari peta BMKG — Medan, misalnya, keluarga BMKG-nya
             terverifikasi Ekuatorial, tetapi klasifikasi turunan di titik koordinat kota itu jatuh sebagai Lokal.
-            Itu bukan bug yang perlu diperbaiki; itu perbedaan nyata antara metode. Memaksakan kecocokan — baik
+            Palu serupa: BMKG menyebutnya eksplisit sebagai contoh wilayah Lokal, tetapi titik kota Palu sendiri
+            jatuh sebagai Monsunal turunan — kemungkinan karena efek lembah bayangan hujan Palu yang sangat
+            lokal tidak sepenuhnya tertangkap satu titik grid 0,05°. Keduanya bukan bug yang perlu diperbaiki;
+            itu perbedaan nyata antara metode. Memaksakan kecocokan — baik
             dengan menyetel ambang maupun menyetel label pembanding — berarti berhenti menganalisis. Lokasi yang
             berbeda ditandai arsir di peta, bukan warna keempat.
           </p>
