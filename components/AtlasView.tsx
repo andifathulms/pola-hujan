@@ -100,6 +100,32 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
                 {selected.agrees === false ? " (berbeda dari klasifikasi turunan)" : " (cocok)"}
               </p>
             )}
+
+            <details className="mt-1 text-sm text-ink/70">
+              <summary className="cursor-pointer select-none font-medium text-ink">Kenapa {selected.name} diklasifikasi {FAMILY_LABEL[family]}?</summary>
+              <dl className="mt-1 flex flex-col gap-0.5 font-mono text-xs">
+                <div>
+                  <dt className="inline">Rasio semi-tahunan/tahunan: </dt>
+                  <dd className="inline tabular-nums">
+                    {selected.classificationDetail.semiToAnnualRatio === null
+                      ? "tak terhingga (amplitudo tahunan nol)"
+                      : selected.classificationDetail.semiToAnnualRatio.toFixed(2)}
+                  </dd>
+                  <dd className="inline"> — ambang Ekuatorial {manifest.thresholds.ekuatorialDominanceRatio.toFixed(2)}</dd>
+                </div>
+                {selected.classificationDetail.displacementMonths !== undefined && (
+                  <div>
+                    <dt className="inline">Jarak puncak dari pusat monsun: </dt>
+                    <dd className="inline tabular-nums">{selected.classificationDetail.displacementMonths.toFixed(2)} bulan</dd>
+                    <dd className="inline">
+                      {" "}
+                      — ambang Monsunal ≤{manifest.thresholds.monsunalMaxDisplacementMonths}, Lokal &gt;
+                      {manifest.thresholds.lokalMinDisplacementMonths}
+                    </dd>
+                  </div>
+                )}
+              </dl>
+            </details>
           </div>
 
           <CycleCurve
