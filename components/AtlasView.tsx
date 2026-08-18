@@ -206,7 +206,7 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
 
           <CycleTable monthlyMm={selected.monthlyMm} caption={`Curah hujan bulanan di ${selected.name}, mm`} />
 
-          <ArchetypeStrip archetypes={archetypes} />
+          <ArchetypeStrip archetypes={archetypes} activeFamily={family} />
         </div>
       </div>
 
