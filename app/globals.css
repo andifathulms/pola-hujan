@@ -65,6 +65,11 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    /* CycleCurve staggers its bars and harmonic paths with inline
+       transition-delay (up to 440ms) — without this, reduced-motion
+       still leaves a sequential reveal even though each transition
+       itself is now instant. */
+    transition-delay: 0ms !important;
   }
 }
 
