@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Alegreya, Alegreya_Sans, IBM_Plex_Mono } from "next/font/google";
+import { MakerSignature } from "@/components/MakerSignature";
 import "./globals.css";
 
 // next/font downloads and self-hosts these at build time and serves them
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           Lompat ke konten utama
         </a>
         {children}
+        <MakerSignature />
       </body>
     </html>
   );
