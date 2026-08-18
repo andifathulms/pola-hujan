@@ -50,6 +50,7 @@ const THRESHOLD_ROWS: Array<{ label: string; key: keyof typeof manifest.threshol
 // addition to the map's own one-line disclaimer (CLAUDE.md invariant 6).
 export default function MetodePage() {
   const byFamily = Object.entries(manifest.coverage.byFamily);
+  const bySubtype = Object.entries(manifest.coverage.bySubtype).sort(([a], [b]) => a.localeCompare(b));
 
   return (
     <>
@@ -98,6 +99,17 @@ export default function MetodePage() {
             {byFamily.map(([family, count]) => (
               <li key={family}>
                 {family}: {count} lokasi
+              </li>
+            ))}
+          </ul>
+          <p className="text-sm text-ink/70">
+            Tiap keluarga bukan satu bentuk tunggal — sub-tipe di bawah ini, mengikuti nomenklatur BMKG sendiri,
+            adalah pemecahan berdasarkan seberapa kuat harmonik sekunder atau seberapa dominan pola dua-puncaknya.
+          </p>
+          <ul className="flex flex-col gap-1 font-mono text-xs">
+            {bySubtype.map(([subtype, count]) => (
+              <li key={subtype}>
+                {subtype}: {count} lokasi
               </li>
             ))}
           </ul>
