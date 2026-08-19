@@ -62,7 +62,7 @@ export function MakerSignature() {
   return (
     <footer className="border-t border-rule px-4 py-4 lg:px-6">
       <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
-        <p className="text-xs text-ink/60">
+        <p className="text-xs text-ink/70">
           Designed &amp; built by{" "}
           <a
             href={portfolioHref}

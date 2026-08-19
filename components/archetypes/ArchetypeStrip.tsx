@@ -45,7 +45,7 @@ export function ArchetypeStrip({ archetypes, activeFamily }: ArchetypeStripProps
             <svg viewBox={`0 0 ${SPARK_WIDTH} ${SPARK_HEIGHT}`} role="img" aria-label={`Kurva acuan rezim ${FAMILY_LABEL[archetype.family as Family]} (contoh sintetis, bukan data lokasi nyata)`}>
               <path d={sparkline(archetype.monthlyMm)} fill="none" className={FAMILY_TEXT_CLASS[archetype.family as Family]} stroke="currentColor" strokeWidth={1.5} />
             </svg>
-            <span className="font-mono text-[10px] text-ink/60">
+            <span className="font-mono text-[10px] text-ink/70">
               {MONTH_LABELS_ID[0]}–{MONTH_LABELS_ID[11]} · contoh sintetis
             </span>
           </div>
