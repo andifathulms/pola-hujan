@@ -1,6 +1,15 @@
+import type { Metadata } from "next";
 import { archetypeRecords, manifest, regimeRecords } from "@/lib/grid/lookup";
 import { AtlasView } from "@/components/AtlasView";
 import { SiteNav } from "@/components/SiteNav";
+import { pageMetadata } from "@/lib/metadata";
+import { ATLAS_LEAD } from "@/lib/pageCopy";
+
+export const metadata: Metadata = pageMetadata({
+  title: "Pola Hujan — atlas rezim curah hujan Indonesia",
+  description: ATLAS_LEAD,
+  path: "/",
+});
 
 // The atlas is the home page directly — no redirect. An earlier version
 // redirected "/" to "/peta/" client-side (useEffect + window.location),

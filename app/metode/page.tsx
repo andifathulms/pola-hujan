@@ -2,10 +2,14 @@ import type { Metadata } from "next";
 import { manifest, regimeRecords } from "@/lib/grid/lookup";
 import { SiteNav } from "@/components/SiteNav";
 import { DownloadData } from "@/components/DownloadData";
+import { pageMetadata } from "@/lib/metadata";
+import { METODE_LEAD } from "@/lib/pageCopy";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Metode — Pola Hujan",
-};
+  description: METODE_LEAD,
+  path: "/metode/",
+});
 
 const THRESHOLD_ROWS: Array<{ label: string; key: keyof typeof manifest.thresholds; unit: string; note: string }> = [
   {
@@ -63,10 +67,7 @@ export default function MetodePage() {
       <div id="main-content" className="flex flex-col gap-8 p-4 lg:p-6">
         <header className="flex flex-col gap-2">
           <h1 className="font-display text-xl font-semibold lg:text-2xl">Metode</h1>
-          <p className="max-w-prose text-lg">
-            Ini bukti kerjanya: dataset, ambang klasifikasi, dan tingkat kecocokan dengan BMKG — semua bisa
-            diperiksa, bukan sekadar diklaim.
-          </p>
+          <p className="max-w-prose text-lg">{METODE_LEAD}</p>
           <p className="text-sm text-ink/70">Bagaimana klasifikasi ini dibuat, dan apa yang tidak bisa ia klaim.</p>
         </header>
 

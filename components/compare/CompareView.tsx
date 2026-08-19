@@ -5,6 +5,7 @@ import type { RegimeRecord } from "@/lib/grid/schema";
 import { FAMILY_LABEL, FAMILY_TEXT_CLASS, type Family } from "@/lib/family";
 import { CycleCurve } from "@/components/curve/CycleCurve";
 import { CycleTable } from "@/components/table/CycleTable";
+import { BANDING_LEAD } from "@/lib/pageCopy";
 
 export interface CompareViewProps {
   records: RegimeRecord[];
@@ -120,10 +121,7 @@ export function CompareView({ records, defaultLeftId, defaultRightId }: CompareV
     <div id="main-content" className="flex flex-col gap-6 p-4 lg:p-6">
       <header className="flex flex-col gap-2">
         <h1 className="font-display text-xl font-semibold lg:text-2xl">Banding dua tempat</h1>
-        <p className="max-w-prose text-lg">
-          Bandingkan dua kota berdampingan pada sumbu bulan yang sama, supaya perbedaan pola hujannya terlihat
-          langsung.
-        </p>
+        <p className="max-w-prose text-lg">{BANDING_LEAD}</p>
         <p className="text-sm text-ink/70">
           Sumbu bulan tidak pernah digeser untuk menyelaraskan puncak — perbedaan letak puncak adalah temuannya.
         </p>

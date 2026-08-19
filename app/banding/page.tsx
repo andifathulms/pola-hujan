@@ -2,10 +2,14 @@ import type { Metadata } from "next";
 import { regimeRecords } from "@/lib/grid/lookup";
 import { CompareView } from "@/components/compare/CompareView";
 import { SiteNav } from "@/components/SiteNav";
+import { pageMetadata } from "@/lib/metadata";
+import { BANDING_LEAD } from "@/lib/pageCopy";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Banding — Pola Hujan",
-};
+  description: BANDING_LEAD,
+  path: "/banding/",
+});
 
 // M3: two-place comparison, with Jakarta-vs-Ambon as the one-tap preset
 // demonstrating the Java/Lokal inversion PRD.md §6.4 calls the

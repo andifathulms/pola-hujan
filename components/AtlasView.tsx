@@ -11,6 +11,7 @@ import { ArchetypeStrip } from "@/components/archetypes/ArchetypeStrip";
 import { Legend } from "@/components/Legend";
 import { YourPlace } from "@/components/YourPlace";
 import { NearestOppositeFinding } from "@/components/NearestOppositeFinding";
+import { ATLAS_LEAD } from "@/lib/pageCopy";
 
 /**
  * The plain-language bridge from a raw ratio/displacement number to
@@ -108,10 +109,7 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
     <div id="main-content" className="flex flex-col gap-6 p-4 lg:p-6">
       <header className="flex flex-col gap-2">
         <h1 className="font-display text-2xl font-semibold lg:text-3xl">Pola Hujan</h1>
-        <p className="max-w-prose text-lg">
-          Setiap kota di peta ini diklasifikasikan ke salah satu dari tiga pola musim hujan tahunan, dihitung
-          langsung dari data curah hujan asli — lalu dibandingkan dengan peta resmi BMKG.
-        </p>
+        <p className="max-w-prose text-lg">{ATLAS_LEAD}</p>
         <p className="text-sm text-ink/70">Atlas rezim curah hujan tahunan Indonesia — bukan animasi angin, bukan prakiraan.</p>
       </header>
 
