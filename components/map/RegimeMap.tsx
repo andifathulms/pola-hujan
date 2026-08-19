@@ -2,6 +2,7 @@
 
 import type { RegimeRecord } from "@/lib/grid/schema";
 import { FAMILY_FILL_CLASS, FAMILY_LABEL, type Family } from "@/lib/family";
+import { INDONESIA_OUTLINE_PATH } from "@/lib/geo/indonesiaOutline";
 
 export interface RegimeMapProps {
   records: RegimeRecord[];
@@ -9,10 +10,13 @@ export interface RegimeMapProps {
   onSelect: (id: string) => void;
 }
 
-// Indonesia's rough bounding box, used only to place points on a plain
-// SVG canvas — there is no basemap, no tiles, no reprojection. This is a
-// schematic scatter of the pipeline's own locations, not a geographic
-// map (CLAUDE.md invariant 7: no ZOM or other boundary is drawn here).
+// Indonesia's rough bounding box, used to place points on a plain SVG
+// canvas and to pre-project the coastline outline below — there is no
+// tile layer, no runtime reprojection, no mapping library. The
+// coastline is a static checked-in path (lib/geo/indonesiaOutline.ts),
+// not a rendering of anyone's zone boundaries (CLAUDE.md invariant 7 is
+// about BMKG's own ZOM polygons specifically, not ordinary landmass
+// geometry).
 const LAT_MIN = -11;
 const LAT_MAX = 6;
 const LON_MIN = 95;
@@ -57,6 +61,12 @@ export function RegimeMap({ records, selectedId, onSelect }: RegimeMapProps) {
       </defs>
 
       <rect x={0} y={0} width={WIDTH} height={HEIGHT} className="fill-stock stroke-rule" strokeWidth={0.5} />
+
+      {/* Orientation only — quiet enough that family colour (the actual
+          data channel) still reads as the strongest thing on the
+          canvas. Decorative: not part of the classification, so it
+          carries no label of its own. */}
+      <path d={INDONESIA_OUTLINE_PATH} className="fill-ink/10 stroke-rule" strokeWidth={0.5} aria-hidden="true" />
 
       {records.map((record) => {
         const { x, y } = project(record.lat, record.lon);
