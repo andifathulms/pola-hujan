@@ -1,6 +1,9 @@
+"use client";
+
 import { Fragment } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import logoIcon from "@/public/logo/pola-hujan-icon.svg";
 
 const LINKS = [
@@ -18,6 +21,10 @@ const LINKS = [
  * hidden text reaches both without changing the visible label.
  */
 export function SiteNav() {
+  // usePathname() already excludes next.config.js's basePath. "/" renders
+  // the same AtlasView as "/peta/" (see app/page.tsx) — treated as the
+  // same destination here so "Peta" reads as current on either URL.
+  const pathname = usePathname();
   return (
     <nav
       aria-label="Navigasi utama"
@@ -30,12 +37,14 @@ export function SiteNav() {
       <div className="flex flex-wrap gap-4">
         {LINKS.map((link) => {
           const descriptionId = `nav-desc-${link.label.toLowerCase()}`;
+          const isCurrent = pathname === link.href || (link.href === "/peta/" && pathname === "/");
           return (
             <Fragment key={link.href}>
               <Link
                 href={link.href}
                 aria-describedby={descriptionId}
-                className="text-ink underline-offset-4 hover:underline"
+                aria-current={isCurrent ? "page" : undefined}
+                className={`underline-offset-4 hover:underline ${isCurrent ? "font-medium text-ink underline" : "text-ink/70"}`}
               >
                 {link.label}
               </Link>
