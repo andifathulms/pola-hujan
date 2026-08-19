@@ -18,13 +18,14 @@ export const SITE_URL = "https://andifathulms.github.io/pola-hujan/";
 export const SITE_ORIGIN = "https://andifathulms.github.io";
 const SITE_NAME = "Pola Hujan";
 /**
- * app/opengraph-image.tsx's rendered output. Referenced explicitly
- * rather than relying on Next's file-convention auto-attachment —
- * verified that only worked for "/" and silently dropped for every
- * other route the moment it defined its own `openGraph` object, which
- * every route here does.
+ * The real designed OG/social card (public/opengraph-image.png, from
+ * the brand kit) — a static file, not Next's opengraph-image.tsx
+ * convention. Referenced explicitly here rather than relying on that
+ * convention's auto-attachment, which was verified to only work for
+ * "/" and silently drop for every other route the moment it defined
+ * its own `openGraph` object, which every route here does.
  */
-const OG_IMAGE_URL = new URL("opengraph-image", SITE_URL).toString();
+const OG_IMAGE_URL = new URL("opengraph-image.png", SITE_URL).toString();
 
 export interface PageMetadataInput {
   title: string;
