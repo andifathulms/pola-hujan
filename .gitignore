@@ -11,3 +11,7 @@ data/grids
 .env
 .env.local
 coverage
+# Raw brand-kit export bundle (many sizes/variants of the same marks).
+# The specific files actually used by the app or the README are copied
+# into app/, public/, and .github/ instead of referencing this folder.
+exports
