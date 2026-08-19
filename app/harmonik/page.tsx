@@ -9,6 +9,13 @@ export const metadata: Metadata = {
 
 // M5: the live decomposition explainer (PRD.md §6.7).
 export default function HarmonikPage() {
+  // HarmonicExplainer only seeds itself from id/name/family/fit — not
+  // monthlyMm, the two curve arrays, coordinates, or the BMKG
+  // comparison, all of which regimeRecords also carries. Trimmed here,
+  // server-side, so the unused ~29KB/record-set never crosses into the
+  // client bundle.
+  const harmonicSeeds = regimeRecords.map(({ id, name, family, fit }) => ({ id, name, family, fit }));
+
   return (
     <>
       <SiteNav />
@@ -30,7 +37,7 @@ export default function HarmonikPage() {
             keluarga — monsunal, ekuatorial, atau lokal — secara langsung.
           </p>
         </header>
-        <HarmonicExplainer records={regimeRecords} />
+        <HarmonicExplainer records={harmonicSeeds} />
       </div>
     </>
   );

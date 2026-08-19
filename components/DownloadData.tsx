@@ -3,8 +3,17 @@
 import type { RegimeRecord } from "@/lib/grid/schema";
 import { MONTH_LABELS_ID } from "@/lib/family";
 
+/**
+ * The two curve arrays (24 numbers/record) are never read by this CSV —
+ * see COLUMNS below. Excluding them from the prop type means the page
+ * that passes `records` in can trim them before they cross the
+ * server/client boundary, instead of shipping data this component
+ * doesn't use.
+ */
+export type DownloadRecord = Omit<RegimeRecord, "annualCurveMm" | "semiAnnualCurveMm">;
+
 export interface DownloadDataProps {
-  records: RegimeRecord[];
+  records: DownloadRecord[];
 }
 
 const COLUMNS = [
@@ -35,7 +44,7 @@ function escapeCsvField(value: unknown): string {
   return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
-function toCsvRow(record: RegimeRecord): string {
+function toCsvRow(record: DownloadRecord): string {
   const fields = [
     record.id,
     record.name,

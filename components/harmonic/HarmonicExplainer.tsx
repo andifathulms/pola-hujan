@@ -5,8 +5,18 @@ import type { RegimeRecord } from "@/lib/grid/schema";
 import { annualHarmonicMm, classifyRegime, fitHarmonics, MONTHS_PER_YEAR, semiAnnualHarmonicMm } from "@/lib/harmonic";
 import { FAMILY_FILL_CLASS, FAMILY_LABEL, FAMILY_TEXT_CLASS, MONTH_LABELS_ID, type Family } from "@/lib/family";
 
+/**
+ * Only the four numbers this component actually seeds itself from, plus
+ * what identifies the seed to the reader — not the full RegimeRecord
+ * (which also carries two 12-value curve arrays, monthlyMm, province,
+ * coordinates, and the BMKG comparison, none of which this component
+ * reads). Trimming the type lets the page trim the data before it
+ * crosses into the client bundle.
+ */
+export type HarmonicSeed = Pick<RegimeRecord, "id" | "name" | "family" | "fit">;
+
 export interface HarmonicExplainerProps {
-  records: RegimeRecord[];
+  records: HarmonicSeed[];
 }
 
 function buildCycle(meanMm: number, annualAmpMm: number, annualPeakMonth: number, semiAnnualAmpMm: number, semiAnnualPeakMonth: number) {

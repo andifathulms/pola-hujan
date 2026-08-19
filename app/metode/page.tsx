@@ -52,6 +52,10 @@ const THRESHOLD_ROWS: Array<{ label: string; key: keyof typeof manifest.threshol
 export default function MetodePage() {
   const byFamily = Object.entries(manifest.coverage.byFamily);
   const bySubtype = Object.entries(manifest.coverage.bySubtype).sort(([a], [b]) => a.localeCompare(b));
+  // DownloadData's CSV never reads the two curve arrays (24 numbers per
+  // location) — trimmed here, in the server component, so they never
+  // cross into the client bundle in the first place.
+  const downloadRecords = regimeRecords.map(({ annualCurveMm, semiAnnualCurveMm, ...rest }) => rest);
 
   return (
     <>
@@ -96,7 +100,7 @@ export default function MetodePage() {
             <dd>{manifest.generatedFromLocations}</dd>
           </dl>
           <p className="border border-rule bg-stock p-3 text-xs text-ink/70">{manifest.datasetStatus}</p>
-          <DownloadData records={regimeRecords} />
+          <DownloadData records={downloadRecords} />
         </section>
 
         <section className="flex flex-col gap-2">
