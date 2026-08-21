@@ -85,6 +85,15 @@ The core object. Twelve monthly bars for a location, with the fitted annual and 
 - Y-axis in mm, tabular figures, always labelled.
 - **Fixed month order Jan–Dec, always.** Never rotated to centre a peak; the whole point is that peaks sit in different months in different places, and re-centring would destroy the comparison.
 
+### 4.1 The field plate
+
+**"Almanac, Intensified" — the one signature element.** On the atlas, the selected location's curve is restated once, full width, beneath the map-and-meta row, as a mounted plate rather than a chart squeezed into a third-width column. Same `CycleCurve`/`CycleTable`, not a new chart — the ambition is spent on presentation, in one place, rather than spread thin across the page.
+
+- Ground is `--plate` (`#E8E2D0`), one value-step darker than `--stock` — a value-step of the same warm-neutral family, not a new hue. A `--stitch` (`#B7AE95`) hairline stands in for elevation, since the app uses no box-shadow anywhere and this keeps it that way.
+- The location name sets in the display serif at `--text-4xl` (58px) — the one place in the app that goes above the 46px ceiling elsewhere in the type scale (§8), scoped to this single heading.
+- The two harmonics draw heavier here (2.5px / 1.75px vs. the standard 1.5px / 1px) and the month labels set uppercase, letterspaced, mono — an instrument-plate register for this one reading, not a change to `CycleCurve`'s default appearance anywhere else it's used (`CompareView` is untouched).
+- One plate, one location, one moment. It does not appear per-row in a list or repeat anywhere else — repeating it would make it wallpaper, not a signature.
+
 ## 5. The archetype strip
 
 Three reference curves — one per family — always visible along one edge. A selected location can be pattern-matched against them without the reader having to remember what each family looks like.
@@ -95,9 +104,9 @@ Small, quiet, permanent. Not a legend that expands; a fixed part of the page.
 
 **An atlas spread, not a full-bleed canvas.** This app has two co-equal objects — the map and the curve — and neither should dominate.
 
-**Desktop:** map on the left two-thirds, curve panel on the right third, archetype strip along the bottom of the curve panel. Comparison mode splits the curve panel into two stacked curves sharing one month axis.
+**Desktop:** map on the left two-thirds, the selected location's meta panel and archetype strip on the right third. The field plate (§4.1) runs full width beneath that row — a third tier, not a third column, so it doesn't compete with the map/meta split above it. Comparison mode splits the curve panel into two stacked curves sharing one month axis.
 
-**Mobile:** map at 45vh, curve beneath, archetypes as a horizontally scrollable strip under that.
+**Mobile:** map at 45vh, meta panel and archetypes beneath, the field plate beneath that.
 
 **Never overlay the curve on the map.** They are different kinds of statement and stacking them would muddle both.
 
@@ -128,8 +137,10 @@ IBM Plex Mono     millimetres, month codes, thresholds, citations
 Self-hosted via `next/font`.
 
 ```
-14  16  18  22  28  36  46          1.25 ratio
+14  16  18  22  28  36  46  (58)    1.25 ratio
 ```
+
+58 (`--text-4xl`) is scoped to the field plate's location name only (§4.1) — not a general step in the scale.
 
 Light ground, so no dark-mode weight correction — body 400, headings 600.
 

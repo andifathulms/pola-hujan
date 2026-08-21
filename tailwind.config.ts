@@ -26,6 +26,15 @@ const config: Config = {
         // and 4.99:1. `monsunal` needs no variant (5.0:1 already).
         "ekuatorial-text": "#437050",
         "lokal-text": "#99552A",
+        // "Almanac, Intensified" (VISUAL_AMBITION direction A): the one
+        // signature element, the field plate, needs a ground one value-
+        // step darker than stock (reads as a mounted card) and a single
+        // accent line standing in for elevation without a box-shadow —
+        // the app has none anywhere and this keeps it that way. Both are
+        // value-steps of the same warm-neutral family as stock/rule, not
+        // a new hue.
+        plate: "#E8E2D0",
+        stitch: "#B7AE95",
       },
       fontFamily: {
         display: ["var(--font-alegreya)", "serif"],
@@ -45,6 +54,10 @@ const config: Config = {
         xl: "28px",
         "2xl": "36px",
         "3xl": "46px",
+        // Scoped to the field plate's location name only (VISUAL_AMBITION
+        // direction A) — continues the scale's own ~1.25-1.28 progression
+        // (46 * ~1.26) rather than introducing an unrelated ratio.
+        "4xl": "58px",
       },
       spacing: {
         1: "4px",

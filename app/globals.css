@@ -30,6 +30,12 @@
      below the 4.5:1 floor for text. These are 5.0:1 and 4.99:1. */
   --color-ekuatorial-text: #437050;
   --color-lokal-text: #99552a;
+  /* "Almanac, Intensified" (VISUAL_AMBITION direction A) — the field
+     plate's ground (one value-step darker than stock) and its one accent
+     line standing in for elevation, since the app uses no box-shadow
+     anywhere. Value-steps of the same warm-neutral family, not a new hue. */
+  --color-plate: #e8e2d0;
+  --color-stitch: #b7ae95;
 
   /* Type scale — one scale, applied everywhere; body copy never below
      --text-sm (16px) per the house minimum. */
@@ -41,6 +47,7 @@
   --text-xl: 28px;
   --text-2xl: 36px;
   --text-3xl: 46px;
+  --text-4xl: 58px; /* the field plate's location name only — see tailwind.config.ts */
 
   --space-1: 4px;
   --space-2: 8px;

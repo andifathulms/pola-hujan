@@ -5,8 +5,7 @@ import Link from "next/link";
 import type { ArchetypeRecord, Manifest, RegimeRecord } from "@/lib/grid/schema";
 import { FAMILY_LABEL, FAMILY_TEXT_CLASS, MONTH_LABELS_ID, type Family } from "@/lib/family";
 import { RegimeMap } from "@/components/map/RegimeMap";
-import { CycleCurve } from "@/components/curve/CycleCurve";
-import { CycleTable } from "@/components/table/CycleTable";
+import { FieldPlate } from "@/components/curve/FieldPlate";
 import { ArchetypeStrip } from "@/components/archetypes/ArchetypeStrip";
 import { Legend } from "@/components/Legend";
 import { YourPlace } from "@/components/YourPlace";
@@ -245,19 +244,20 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
             </Link>
           </div>
 
-          <CycleCurve
-            monthlyMm={selected.monthlyMm}
-            annualCurveMm={selected.annualCurveMm}
-            semiAnnualCurveMm={selected.semiAnnualCurveMm}
-            meanMm={selected.fit.meanMm}
-            family={family}
-          />
-
-          <CycleTable monthlyMm={selected.monthlyMm} caption={`Curah hujan bulanan di ${selected.name}, mm`} />
-
           <ArchetypeStrip archetypes={archetypes} activeFamily={family} />
         </div>
       </div>
+
+      <FieldPlate
+        name={selected.name}
+        province={selected.province}
+        family={family}
+        subtype={selected.subtype}
+        monthlyMm={selected.monthlyMm}
+        annualCurveMm={selected.annualCurveMm}
+        semiAnnualCurveMm={selected.semiAnnualCurveMm}
+        meanMm={selected.fit.meanMm}
+      />
 
       <nav aria-label="Daftar lokasi" className="flex flex-wrap gap-2 border-t border-rule pt-4">
         {records.map((record) => (

@@ -24,6 +24,15 @@ export interface CycleCurveProps {
    * defaults to true for every other caller.
    */
   showMonthLabels?: boolean;
+  /**
+   * "plate" is the field plate's one ceremonial rendering (VISUAL_AMBITION
+   * direction A) — heavier harmonic strokes and letterspaced, uppercase
+   * month labels, so it reads as a mounted instrument reading rather than
+   * the same compact chart used everywhere else. Every other caller keeps
+   * "default"; no geometry changes, so CompareView's shared-axis maths
+   * (lib/curveLayout.ts) is untouched.
+   */
+  size?: "default" | "plate";
 }
 
 /**
@@ -43,7 +52,9 @@ export function CycleCurve({
   meanMm,
   family,
   showMonthLabels = true,
+  size = "default",
 }: CycleCurveProps) {
+  const isPlate = size === "plate";
   const [drawn, setDrawn] = useState(false);
   useEffect(() => {
     const id = requestAnimationFrame(() => setDrawn(true));
@@ -86,7 +97,12 @@ export function CycleCurve({
 
         {yTicks.map((tick) => (
           <g key={tick}>
-            <text x={PAD_LEFT - 6} y={yFor(tick) + 4} textAnchor="end" className="fill-ink font-mono text-tick tabular-nums">
+            <text
+              x={PAD_LEFT - 6}
+              y={yFor(tick) + 4}
+              textAnchor="end"
+              className={`fill-ink font-mono tabular-nums ${isPlate ? "text-xs" : "text-tick"}`}
+            >
               {Math.round(tick)}
             </text>
           </g>
@@ -122,7 +138,7 @@ export function CycleCurve({
           d={annualPath}
           fill="none"
           className="stroke-ink"
-          strokeWidth={1.5}
+          strokeWidth={isPlate ? 2.5 : 1.5}
           pathLength={1}
           style={{
             strokeDasharray: 1,
@@ -134,7 +150,7 @@ export function CycleCurve({
           d={semiAnnualPath}
           fill="none"
           className="stroke-ink/50"
-          strokeWidth={1}
+          strokeWidth={isPlate ? 1.75 : 1}
           strokeDasharray="3 2"
           pathLength={1}
           style={{
@@ -150,14 +166,14 @@ export function CycleCurve({
               x={xFor(t)}
               y={HEIGHT - PAD_BOTTOM + 16}
               textAnchor="middle"
-              className="fill-ink font-mono text-tick"
+              className={`fill-ink font-mono ${isPlate ? "text-xs tracking-widest" : "text-tick"}`}
             >
-              {label}
+              {isPlate ? label.toUpperCase() : label}
             </text>
           ))}
       </svg>
 
-      <figcaption className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink/70">
+      <figcaption className={`flex flex-wrap gap-x-4 gap-y-1 text-ink/70 ${isPlate ? "text-sm" : "text-xs"}`}>
         <span className="flex items-center gap-1.5">
           <span aria-hidden className={`inline-block h-2 w-3 shrink-0 ${FAMILY_FILL_CLASS[family]}`} />
           Batang — curah hujan bulanan aktual
