@@ -46,6 +46,20 @@ export const FAMILY_FILL_CLASS: Record<Family, string> = {
   lokal: "fill-lokal",
 };
 
+/**
+ * SVG `fill` equivalent of FAMILY_TEXT_CLASS, for coloured text set
+ * inside an SVG (e.g. a region label) rather than as regular HTML text
+ * — Tailwind's `text-*` utility sets CSS `color`, which SVG `<text>`
+ * ignores unless it explicitly inherits it, so a `fill-*` class is what
+ * actually colours SVG text. Same darker ekuatorial/lokal variants as
+ * FAMILY_TEXT_CLASS, for the same contrast reason.
+ */
+export const FAMILY_TEXT_FILL_CLASS: Record<Family, string> = {
+  monsunal: "fill-monsunal",
+  ekuatorial: "fill-ekuatorial-text",
+  lokal: "fill-lokal-text",
+};
+
 export const FAMILY_STROKE_CLASS: Record<Family, string> = {
   monsunal: "stroke-monsunal",
   ekuatorial: "stroke-ekuatorial",

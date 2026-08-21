@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { manifest, regimeRecords } from "@/lib/grid/lookup";
 import { SiteNav } from "@/components/SiteNav";
 import { DownloadData } from "@/components/DownloadData";
+import { CoverageProportionBar } from "@/components/CoverageProportionBar";
+import { ClassificationSpaceDiagram } from "@/components/ClassificationSpaceDiagram";
 import { pageMetadata } from "@/lib/metadata";
 import { METODE_LEAD } from "@/lib/pageCopy";
 
@@ -106,6 +108,7 @@ export default function MetodePage() {
 
         <section className="flex flex-col gap-2">
           <h2 className="font-display text-lg font-semibold">Cakupan</h2>
+          <CoverageProportionBar byFamily={manifest.coverage.byFamily} total={manifest.coverage.totalLocations} />
           <ul className="flex flex-col gap-1 font-mono text-xs">
             {byFamily.map(([family, count]) => (
               <li key={family}>
@@ -133,6 +136,10 @@ export default function MetodePage() {
             Mengubah salah satu mengubah peta, jadi setiap nilai adalah keputusan yang didokumentasikan, bukan
             angka ajaib.
           </p>
+          <ClassificationSpaceDiagram
+            monsunalMaxDisplacementMonths={manifest.thresholds.monsunalMaxDisplacementMonths}
+            ekuatorialDominanceRatio={manifest.thresholds.ekuatorialDominanceRatio}
+          />
           <div className="overflow-x-auto">
             <table className="w-full min-w-[480px] border-collapse text-xs">
               <thead>
