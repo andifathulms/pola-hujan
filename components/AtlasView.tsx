@@ -11,7 +11,11 @@ import { ArchetypeStrip } from "@/components/archetypes/ArchetypeStrip";
 import { Legend } from "@/components/Legend";
 import { YourPlace } from "@/components/YourPlace";
 import { NearestOppositeFinding } from "@/components/NearestOppositeFinding";
+import { ThresholdGauge } from "@/components/ThresholdGauge";
 import { ATLAS_LEAD } from "@/lib/pageCopy";
+
+/** Circular distance in months is always in [0, 6] — lib/harmonic/thresholds.ts's own documented range for the quantity, not a threshold itself, so fixing it as the gauge's axis doesn't touch thresholds.ts. */
+const DISPLACEMENT_GAUGE_MAX_MONTHS = 6;
 
 /**
  * The plain-language bridge from a raw ratio/displacement number to
@@ -165,7 +169,49 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
 
             <details className="mt-1 text-sm text-ink/70">
               <summary className="cursor-pointer select-none font-medium text-ink">Lihat angka pastinya</summary>
-              <dl className="mt-1 flex flex-col gap-1 font-mono text-xs">
+
+              {/* A value's position relative to the threshold that decided it
+                  (DESIGN-REWORK.md §2.1) — how close this location sits to a
+                  different classification under a defensible different
+                  threshold. Both criteria shown even when only one was
+                  decisive, so the reader sees the whole picture, not just
+                  the winning one. Purely visual; the <dl> below carries the
+                  same numbers as the always-present, precise text reading. */}
+              <div className="mt-2 flex flex-col gap-3">
+                {selected.classificationDetail.semiToAnnualRatio !== null && (
+                  <ThresholdGauge
+                    label="Rasio semi-tahunan/tahunan"
+                    valueText={selected.classificationDetail.semiToAnnualRatio.toFixed(2)}
+                    thresholdText={`ambang Ekuatorial ${manifest.thresholds.ekuatorialDominanceRatio.toFixed(2)}`}
+                    value={selected.classificationDetail.semiToAnnualRatio}
+                    threshold={manifest.thresholds.ekuatorialDominanceRatio}
+                    domainMin={0}
+                    domainMax={Math.max(
+                      manifest.thresholds.ekuatorialDominanceRatio * 2,
+                      selected.classificationDetail.semiToAnnualRatio * 1.2,
+                    )}
+                    family={family}
+                  />
+                )}
+                {selected.classificationDetail.displacementMonths !== undefined && (
+                  <ThresholdGauge
+                    label="Jarak puncak dari pusat monsun"
+                    valueText={`${selected.classificationDetail.displacementMonths.toFixed(2)} bulan`}
+                    thresholdText={
+                      family === "lokal"
+                        ? `ambang Lokal >${manifest.thresholds.lokalMinDisplacementMonths} bulan`
+                        : `ambang Monsunal ≤${manifest.thresholds.monsunalMaxDisplacementMonths} bulan`
+                    }
+                    value={selected.classificationDetail.displacementMonths}
+                    threshold={family === "lokal" ? manifest.thresholds.lokalMinDisplacementMonths : manifest.thresholds.monsunalMaxDisplacementMonths}
+                    domainMin={0}
+                    domainMax={DISPLACEMENT_GAUGE_MAX_MONTHS}
+                    family={family}
+                  />
+                )}
+              </div>
+
+              <dl className="mt-2 flex flex-col gap-1 font-mono text-xs">
                 <div>
                   <dt className="inline">Rasio semi-tahunan/tahunan: </dt>
                   <dd className="inline tabular-nums">
