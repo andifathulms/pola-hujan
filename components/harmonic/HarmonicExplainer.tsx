@@ -251,7 +251,7 @@ export function HarmonicExplainer({ records }: HarmonicExplainerProps) {
           />
 
           {MONTH_LABELS_ID.map((label, t) => (
-            <text key={label} x={40 + ((480 - 48) / 12) * t + ((480 - 48) / 12) / 2} y={232} textAnchor="middle" className="fill-ink font-mono text-[10px]">
+            <text key={label} x={40 + ((480 - 48) / 12) * t + ((480 - 48) / 12) / 2} y={232} textAnchor="middle" className="fill-ink font-mono text-tick">
               {label}
             </text>
           ))}

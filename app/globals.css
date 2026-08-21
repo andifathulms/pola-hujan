@@ -33,7 +33,8 @@
 
   /* Type scale — one scale, applied everywhere; body copy never below
      --text-sm (16px) per the house minimum. */
-  --text-xs: 14px; /* micro-labels, table figures, axis ticks only — never prose */
+  --text-tick: 10px; /* axis ticks and month labels inside a chart's own SVG only — never prose, the one declared exception below the floor */
+  --text-xs: 14px; /* micro-labels, table figures — never prose */
   --text-sm: 16px; /* body copy floor */
   --text-base: 18px; /* default body */
   --text-lg: 22px;

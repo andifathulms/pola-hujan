@@ -33,6 +33,11 @@ const config: Config = {
         mono: ["var(--font-plex-mono)", "monospace"],
       },
       fontSize: {
+        // Below the 16px floor, so scoped to axis ticks and month labels
+        // inside a chart's own SVG — never prose. Was a repeated
+        // text-[10px] arbitrary value; named so the exception is
+        // declared once instead of written inline at every call site.
+        tick: "10px",
         xs: "14px",
         sm: "16px",
         base: "18px",
