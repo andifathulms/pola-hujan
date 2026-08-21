@@ -1,6 +1,6 @@
 "use client";
 
-import type { RegimeRecord } from "@/lib/grid/schema";
+import type { Manifest, RegimeRecord } from "@/lib/grid/schema";
 import { FAMILY_FILL_CLASS, FAMILY_LABEL, type Family } from "@/lib/family";
 import { INDONESIA_OUTLINE_PATH } from "@/lib/geo/indonesiaOutline";
 
@@ -8,6 +8,8 @@ export interface RegimeMapProps {
   records: RegimeRecord[];
   selectedId: string | undefined;
   onSelect: (id: string) => void;
+  /** Drawn as a hairline between the two dots — DESIGN-REWORK.md §3. Optional so the map still renders without it (e.g. fewer than two families present). */
+  nearestOppositePair?: Manifest["nearestOppositePair"];
 }
 
 // Indonesia's rough bounding box, used to place points on a plain SVG
@@ -45,7 +47,10 @@ function project(lat: number, lon: number) {
  * (DESIGN.md §3). Each point carries a text label so colour is never the
  * only channel (DESIGN.md §10).
  */
-export function RegimeMap({ records, selectedId, onSelect }: RegimeMapProps) {
+export function RegimeMap({ records, selectedId, onSelect, nearestOppositePair }: RegimeMapProps) {
+  const oppositeA = nearestOppositePair && records.find((r) => r.id === nearestOppositePair.aId);
+  const oppositeB = nearestOppositePair && records.find((r) => r.id === nearestOppositePair.bId);
+
   return (
     <svg
       viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
@@ -67,6 +72,33 @@ export function RegimeMap({ records, selectedId, onSelect }: RegimeMapProps) {
           canvas. Decorative: not part of the classification, so it
           carries no label of its own. */}
       <path d={INDONESIA_OUTLINE_PATH} className="fill-ink/10 stroke-rule" strokeWidth={0.5} aria-hidden="true" />
+
+      {/* The sharpest local instance of PRD.md §1's founding claim, drawn
+          rather than only stated in NearestOppositeFinding's paragraph
+          above the map (DESIGN-REWORK.md §3). `ink`, not a family hue —
+          this is a relationship between two regimes, not a regime
+          (CLAUDE.md invariant 10). aria-hidden: the paragraph already
+          carries this as text. */}
+      {oppositeA && oppositeB && nearestOppositePair && (
+        <g aria-hidden="true" className="pointer-events-none">
+          {(() => {
+            const a = project(oppositeA.lat, oppositeA.lon);
+            const b = project(oppositeB.lat, oppositeB.lon);
+            const midX = (a.x + b.x) / 2;
+            const midY = (a.y + b.y) / 2;
+            const distanceLabel = nearestOppositePair.distanceKm < 1 ? "<1 km" : `${Math.round(nearestOppositePair.distanceKm)} km`;
+            return (
+              <>
+                <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} className="stroke-ink" strokeWidth={1} />
+                <rect x={midX - distanceLabel.length * 3 - 2} y={midY - 7} width={distanceLabel.length * 6 + 4} height={10} className="fill-stock" />
+                <text x={midX} y={midY + 1} textAnchor="middle" className="fill-ink font-mono text-tick">
+                  {distanceLabel}
+                </text>
+              </>
+            );
+          })()}
+        </g>
+      )}
 
       {records.map((record) => {
         const { x, y } = project(record.lat, record.lon);
