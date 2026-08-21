@@ -3,7 +3,12 @@ import type { Config } from "tailwindcss";
 // Tokens exactly as DESIGN.md specifies — never a raw hex in a component
 // (CLAUDE.md Conventions). §1 (space/motion/edge) and §3 (colour).
 const config: Config = {
-  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
+  // lib/family.ts is where FAMILY_FILL_CLASS etc. write out their full
+  // literal class-name strings ("fill-monsunal", "bg-monsunal", ...) —
+  // Tailwind's content scanner only sees a class if the file containing
+  // its literal text is in this list, and lib/ was missing, so every
+  // family-hue class was silently never generated.
+  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
