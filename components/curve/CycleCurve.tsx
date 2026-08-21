@@ -2,6 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { FAMILY_FILL_CLASS, MONTH_LABELS_ID, type Family } from "@/lib/family";
+import {
+  CURVE_HEIGHT as HEIGHT,
+  CURVE_PAD_BOTTOM as PAD_BOTTOM,
+  CURVE_PAD_LEFT as PAD_LEFT,
+  CURVE_PAD_TOP as PAD_TOP,
+  CURVE_PLOT_HEIGHT as PLOT_HEIGHT,
+  CURVE_PLOT_WIDTH as PLOT_WIDTH,
+  CURVE_WIDTH as WIDTH,
+} from "@/lib/curveLayout";
 
 export interface CycleCurveProps {
   monthlyMm: number[];
@@ -9,15 +18,13 @@ export interface CycleCurveProps {
   semiAnnualCurveMm: number[];
   meanMm: number;
   family: Family;
+  /**
+   * Comparison mode draws one shared month axis beneath both panels
+   * (DESIGN-REWORK.md §1.1) instead of each curve labelling its own —
+   * defaults to true for every other caller.
+   */
+  showMonthLabels?: boolean;
 }
-
-const WIDTH = 480;
-const HEIGHT = 240;
-const PAD_LEFT = 40;
-const PAD_BOTTOM = 24;
-const PAD_TOP = 12;
-const PLOT_WIDTH = WIDTH - PAD_LEFT - 8;
-const PLOT_HEIGHT = HEIGHT - PAD_TOP - PAD_BOTTOM;
 
 /**
  * Twelve monthly bars plus the two fitted harmonics drawn as separate
@@ -29,7 +36,14 @@ const PLOT_HEIGHT = HEIGHT - PAD_TOP - PAD_BOTTOM;
  * §6.2's stated evidence for the classification, so what each line is
  * has to be readable without already knowing the method.
  */
-export function CycleCurve({ monthlyMm, annualCurveMm, semiAnnualCurveMm, meanMm, family }: CycleCurveProps) {
+export function CycleCurve({
+  monthlyMm,
+  annualCurveMm,
+  semiAnnualCurveMm,
+  meanMm,
+  family,
+  showMonthLabels = true,
+}: CycleCurveProps) {
   const [drawn, setDrawn] = useState(false);
   useEffect(() => {
     const id = requestAnimationFrame(() => setDrawn(true));
@@ -72,7 +86,7 @@ export function CycleCurve({ monthlyMm, annualCurveMm, semiAnnualCurveMm, meanMm
 
         {yTicks.map((tick) => (
           <g key={tick}>
-            <text x={PAD_LEFT - 6} y={yFor(tick) + 4} textAnchor="end" className="fill-ink font-mono text-[10px] tabular-nums">
+            <text x={PAD_LEFT - 6} y={yFor(tick) + 4} textAnchor="end" className="fill-ink font-mono text-tick tabular-nums">
               {Math.round(tick)}
             </text>
           </g>
@@ -129,17 +143,18 @@ export function CycleCurve({ monthlyMm, annualCurveMm, semiAnnualCurveMm, meanMm
           }}
         />
 
-        {MONTH_LABELS_ID.map((label, t) => (
-          <text
-            key={label}
-            x={xFor(t)}
-            y={HEIGHT - PAD_BOTTOM + 16}
-            textAnchor="middle"
-            className="fill-ink font-mono text-[10px]"
-          >
-            {label}
-          </text>
-        ))}
+        {showMonthLabels &&
+          MONTH_LABELS_ID.map((label, t) => (
+            <text
+              key={label}
+              x={xFor(t)}
+              y={HEIGHT - PAD_BOTTOM + 16}
+              textAnchor="middle"
+              className="fill-ink font-mono text-tick"
+            >
+              {label}
+            </text>
+          ))}
       </svg>
 
       <figcaption className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink/70">

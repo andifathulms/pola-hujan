@@ -2,9 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { RegimeRecord } from "@/lib/grid/schema";
-import { FAMILY_LABEL, FAMILY_TEXT_CLASS, type Family } from "@/lib/family";
+import { FAMILY_LABEL, FAMILY_TEXT_CLASS, MONTH_LABELS_ID, type Family } from "@/lib/family";
+import { circularMonthDistance } from "@/lib/harmonic";
 import { CycleCurve } from "@/components/curve/CycleCurve";
 import { CycleTable } from "@/components/table/CycleTable";
+import { MonthGridlines } from "@/components/compare/MonthGridlines";
+import { PeakDisplacementMarkers } from "@/components/compare/PeakDisplacementMarkers";
+import { SharedMonthAxis } from "@/components/compare/SharedMonthAxis";
 import { BANDING_LEAD } from "@/lib/pageCopy";
 
 export interface CompareViewProps {
@@ -42,15 +46,24 @@ function LocationPicker({
   );
 }
 
-function CompareSide({ record }: { record: RegimeRecord }) {
+/**
+ * One comparison panel's chart only — name, family, and the bars/
+ * harmonics. Its own month labels are suppressed: the two panels share
+ * one axis, drawn once beneath both by SharedMonthAxis. Its y-axis in
+ * mm stays its own — DESIGN-REWORK.md §1.1: the comparison is of shape
+ * and timing, not magnitude, so the two panels are never forced onto
+ * one y-scale.
+ */
+function CyclePanel({ record }: { record: RegimeRecord }) {
   const family = record.family as Family;
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1">
       <div>
         <h3 className="font-display text-lg font-semibold">{record.name}</h3>
         <p className={`text-sm font-medium ${FAMILY_TEXT_CLASS[family]}`}>
           {FAMILY_LABEL[family]} · {record.subtype}
         </p>
+        <p className="font-mono text-xs text-ink/70">Puncak {MONTH_LABELS_ID[Math.round(record.peakMonth) % 12]}</p>
       </div>
       <CycleCurve
         monthlyMm={record.monthlyMm}
@@ -58,15 +71,17 @@ function CompareSide({ record }: { record: RegimeRecord }) {
         semiAnnualCurveMm={record.semiAnnualCurveMm}
         meanMm={record.fit.meanMm}
         family={family}
+        showMonthLabels={false}
       />
-      <CycleTable monthlyMm={record.monthlyMm} caption={`Curah hujan bulanan di ${record.name}, mm`} />
     </div>
   );
 }
 
 /**
- * Two places, side by side, curves aligned on the same fixed Jan-Dec
- * axis (PRD.md §6.4, DESIGN.md §6). Both curves draw simultaneously —
+ * Two places, stacked, sharing one fixed Jan-Dec axis (PRD.md §6.4,
+ * DESIGN.md §6, DESIGN-REWORK.md §1.1) — one axis drawn once, gridlines
+ * running through both panels, rather than two independent axes the
+ * reader has to align mentally. Both curves still draw simultaneously —
  * that simultaneity is the demonstration, so this deliberately does not
  * stagger the two CycleCurve mounts against each other.
  */
@@ -146,9 +161,32 @@ export function CompareView({ records, defaultLeftId, defaultRightId }: CompareV
         </button>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        <CompareSide record={left} />
-        <CompareSide record={right} />
+      {left.family !== right.family && (
+        <p className="text-sm text-ink/70">
+          Puncak {left.name} dan puncak {right.name} terpisah{" "}
+          <span className="font-mono tabular-nums">
+            {circularMonthDistance(left.peakMonth, right.peakMonth).toFixed(1)}
+          </span>{" "}
+          bulan.
+        </p>
+      )}
+
+      <div className="flex flex-col gap-8">
+        <div className="relative flex flex-col gap-6">
+          <MonthGridlines />
+          <PeakDisplacementMarkers
+            leftPeakMonth={left.peakMonth}
+            rightPeakMonth={right.peakMonth}
+            sameFamily={left.family === right.family}
+          />
+          <CyclePanel record={left} />
+          <CyclePanel record={right} />
+        </div>
+        <SharedMonthAxis />
+        <div className="grid gap-6 sm:grid-cols-2">
+          <CycleTable monthlyMm={left.monthlyMm} caption={`Curah hujan bulanan di ${left.name}, mm`} />
+          <CycleTable monthlyMm={right.monthlyMm} caption={`Curah hujan bulanan di ${right.name}, mm`} />
+        </div>
       </div>
     </div>
   );
