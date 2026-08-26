@@ -36,6 +36,29 @@ const HEIGHT = 320;
 // compliance at every viewport width.
 const HIT_RADIUS = 13;
 
+// Parallels and meridians drawn as a graticule. The equator is in the
+// list twice over: once as a parallel, once as the line the whole
+// classification turns on — a location's family is decided by where its
+// rain peak sits relative to the Asian monsoon, and how far a place sits
+// from the equator is the first-order reason that differs. Drawing it
+// makes the map answer a question the dot colours only assert.
+const PARALLELS = [5, 0, -5, -10];
+const MERIDIANS = [100, 110, 120, 130, 140];
+
+/** Label for a parallel in Indonesian map convention: LU north, LS south. */
+function parallelLabel(lat: number): string {
+  if (lat === 0) return "0\u00b0";
+  return `${Math.abs(lat)}\u00b0${lat > 0 ? "LU" : "LS"}`;
+}
+
+// One degree of longitude at the equator, WGS84. Used only to size the
+// scale bar — the map is a plain equirectangular plot, so this is
+// honest at the equator and increasingly generous toward the edges of the
+// latitude range, which is why the bar is labelled "di khatulistiwa".
+const KM_PER_LON_DEGREE_AT_EQUATOR = 111.32;
+const SCALE_BAR_KM = 500;
+const SCALE_BAR_WIDTH = (SCALE_BAR_KM / KM_PER_LON_DEGREE_AT_EQUATOR) * (WIDTH / (LON_MAX - LON_MIN));
+
 function project(lat: number, lon: number) {
   const x = ((lon - LON_MIN) / (LON_MAX - LON_MIN)) * WIDTH;
   const y = ((LAT_MAX - lat) / (LAT_MAX - LAT_MIN)) * HEIGHT;
@@ -65,13 +88,60 @@ export function RegimeMap({ records, selectedId, onSelect, nearestOppositePair }
         </pattern>
       </defs>
 
-      <rect x={0} y={0} width={WIDTH} height={HEIGHT} className="fill-stock stroke-rule" strokeWidth={0.5} />
+      {/* Sea, then land, then the graticule over both — three value-steps
+          of the same warm neutral, so the coast reads as an edge rather
+          than as a stroke around a grey shape on the page ground. */}
+      <rect x={0} y={0} width={WIDTH} height={HEIGHT} className="fill-sea stroke-rule" strokeWidth={0.5} />
+
+      <g aria-hidden="true" className="pointer-events-none">
+        {MERIDIANS.map((lon) => (
+          <line
+            key={lon}
+            x1={project(0, lon).x}
+            y1={0}
+            x2={project(0, lon).x}
+            y2={HEIGHT}
+            className="stroke-stitch/60"
+            strokeWidth={0.5}
+          />
+        ))}
+        {PARALLELS.filter((lat) => lat !== 0).map((lat) => (
+          <line
+            key={lat}
+            x1={0}
+            y1={project(lat, 0).y}
+            x2={WIDTH}
+            y2={project(lat, 0).y}
+            className="stroke-stitch/60"
+            strokeWidth={0.5}
+          />
+        ))}
+      </g>
 
       {/* Orientation only — quiet enough that family colour (the actual
           data channel) still reads as the strongest thing on the
           canvas. Decorative: not part of the classification, so it
           carries no label of its own. */}
-      <path d={INDONESIA_OUTLINE_PATH} className="fill-ink/10 stroke-rule" strokeWidth={0.5} aria-hidden="true" />
+      <path d={INDONESIA_OUTLINE_PATH} className="fill-land stroke-stitch" strokeWidth={0.6} aria-hidden="true" />
+
+      {/* The equator, over the coastline rather than under it — it is the
+          axis the classification turns on, not background furniture. */}
+      <g aria-hidden="true" className="pointer-events-none">
+        <line
+          x1={0}
+          y1={project(0, 0).y}
+          x2={WIDTH}
+          y2={project(0, 0).y}
+          className="stroke-ink/55"
+          strokeWidth={0.75}
+          strokeDasharray="6 4"
+        />
+        {PARALLELS.map((lat) => (
+          <text key={lat} x={5} y={project(lat, 0).y - 4} className="fill-ink/70 font-mono text-tick">
+            {parallelLabel(lat)}
+          </text>
+        ))}
+      </g>
 
       {/* The sharpest local instance of PRD.md §1's founding claim, drawn
           rather than only stated in NearestOppositeFinding's paragraph
@@ -90,7 +160,7 @@ export function RegimeMap({ records, selectedId, onSelect, nearestOppositePair }
             return (
               <>
                 <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} className="stroke-ink" strokeWidth={1} />
-                <rect x={midX - distanceLabel.length * 3 - 2} y={midY - 7} width={distanceLabel.length * 6 + 4} height={10} className="fill-stock" />
+                <rect x={midX - distanceLabel.length * 3 - 2} y={midY - 7} width={distanceLabel.length * 6 + 4} height={10} className="fill-sea" />
                 <text x={midX} y={midY + 1} textAnchor="middle" className="fill-ink font-mono text-tick">
                   {distanceLabel}
                 </text>
@@ -142,6 +212,25 @@ export function RegimeMap({ records, selectedId, onSelect, nearestOppositePair }
           </g>
         );
       })}
+
+      {/* Distances on this map are readable, not decorative: the nearest
+          opposite pair is drawn with a km label, and this is what makes
+          that number checkable against the rest of the archipelago. */}
+      <g aria-hidden="true" className="pointer-events-none">
+        <line
+          x1={WIDTH - SCALE_BAR_WIDTH - 12}
+          y1={HEIGHT - 14}
+          x2={WIDTH - 12}
+          y2={HEIGHT - 14}
+          className="stroke-ink"
+          strokeWidth={1}
+        />
+        <line x1={WIDTH - SCALE_BAR_WIDTH - 12} y1={HEIGHT - 17} x2={WIDTH - SCALE_BAR_WIDTH - 12} y2={HEIGHT - 11} className="stroke-ink" strokeWidth={1} />
+        <line x1={WIDTH - 12} y1={HEIGHT - 17} x2={WIDTH - 12} y2={HEIGHT - 11} className="stroke-ink" strokeWidth={1} />
+        <text x={WIDTH - 12} y={HEIGHT - 20} textAnchor="end" className="fill-ink/70 font-mono text-tick tabular-nums">
+          {SCALE_BAR_KM} km di khatulistiwa
+        </text>
+      </g>
     </svg>
   );
 }
