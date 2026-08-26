@@ -49,11 +49,11 @@ export function YourPlace({ records, onFound }: YourPlaceProps) {
   }
 
   return (
-    <div className="flex flex-col gap-2 border border-rule bg-stock p-3 text-sm">
+    <div className="flex flex-col gap-2 text-sm">
       <button
         type="button"
         onClick={locate}
-        className="self-start rounded border border-ink px-2 py-1 font-medium transition-colors duration-fast hover:bg-ink hover:text-stock"
+        className="self-start rounded border border-ink px-2 py-1 text-sm font-medium transition-colors duration-fast hover:bg-ink hover:text-stock"
       >
         Gunakan lokasi saya
       </button>

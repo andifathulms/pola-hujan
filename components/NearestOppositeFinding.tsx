@@ -17,7 +17,10 @@ export function NearestOppositeFinding({ pair, onSelect }: NearestOppositeFindin
   if (!pair) return null;
 
   return (
-    <p className="border border-rule bg-stock p-4 text-base">
+    // A left rule instead of a box: the finding is the sharpest single
+    // sentence on the page and still needs to stand out, but it was one
+    // of four stacked cards a reader met before reaching the atlas.
+    <p className="max-w-prose border-l-2 border-ink/40 pl-3 text-base">
       Titik terdekat: <strong>{pair.distanceKm < 1 ? "<1" : Math.round(pair.distanceKm)} km</strong> memisahkan{" "}
       <button type="button" onClick={() => onSelect(pair.aId)} className="font-medium underline decoration-ink/30 underline-offset-2 hover:decoration-ink">
         {pair.aName}

@@ -121,20 +121,25 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
 
   return (
     <div id="main-content" className="flex flex-col gap-6 p-4 lg:p-6">
+      {/* One eyebrow, one name, one sentence, one finding. The atlas used
+          to sit under five stacked blocks — a headline, a lead, a
+          caption, a bordered finding and a bordered legend — so a reader
+          who came to see where it rains met four paragraphs first. The
+          legend contract is not weakened by this; it moved to where it
+          belongs, directly under the map it qualifies. */}
       <header className="flex flex-col gap-2">
+        <p className="font-mono text-xs uppercase tracking-[0.2em] text-ink/70">
+          Atlas rezim curah hujan tahunan · Indonesia
+        </p>
         <h1 className="font-display text-2xl font-semibold lg:text-3xl">Pola Hujan</h1>
         <p className="max-w-prose text-lg">{ATLAS_LEAD}</p>
-        <p className="text-sm text-ink/70">Atlas rezim curah hujan tahunan Indonesia — bukan animasi angin, bukan prakiraan.</p>
+        <NearestOppositeFinding pair={manifest.nearestOppositePair} onSelect={setSelectedId} />
       </header>
 
-      <NearestOppositeFinding pair={manifest.nearestOppositePair} onSelect={setSelectedId} />
-
-      <Legend manifest={manifest} />
-      <YourPlace records={records} onFound={setSelectedId} />
-
-      <p className="text-sm text-ink/70">Pilih kota di peta, atau dari dinding rezim di bagian bawah halaman.</p>
-
-      <AtlasFilters records={records} filters={filters} onChange={setFilters} visibleCount={visibleRecords.length} />
+      <div className="flex flex-col gap-3">
+        <AtlasFilters records={records} filters={filters} onChange={setFilters} visibleCount={visibleRecords.length} />
+        <YourPlace records={records} onFound={setSelectedId} />
+      </div>
 
       {/* Selecting a city (map dot, bottom button list, the nearest-
           opposite-pair callout, or "your place") rewrites the panel
@@ -147,15 +152,22 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
       </p>
 
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-3">
-        {/* Mobile: map fixed at 45vh (DESIGN.md §6); desktop: natural
-            height within the left two-thirds column. */}
-        <div className="h-[45vh] lg:h-auto lg:col-span-2">
-          <RegimeMap
-            records={visibleRecords}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-            nearestOppositePair={manifest.nearestOppositePair}
-          />
+        <div className="flex flex-col gap-3 lg:col-span-2">
+          {/* Mobile: map fixed at 45vh (DESIGN.md §6); desktop: natural
+              height within the left two-thirds column. */}
+          <div className="h-[45vh] lg:h-auto">
+            <RegimeMap
+              records={visibleRecords}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+              nearestOppositePair={manifest.nearestOppositePair}
+            />
+          </div>
+
+          {/* "On the map itself" (CLAUDE.md invariant 6) read literally:
+              the derived-not-official statement is the map's own caption,
+              not a card somewhere above it. */}
+          <Legend manifest={manifest} />
         </div>
 
         <div className="flex flex-col gap-4 lg:col-span-1">
@@ -170,10 +182,10 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
               {MONTH_LABELS_ID[driestMonthIndex]}
             </p>
             {selected.bmkgFamily && (
-              <p className="font-mono text-sm text-ink/70">
+              <p className="text-sm text-ink/70">
                 BMKG {selected.bmkgFamilySource === "bmkg-zom9120" ? "(terverifikasi ZOM9120)" : "(perkiraan)"}:{" "}
-                {FAMILY_LABEL[selected.bmkgFamily as Family]}
-                {selected.agrees === false ? " (berbeda dari klasifikasi turunan)" : " (cocok)"}
+                <span className="font-medium text-ink">{FAMILY_LABEL[selected.bmkgFamily as Family]}</span>
+                {selected.agrees === false ? " — berbeda dari klasifikasi turunan" : " — cocok"}
               </p>
             )}
 
