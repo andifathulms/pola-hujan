@@ -10,38 +10,44 @@
  * hatch patterns — reads from here instead of a raw hex.
  *
  * Contrast, checked against WCAG 2.1 SC 1.4.3 (text ≥4.5:1):
- *   --color-ink        on --color-stock = 14.1:1
- *   --color-ink-muted   on --color-stock =  5.6:1  (equivalent to ink/70%)
- * Both clear the 4.5:1 floor for normal-weight body text.
+ *   --color-ink        on --color-stock = 13.94:1
+ *   --color-ink-muted  on --color-stock =  6.01:1
+ * Both clear the 4.5:1 floor for normal-weight body text, and
+ * tests/design/palette.test.ts asserts them rather than trusting this
+ * comment to stay true.
  */
 :root {
   color-scheme: light;
 
-  --color-stock: #f2f0e7;
-  --color-ink: #23211c;
-  --color-ink-muted: #615f59;
-  --color-rule: #d6d2c4;
-  --color-monsunal: #3a6b8a;
-  --color-ekuatorial: #4a7c59;
-  --color-lokal: #b5652e;
-  --color-you: #8b3a62;
-  /* Text-only variants: --color-ekuatorial and --color-lokal are 4.26:1
-     and 3.78:1 against --color-stock — fine for a map-dot fill (3:1) but
-     below the 4.5:1 floor for text. These are 5.0:1 and 4.99:1. */
-  --color-ekuatorial-text: #437050;
-  --color-lokal-text: #99552a;
-  /* "Almanac, Intensified" (VISUAL_AMBITION direction A) — the field
-     plate's ground (one value-step darker than stock) and its one accent
-     line standing in for elevation, since the app uses no box-shadow
-     anywhere. Value-steps of the same warm-neutral family, not a new hue. */
-  --color-plate: #e8e2d0;
-  --color-stitch: #b7ae95;
-  /* The map's ground and its landmass — two more value-steps of the
-     same warm-neutral family, so the regime map reads as a chart with a
-     sea rather than a diagram on the page ground. --color-ink on
-     --color-sea = 13.4:1. */
-  --color-sea: #eae7da;
-  --color-land: #d9d5c6;
+  /* "Batik Pesisir" — indigo (nila), olive and soga gold on unbleached
+     mori cloth. Mirrors tailwind.config.ts exactly (Tailwind can't read
+     CSS custom properties at build time, so the two are kept in sync by
+     hand and tests/design/token-sync.test.ts guards the drift).
+     tests/design/palette.test.ts asserts the contrast and value-spread
+     floors quoted below. */
+
+  /* The warm-neutral ramp — cloth, not bleached paper. Relative
+     luminance in brackets. */
+  --color-stock: #f1eadd; /* [0.828] */
+  --color-sea: #ece3d2; /* [0.774] the map's water */
+  --color-plate: #e7deca; /* [0.735] the field plate's mount */
+  --color-land: #e1d7c2; /* [0.685] the map's landmass */
+  --color-rule: #dbd1bd; /* [0.643] */
+  --color-stitch: #bfb092; /* [0.442] the plate's seam, the coastline */
+  --color-ink: #231d17; /* 13.94:1 on stock, 12.46:1 on plate */
+  --color-ink-muted: #605648; /* 6.01:1 on stock — declared, not ink/70% */
+
+  /* Family = hue, spaced across the widest luminance range that still
+     clears 3:1 against --color-land, the darkest surface a map dot sits
+     on. Spread 0.120, against the previous palette's 0.061. */
+  --color-monsunal: #2b477b; /* nila indigo [0.065] */
+  --color-ekuatorial: #527030; /* olive green [0.136] */
+  --color-lokal: #977121; /* soga gold [0.185] */
+  /* Text-only variants: the canonical hues clear the 3:1 a dot fill
+     needs, not the 4.5:1 text needs on both stock and plate. */
+  --color-ekuatorial-text: #4f6b2e;
+  --color-lokal-text: #7d5d1b;
+  --color-you: #763254; /* batik plum, outside all three families */
 
   /* Type scale — one scale, applied everywhere; body copy never below
      --text-sm (16px) per the house minimum. */

@@ -12,41 +12,44 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        stock: "#F2F0E7",
-        ink: "#23211C",
-        rule: "#D6D2C4",
-        monsunal: "#3A6B8A",
-        ekuatorial: "#4A7C59",
-        lokal: "#B5652E",
-        you: "#8B3A62",
-        // Darker variants of ekuatorial/lokal for TEXT use only — the
-        // canonical hues above are 4.26:1 and 3.78:1 against `stock`,
-        // below the 4.5:1 floor for normal-weight text (they're fine as
-        // map-dot/swatch fills, which only need 3:1). These are 5.0:1
-        // and 4.99:1. `monsunal` needs no variant (5.0:1 already).
-        "ekuatorial-text": "#437050",
-        "lokal-text": "#99552A",
-        // "Almanac, Intensified" (VISUAL_AMBITION direction A): the one
-        // signature element, the field plate, needs a ground one value-
-        // step darker than stock (reads as a mounted card) and a single
-        // accent line standing in for elevation without a box-shadow —
-        // the app has none anywhere and this keeps it that way. Both are
-        // value-steps of the same warm-neutral family as stock/rule, not
-        // a new hue.
-        plate: "#E8E2D0",
-        stitch: "#B7AE95",
-        // The map's own two value-steps. The regime map was drawn as
-        // grey landmass on `stock` — the same ground as the page — so
-        // it read as a diagram floating on the page rather than a chart
-        // with a sea and a coast. `sea` sits one step under `stock` and
-        // `land` one step under that, which is what gives the coastline
-        // an edge without a stroke doing all the work. Both are
-        // value-steps of the same warm-neutral family as stock/plate/
-        // rule — no new hue (DESIGN.md §3, "not in the palette").
-        // `ink` on `sea` is 13.4:1, so the map's own mono labels clear
-        // the 4.5:1 text floor comfortably.
-        sea: "#EAE7DA",
-        land: "#D9D5C6",
+        // "Batik Pesisir" — indigo (nila), olive and soga gold on
+        // unbleached mori cloth, the north-coast dye triad. It replaces a
+        // palette whose three family hues sat within 0.06 of each other
+        // in relative luminance: hue is the primary channel, but strip
+        // the colour (greyscale, the print stylesheet, or one form of
+        // colour-vision deficiency) and the encoding collapsed into one
+        // grey. Every value below is solved, not picked — see
+        // tests/design/palette.test.ts, which asserts the floors.
+        //
+        // The warm-neutral ramp, cloth rather than bleached paper.
+        // Relative luminance in brackets.
+        stock: "#F1EADD", // [0.828] page ground
+        sea: "#ECE3D2", // [0.774] the map's water
+        plate: "#E7DECA", // [0.735] the field plate's mount
+        land: "#E1D7C2", // [0.685] the map's landmass
+        rule: "#DBD1BD", // [0.643] hairlines, month gridlines
+        stitch: "#BFB092", // [0.442] the plate's seam, the coastline
+        ink: "#231D17", // 13.94:1 on stock, 12.46:1 on plate
+        // Equivalent to the old ink/70%, but declared rather than
+        // derived so its contrast is checkable: 6.01:1 on stock.
+        "ink-muted": "#605648",
+
+        // Family = hue (DESIGN.md §3). Spaced across the widest
+        // luminance range that still clears 3:1 against `land`, the
+        // darkest surface a map dot ever sits on — 0.065 / 0.136 / 0.185,
+        // a spread of 0.120 against the old palette's 0.061.
+        monsunal: "#2B477B", // nila indigo   [0.065] 7.67:1 stock, 6.42:1 land
+        ekuatorial: "#527030", // olive green   [0.136] 4.72:1 stock, 3.95:1 land
+        lokal: "#977121", // soga gold     [0.185] 3.73:1 stock, 3.13:1 land
+        // Darker variants for TEXT only. The canonical hues above clear
+        // the 3:1 a dot fill needs but not the 4.5:1 normal-weight text
+        // needs on both `stock` and `plate`. These clear both (5.05:1 /
+        // 4.52:1 and 5.08:1 / 4.55:1). `monsunal` needs no variant.
+        "ekuatorial-text": "#4F6B2E",
+        "lokal-text": "#7D5D1B",
+        // Your location — a batik plum, outside all three families so it
+        // is findable on any regime. 7.46:1 on stock.
+        you: "#763254",
       },
       fontFamily: {
         display: ["var(--font-alegreya)", "serif"],
