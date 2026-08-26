@@ -115,6 +115,7 @@ tests/
 - **Never adjust a threshold to improve the agreement rate.** If a threshold changes, it changes because of a stated methodological reason, and the agreement rate moves as a consequence.
 - **Build the disagreement layer early**, at M4 and not later. A map without it claims more confidence than the method has.
 - **Don't touch `next.config.js`, the Actions workflow, `thresholds.ts`, or `data:validate` without saying so explicitly.**
+- **Don't change a palette value without running `tests/design/palette.test.ts`.** It holds the contrast floors, the greyscale value spread and the dichromacy separation the palette was chosen for; a hue that looks fine on screen can still collapse in print or for a reader who can't separate it.
 - **Don't add a charting, mapping or statistics dependency.**
 - **Never weaken a test to make something pass.**
 
@@ -128,7 +129,9 @@ tests/
 - Comments cite the dataset version or the source of any threshold.
 - Indonesian first in UI copy; family names in BMKG's form.
 - Tabular figures on every rainfall value.
-- Tailwind tokens exactly as in `DESIGN.md` — `stock`, `ink`, `rule`, `monsunal`, `ekuatorial`, `lokal`, `you`. Never raw hex in components.
+- Tailwind tokens exactly as in `DESIGN.md` — neutrals `stock`, `sea`, `plate`, `land`, `rule`, `stitch`, `ink`, `ink-muted`; families `monsunal`, `ekuatorial`, `lokal` with text-only variants `ekuatorial-text` and `lokal-text`; plus `you`. Never raw hex in components.
+- **A family hue is a fill; its `-text` variant is text.** Never the other way round — the split exists because the canonical hues clear the 3:1 a dot needs and not the 4.5:1 text needs.
+- Faces are addressed by role — `font-display` (Fraunces), `font-sans` (Karla), `font-mono` (IBM Plex Mono). Fraunces never below `--text-base`.
 
 ## Testing rules
 
@@ -210,6 +213,27 @@ restructured so the atlas is above the fold with the legend set beneath
 the map as its caption. `DESIGN.md` §3, §5.1, §5.2, §6, §9 and §11 were
 updated to match — the wall and the filter bar are now specified there,
 not just implemented.
+
+**The palette and the type stack were replaced.** Both had a measurable
+problem, not a taste problem. The three family hues sat within 0.061 of
+each other in relative luminance, so in greyscale — the print stylesheet
+included — they collapsed into one grey, and under tritanopia the
+closest pair was ΔE 12.4, inside the range where two colours stop being
+tellable apart. Alegreya and Alegreya Sans were a superfamily, one
+skeleton drawn twice, so headings and body shared a voice and only size
+marked the difference.
+
+The palette is now **Batik Pesisir** — nila indigo `#2B477B`, olive
+`#527030`, soga gold `#977121` on unbleached mori `#F1EADD`. Every value
+is solved rather than picked: the families span the widest luminance
+range that still clears 3:1 against `land`, the darkest surface a map
+dot sits on. Spread 0.061 → 0.120; tritanopia ΔE 12.4 → 21.4;
+deuteranopia 28.4 → 33.8; protanopia 30.0 → 27.8 (the one number that
+moved the wrong way, reported rather than hidden — it stays far clear of
+the ~10 merge point). `tests/design/palette.test.ts` asserts all of it
+and fails on the old palette. The type stack is Fraunces / Karla / IBM
+Plex Mono, with font variables renamed to their roles. `DESIGN.md` §2,
+§3, §8 and §11 carry all of this.
 
 Still open: `app/[locale]/` locale routing (English is deferred —
 Indonesian is served flat at the app root), the ZOM-polygon licence

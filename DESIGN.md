@@ -30,7 +30,9 @@ edge     hairline 0.5px · radius 2px only
 
 The two sibling atlases (lightning, currents) are dark field animations. **This one is deliberately light and categorical**, because the data is a different shape and because a portfolio of three dark canvases reads as one idea repeated.
 
-The material world is the **agricultural almanac** — printed on warm stock, twelve-month grids, hand-tinted regional maps, ruled monthly columns. It is the register in which "when does it rain here" has always been asked, and it suits a product about annual rhythm.
+The material world is **batik pesisir** — the north-coast cloth, dyed in indigo, olive and soga gold on unbleached mori. The almanac reference this replaced was a real one, and the twelve-month grid it gave the product stays; what it could not survive was being a *Western* almanac wrapped around an atlas of Indonesian rainfall. The register is still the same: printed, ruled, hand-tinted, annual. The material is now the one the subject belongs to.
+
+Practically this means warm cloth rather than bleached paper, three dye colours rather than three pigments, and no red — which the dye triad happens to agree with (§3).
 
 ## 3. Colour — three families, three channels
 
@@ -43,33 +45,47 @@ Three channels, three meanings, no overload.
 ### Ground
 
 ```
---stock    #F2F0E7    warm almanac paper
---plate    #E8E2D0    the field plate's mount, one value-step down
---sea      #EAE7DA    the map's ground
---land     #D9D5C6    landmass, one step under the sea
---ink      #23211C    warm near-black
---rule     #D6D2C4    hairlines, month gridlines
---stitch   #B7AE95    the plate's seam, the coastline hairline
+--stock       #F1EADD  [0.828]  unbleached mori — the page ground
+--sea         #ECE3D2  [0.774]  the map's water
+--plate       #E7DECA  [0.735]  the field plate's mount
+--land        #E1D7C2  [0.685]  the map's landmass
+--rule        #DBD1BD  [0.643]  hairlines, month gridlines
+--stitch      #BFB092  [0.442]  the plate's seam, the coastline hairline
+--ink         #231D17           13.94:1 on stock, 12.46:1 on plate
+--ink-muted   #605648           6.01:1 on stock — declared, not ink/70%
 ```
 
-The four neutrals below `stock` are **value-steps of one warm family, not new hues**. They are what gives the page a floor, a mount and a map ground without a box-shadow or a border doing the work.
+Bracketed figures are relative luminance. The neutrals are **value-steps of one warm family, not new hues** — they give the page a floor, a mount and a map ground without a box-shadow or a border doing the work, and the ramp descends monotonically.
 
 ### The three families
 
 ```
---monsunal    #3A6B8A    blue
---ekuatorial  #4A7C59    green
---lokal       #B5652E    burnt orange
+--monsunal    #2B477B  [0.065]  nila indigo
+--ekuatorial  #527030  [0.136]  olive green
+--lokal       #977121  [0.185]  soga gold
 ```
 
-Distinguishable at small size and under common colour-vision deficiencies. **None of them reads as good or bad** — these are climate regimes, not scores, and a red-to-green ramp would imply a ranking that does not exist.
+**None of them reads as good or bad** — these are climate regimes, not scores, and a red-to-green ramp would imply a ranking that does not exist.
+
+#### Hue is not the only channel the reader receives
+
+Family is encoded as hue, but a reader may be receiving that hue through greyscale, through the print stylesheet, or through a colour-vision deficiency. So the three hues carry **two constraints beyond being three different colours**, and both are asserted in `tests/design/palette.test.ts` rather than trusted to this document:
+
+1. **They stay apart in value.** The three luminances span 0.120 with no adjacent pair closer than 0.04. The palette this replaced spanned 0.061, and in greyscale the three families collapsed into one grey.
+2. **They stay apart under dichromacy.** The closest pair is ΔE 33.8 under deuteranopia, 27.8 under protanopia, 21.4 under tritanopia. Below about 10 two colours stop being tellable apart. The previous palette sat at 12.4 under tritanopia.
+
+The olive is what buys most of this: a green pulled toward yellow separates from indigo in a way a blue-green does not.
+
+**The value spread is bounded by the map, not by taste.** The lightest family hue has to keep 3:1 against `--land`, the darkest surface a map dot is ever drawn on, which is what fixes the top of the range.
+
+Two of the three also carry a **text-only variant** — `--ekuatorial-text` `#4F6B2E` and `--lokal-text` `#7D5D1B`. The canonical hues clear the 3:1 a dot fill needs but not the 4.5:1 normal-weight text needs on both `stock` and `plate`. `--monsunal` needs no variant. A text variant is never used as a fill and a fill hue is never used as text.
 
 **Sub-types are tints of the family hue**, never new colours. Monsunal-1 and Monsunal-2 are two values of the same blue. This keeps the three-family structure readable at a glance while the sub-type stays available on inspection.
 
 ### Overlays
 
 ```
---you         #8B3A62    your location — plum, outside all three families
+--you         #763254    your location — batik plum, outside all three families
 --disagree    hatch      diagonal, over the family colour
 ```
 
@@ -155,12 +171,18 @@ Everything else is state change — map selection, family filter, mode switch.
 ## 8. Type
 
 ```
-Alegreya          display, headings — humanist serif, almanac warmth
-Alegreya Sans     body, controls, labels
+Fraunces          display, headings — high-contrast serif with a voice
+Karla             body, controls, labels — squared grotesque, tall x-height
 IBM Plex Mono     millimetres, month codes, thresholds, citations
 ```
 
-Self-hosted via `next/font`.
+Self-hosted via `next/font`, addressed through role-named variables (`--font-display`, `--font-body`, `--font-mono`) rather than face-named ones, so the next change renames nothing downstream.
+
+**The display and body faces must not share a skeleton.** Alegreya and Alegreya Sans did — one superfamily, drawn twice — and the result was that a heading and the paragraph under it had the same proportions, the same rhythm and the same voice, so nothing read as a heading except size. Fraunces and Karla share nothing, which is the requirement, not a preference.
+
+**Fraunces is scoped to display sizes.** Its stroke contrast is what gives a heading a voice; at label size it becomes decoration. Nothing below `--text-base` is ever set in it.
+
+**IBM Plex Mono does not change with the rest.** It is the house data face carried across the sibling projects — the citation line, the figures, the month codes — and a change there would cost identity without buying legibility.
 
 ```
 14  16  18  22  28  36  46  (58)    1.25 ratio
@@ -207,3 +229,6 @@ The dataset and period are a **short monospace stamp**. Sentences about the data
 - No component library.
 - No border where a value-step will do.
 - No monospace paragraph — monospace is for figures, codes and citations.
+- No family hue that collapses into another in greyscale or under dichromacy — the floors in §3 are tested, not aspirational.
+- No display serif below `--text-base`.
+- No superfamily pairing for display and body.
