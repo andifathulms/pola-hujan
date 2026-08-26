@@ -35,6 +35,18 @@ const config: Config = {
         // a new hue.
         plate: "#E8E2D0",
         stitch: "#B7AE95",
+        // The map's own two value-steps. The regime map was drawn as
+        // grey landmass on `stock` — the same ground as the page — so
+        // it read as a diagram floating on the page rather than a chart
+        // with a sea and a coast. `sea` sits one step under `stock` and
+        // `land` one step under that, which is what gives the coastline
+        // an edge without a stroke doing all the work. Both are
+        // value-steps of the same warm-neutral family as stock/plate/
+        // rule — no new hue (DESIGN.md §3, "not in the palette").
+        // `ink` on `sea` is 13.4:1, so the map's own mono labels clear
+        // the 4.5:1 text floor comfortably.
+        sea: "#EAE7DA",
+        land: "#D9D5C6",
       },
       fontFamily: {
         display: ["var(--font-alegreya)", "serif"],

@@ -36,6 +36,12 @@
      anywhere. Value-steps of the same warm-neutral family, not a new hue. */
   --color-plate: #e8e2d0;
   --color-stitch: #b7ae95;
+  /* The map's ground and its landmass — two more value-steps of the
+     same warm-neutral family, so the regime map reads as a chart with a
+     sea rather than a diagram on the page ground. --color-ink on
+     --color-sea = 13.4:1. */
+  --color-sea: #eae7da;
+  --color-land: #d9d5c6;
 
   /* Type scale — one scale, applied everywhere; body copy never below
      --text-sm (16px) per the house minimum. */
