@@ -192,6 +192,25 @@ them. UI copy distinguishes "(terverifikasi ZOM9120)" from
 "(perkiraan)" throughout rather than treating all comparisons as
 equally authoritative.
 
+**The atlas was reorganised around the regime wall.** An audit of the
+shipped page found the analysis sound but the information design thin:
+five stacked text blocks before the map appeared, every block boxed on
+the same ground with the same hairline, 34 locations reachable only one
+at a time through a flat list of name buttons, monospace carrying
+low-contrast prose, and a map drawn with no sea, no coast weight, no
+graticule and no scale. The fix, in five steps: `sea`/`land` value-step
+tokens; the map redrawn with sea, coast hairline, graticule, a labelled
+equator and a 500 km scale bar; `components/wall/RegimeWall` — all 34
+cycles as small multiples on one shared twelve-month axis, sortable by
+family, peak month or annual total, replacing the button list;
+`lib/atlasFilters.ts` + `components/AtlasFilters` — search, family
+toggles, and the BMKG-disagreement toggle with a count, driving map and
+wall from one pure filter (9 new tests, 95 total); and the page
+restructured so the atlas is above the fold with the legend set beneath
+the map as its caption. `DESIGN.md` §3, §5.1, §5.2, §6, §9 and §11 were
+updated to match — the wall and the filter bar are now specified there,
+not just implemented.
+
 Still open: `app/[locale]/` locale routing (English is deferred —
 Indonesian is served flat at the app root), the ZOM-polygon licence
 question (§4, still unverified and still unused), and further

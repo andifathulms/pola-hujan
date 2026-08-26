@@ -44,9 +44,15 @@ Three channels, three meanings, no overload.
 
 ```
 --stock    #F2F0E7    warm almanac paper
+--plate    #E8E2D0    the field plate's mount, one value-step down
+--sea      #EAE7DA    the map's ground
+--land     #D9D5C6    landmass, one step under the sea
 --ink      #23211C    warm near-black
 --rule     #D6D2C4    hairlines, month gridlines
+--stitch   #B7AE95    the plate's seam, the coastline hairline
 ```
+
+The four neutrals below `stock` are **value-steps of one warm family, not new hues**. They are what gives the page a floor, a mount and a map ground without a box-shadow or a border doing the work.
 
 ### The three families
 
@@ -100,13 +106,33 @@ Three reference curves — one per family — always visible along one edge. A s
 
 Small, quiet, permanent. Not a legend that expands; a fixed part of the page.
 
+### 5.1 The regime wall
+
+**Every location's cycle, at once, on one shared twelve-month axis.** The atlas's founding claim is a comparison — that "musim hujan" does not mean the same months everywhere — and a map that reveals one location per click makes the reader hold that comparison in their head. The wall puts it on the page.
+
+- One cell per location: twelve bars, month gridlines, the name, the peak month and the wettest month's value. **Every cell divides its width into the same twelve slots**, Jan at the left, so a month sits at the same place across the whole wall. This is §1.1 of `DESIGN-REWORK.md` — one shared axis — applied to 34 panels instead of two.
+- **Each cell keeps its own mm scale and states it.** A shared y-scale across the archipelago would flatten the dry places to nothing; the comparison here is of shape and timing, not magnitude.
+- **The two harmonics are not drawn at wall size.** They are the evidence for the classification (§4) and need room to be read as two separate lines; at thumbnail size they overlap into one smudge, which would assert the fit rather than show it. The reading panel and the field plate still draw them apart.
+- Sortable by family, by peak month, or by annual rainfall. **Sorting by peak month is the proof**: the Monsunal cells bunch at the two ends of the year and the Lokal ones sit in the middle of it, with no interaction and no copy required.
+- Month order stays fixed Jan–Des in every cell, never rotated (§4).
+
+### 5.2 The filter bar
+
+Search by city or province, three family toggles, and **the disagreement toggle** — driving the map and the wall from one filter state, so the two views can never show different answers to the same question.
+
+The disagreement toggle is the point of it. Where the derived classification differs from BMKG's published family is the finding, and as a hatch texture alone it was visible but not addressable. As a control with a count it can be asked for. **It still reports and never asserts** — no threshold moves when it is on, and the bar says so. A location with no BMKG family to compare against is never counted as a disagreement.
+
 ## 6. Layout
 
 **An atlas spread, not a full-bleed canvas.** This app has two co-equal objects — the map and the curve — and neither should dominate.
 
-**Desktop:** map on the left two-thirds, the selected location's meta panel and archetype strip on the right third. The field plate (§4.1) runs full width beneath that row — a third tier, not a third column, so it doesn't compete with the map/meta split above it. Comparison mode splits the curve panel into two stacked curves sharing one month axis.
+**Reading order on the atlas is: masthead, filter bar, map spread, field plate, wall.** The masthead is an eyebrow, the name, one sentence and the nearest-opposite finding — **never a stack of cards in front of the atlas.** Explanation that is not one of §9's required statements goes into a disclosure, not into a paragraph above the fold.
 
-**Mobile:** map at 45vh, meta panel and archetypes beneath, the field plate beneath that.
+**Desktop:** map on the left two-thirds with the legend (§9) set directly beneath it as the map's own caption, the selected location's meta panel and archetype strip on the right third. The field plate (§4.1) runs full width beneath that row — a third tier, not a third column, so it doesn't compete with the map/meta split above it. The regime wall (§5.1) runs full width beneath the plate. Comparison mode splits the curve panel into two stacked curves sharing one month axis.
+
+**Mobile:** map at 45vh, legend, meta panel and archetypes beneath, the field plate beneath that, the wall last at two columns.
+
+**Boxes are the last resort, not the default.** Value steps (`stock` → `plate`, `sea` → `land`) and hairline rules separate things; a border around every block leaves nothing in the foreground.
 
 **Never overlay the curve on the map.** They are different kinds of statement and stacking them would muddle both.
 
@@ -155,7 +181,9 @@ Never optional. It always states:
 3. The three families and what each means, in one line apiece.
 4. That the map shows **regime, not zone boundaries**.
 
-Point 1 appears on the map itself, not only on the method page.
+Point 1 appears on the map itself, not only on the method page — **set directly beneath the map as its caption**, which is what "on the map itself" means in practice. It is never a card stacked in front of the atlas.
+
+The dataset and period are a **short monospace stamp**. Sentences about the data are set in the body face; monospace carries figures, not prose.
 
 ## 10. Accessibility
 
@@ -177,3 +205,5 @@ Point 1 appears on the map itself, not only on the method page.
 - No ZOM boundary drawn that was not derived.
 - No dark mode.
 - No component library.
+- No border where a value-step will do.
+- No monospace paragraph — monospace is for figures, codes and citations.
