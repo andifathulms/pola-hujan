@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Alegreya, Alegreya_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Fraunces, Karla, IBM_Plex_Mono } from "next/font/google";
 import { MakerSignature } from "@/components/MakerSignature";
 import { SITE_ORIGIN, SITE_URL } from "@/lib/metadata";
 import "./globals.css";
@@ -9,24 +9,29 @@ import "./globals.css";
 // from the app's own origin — no runtime request to Google Fonts, per
 // DESIGN.md §1 ("self-hosted fonts") and CLAUDE.md invariant 14 (zero
 // runtime network).
-const alegreya = Alegreya({
+// The variables are named for the role, not the face — display, body,
+// mono — so the next time a typeface changes, nothing downstream has to
+// be renamed with it.
+//
+// Both of these are variable fonts, so `weight` is deliberately omitted:
+// next/font ships the whole axis and the weights used across the app
+// (400, 500, 600) come from one file each rather than three static cuts.
+const display = Fraunces({
   subsets: ["latin"],
-  weight: ["600"],
-  variable: "--font-alegreya",
+  variable: "--font-display",
   display: "swap",
 });
 
-const alegreyaSans = Alegreya_Sans({
+const body = Karla({
   subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-alegreya-sans",
+  variable: "--font-body",
   display: "swap",
 });
 
-const plexMono = IBM_Plex_Mono({
+const mono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
-  variable: "--font-plex-mono",
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -60,7 +65,7 @@ export const metadata: Metadata = {
 // language implemented so far, served flat at the app root.
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="id" className={`${alegreya.variable} ${alegreyaSans.variable} ${plexMono.variable}`}>
+    <html lang="id" className={`${display.variable} ${body.variable} ${mono.variable}`}>
       <body className="bg-stock text-ink font-sans text-base antialiased">
         <a href="#main-content" className="skip-link">
           Lompat ke konten utama

@@ -52,9 +52,16 @@ const config: Config = {
         you: "#763254",
       },
       fontFamily: {
-        display: ["var(--font-alegreya)", "serif"],
-        sans: ["var(--font-alegreya-sans)", "sans-serif"],
-        mono: ["var(--font-plex-mono)", "monospace"],
+        // Fraunces / Karla / IBM Plex Mono. Named for the role rather
+        // than the face — see app/layout.tsx. Alegreya and Alegreya Sans
+        // were a superfamily, one skeleton drawn twice, so a heading and
+        // the paragraph under it shared proportions, rhythm and voice
+        // and nothing read as a heading except size. These two share no
+        // skeleton at all, which is the point. Plex Mono is unchanged:
+        // it is the house data face carried across the sibling projects.
+        display: ["var(--font-display)", "serif"],
+        sans: ["var(--font-body)", "sans-serif"],
+        mono: ["var(--font-mono)", "monospace"],
       },
       fontSize: {
         // Below the 16px floor, so scoped to axis ticks and month labels
