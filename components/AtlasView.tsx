@@ -11,6 +11,7 @@ import { Legend } from "@/components/Legend";
 import { YourPlace } from "@/components/YourPlace";
 import { NearestOppositeFinding } from "@/components/NearestOppositeFinding";
 import { ThresholdGauge } from "@/components/ThresholdGauge";
+import { RegimeWall } from "@/components/wall/RegimeWall";
 import { ATLAS_LEAD } from "@/lib/pageCopy";
 
 /** Circular distance in months is always in [0, 6] — lib/harmonic/thresholds.ts's own documented range for the quantity, not a threshold itself, so fixing it as the gauge's axis doesn't touch thresholds.ts. */
@@ -121,7 +122,7 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
       <Legend manifest={manifest} />
       <YourPlace records={records} onFound={setSelectedId} />
 
-      <p className="text-sm text-ink/70">Pilih kota di peta, atau dari daftar lokasi di bagian bawah halaman.</p>
+      <p className="text-sm text-ink/70">Pilih kota di peta, atau dari dinding rezim di bagian bawah halaman.</p>
 
       {/* Selecting a city (map dot, bottom button list, the nearest-
           opposite-pair callout, or "your place") rewrites the panel
@@ -259,21 +260,13 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
         meanMm={selected.fit.meanMm}
       />
 
-      <nav aria-label="Daftar lokasi" className="flex flex-wrap gap-2 border-t border-rule pt-4">
-        {records.map((record) => (
-          <button
-            key={record.id}
-            type="button"
-            onClick={() => setSelectedId(record.id)}
-            aria-pressed={record.id === selectedId}
-            className={`rounded border px-2 py-1 text-sm transition-colors duration-fast ${
-              record.id === selectedId ? "border-ink font-medium" : "border-rule text-ink/70"
-            }`}
-          >
-            {record.name}
-          </button>
-        ))}
-      </nav>
+      {/* Replaces a flat list of 34 name buttons. That list was the only
+          way to reach a location other than hunting for its dot, and it
+          showed nothing about the place it named — so browsing the atlas
+          meant clicking through 34 single readings and remembering them.
+          The wall names the same 34 locations and draws each one's cycle
+          next to its name, which makes the list itself the comparison. */}
+      <RegimeWall records={records} selectedId={selectedId} onSelect={setSelectedId} />
     </div>
   );
 }

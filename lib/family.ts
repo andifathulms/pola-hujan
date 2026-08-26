@@ -60,6 +60,17 @@ export const FAMILY_TEXT_FILL_CLASS: Record<Family, string> = {
   lokal: "fill-lokal-text",
 };
 
+/**
+ * Bottom rule under a family band heading on the regime wall — the band
+ * is a hue-coded division of the page, so its rule carries the family
+ * hue rather than the neutral `rule` used for ordinary hairlines.
+ */
+export const FAMILY_BORDER_CLASS: Record<Family, string> = {
+  monsunal: "border-monsunal",
+  ekuatorial: "border-ekuatorial",
+  lokal: "border-lokal",
+};
+
 export const FAMILY_STROKE_CLASS: Record<Family, string> = {
   monsunal: "stroke-monsunal",
   ekuatorial: "stroke-ekuatorial",
