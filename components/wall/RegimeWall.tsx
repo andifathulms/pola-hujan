@@ -15,7 +15,10 @@ import {
 import { MiniCycle } from "@/components/wall/MiniCycle";
 
 export interface RegimeWallProps {
+  /** Already filtered by the atlas — the wall draws what it is given. */
   records: RegimeRecord[];
+  /** The unfiltered atlas size, so the heading can say how much of it is on screen. */
+  totalCount: number;
   selectedId: string | undefined;
   onSelect: (id: string) => void;
 }
@@ -74,7 +77,7 @@ function byPeakThenName(a: RegimeRecord, b: RegimeRecord): number {
  * (DESIGN-REWORK.md §1.1, the same reason CompareView labels two
  * scales).
  */
-export function RegimeWall({ records, selectedId, onSelect }: RegimeWallProps) {
+export function RegimeWall({ records, totalCount, selectedId, onSelect }: RegimeWallProps) {
   const [sort, setSort] = useState<SortMode>("keluarga");
 
   const sorted = useMemo(() => {
@@ -106,7 +109,10 @@ export function RegimeWall({ records, selectedId, onSelect }: RegimeWallProps) {
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
         <div>
           <h2 id="dinding-rezim" className="font-display text-lg font-semibold">
-            Dinding rezim — {records.length} lokasi sekaligus
+            Dinding rezim —{" "}
+            <span className="tabular-nums">
+              {records.length === totalCount ? `${totalCount} lokasi sekaligus` : `${records.length} dari ${totalCount} lokasi`}
+            </span>
           </h2>
           <p className="text-sm text-ink/70">{SORT_CAPTION[sort]}</p>
         </div>
@@ -131,6 +137,12 @@ export function RegimeWall({ records, selectedId, onSelect }: RegimeWallProps) {
           ))}
         </fieldset>
       </div>
+
+      {records.length === 0 && (
+        <p className="border border-dashed border-stitch p-4 text-sm text-ink/70">
+          Tidak ada lokasi yang cocok dengan saringan ini.
+        </p>
+      )}
 
       <div className="flex flex-col gap-4">
         {bands.map((band) => (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { ArchetypeRecord, Manifest, RegimeRecord } from "@/lib/grid/schema";
 import { FAMILY_LABEL, FAMILY_TEXT_CLASS, MONTH_LABELS_ID, type Family } from "@/lib/family";
@@ -12,6 +12,8 @@ import { YourPlace } from "@/components/YourPlace";
 import { NearestOppositeFinding } from "@/components/NearestOppositeFinding";
 import { ThresholdGauge } from "@/components/ThresholdGauge";
 import { RegimeWall } from "@/components/wall/RegimeWall";
+import { AtlasFilters } from "@/components/AtlasFilters";
+import { EMPTY_FILTERS, applyFilters, type AtlasFilterState } from "@/lib/atlasFilters";
 import { ATLAS_LEAD } from "@/lib/pageCopy";
 
 /** Circular distance in months is always in [0, 6] — lib/harmonic/thresholds.ts's own documented range for the quantity, not a threshold itself, so fixing it as the gauge's axis doesn't touch thresholds.ts. */
@@ -61,6 +63,14 @@ export interface AtlasViewProps {
 export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
   const [selectedId, setSelectedId] = useState<string>(records[0]?.id ?? "");
   const selected = records.find((r) => r.id === selectedId) ?? records[0];
+
+  // The map and the wall draw the same filtered set, from one filter
+  // state — two views of one atlas, never two answers to the same
+  // question. The selected reading is deliberately not cleared when it
+  // filters out: the reader asked for that place, and a filter is about
+  // what else is on screen beside it.
+  const [filters, setFilters] = useState<AtlasFilterState>(EMPTY_FILTERS);
+  const visibleRecords = useMemo(() => applyFilters(records, filters), [records, filters]);
 
   // Read the initial selection from ?lokasi= on mount (window, not a
   // Next.js hook, so no Suspense boundary is needed for a static
@@ -124,6 +134,8 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
 
       <p className="text-sm text-ink/70">Pilih kota di peta, atau dari dinding rezim di bagian bawah halaman.</p>
 
+      <AtlasFilters records={records} filters={filters} onChange={setFilters} visibleCount={visibleRecords.length} />
+
       {/* Selecting a city (map dot, bottom button list, the nearest-
           opposite-pair callout, or "your place") rewrites the panel
           below without moving focus there — this announces what changed
@@ -139,7 +151,7 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
             height within the left two-thirds column. */}
         <div className="h-[45vh] lg:h-auto lg:col-span-2">
           <RegimeMap
-            records={records}
+            records={visibleRecords}
             selectedId={selectedId}
             onSelect={setSelectedId}
             nearestOppositePair={manifest.nearestOppositePair}
@@ -266,7 +278,12 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
           meant clicking through 34 single readings and remembering them.
           The wall names the same 34 locations and draws each one's cycle
           next to its name, which makes the list itself the comparison. */}
-      <RegimeWall records={records} selectedId={selectedId} onSelect={setSelectedId} />
+      <RegimeWall
+        records={visibleRecords}
+        totalCount={records.length}
+        selectedId={selectedId}
+        onSelect={setSelectedId}
+      />
     </div>
   );
 }
