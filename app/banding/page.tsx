@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { regimeRecords } from "@/lib/grid/lookup";
+import { manifest, regimeRecords } from "@/lib/grid/lookup";
+import { comparePresets } from "@/lib/comparePresets";
 import { CompareView } from "@/components/compare/CompareView";
 import { SiteNav } from "@/components/SiteNav";
 import { pageMetadata } from "@/lib/metadata";
 import { BANDING_LEAD } from "@/lib/pageCopy";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Banding — Pola Hujan",
+  title: "Bandingkan dua kota — Pola Hujan",
   description: BANDING_LEAD,
   path: "/banding/",
 });
@@ -23,7 +24,12 @@ export default function BandingPage() {
   return (
     <>
       <SiteNav />
-      <CompareView records={regimeRecords} defaultLeftId={defaultLeftId} defaultRightId={defaultRightId} />
+      <CompareView
+        records={regimeRecords}
+        defaultLeftId={defaultLeftId}
+        defaultRightId={defaultRightId}
+        presets={comparePresets(regimeRecords, manifest)}
+      />
     </>
   );
 }

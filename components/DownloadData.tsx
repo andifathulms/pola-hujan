@@ -94,7 +94,7 @@ export function DownloadData({ records }: DownloadDataProps) {
     <button
       type="button"
       onClick={download}
-      className="self-start rounded border border-ink px-2 py-1 text-sm font-medium transition-colors duration-fast hover:bg-ink hover:text-stock"
+      className="self-start rounded-full border border-ink px-4 py-2 text-xs font-bold transition-colors duration-fast hover:bg-ink hover:text-stock"
     >
       Unduh data lokasi (CSV)
     </button>

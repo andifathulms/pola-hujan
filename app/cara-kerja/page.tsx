@@ -96,7 +96,7 @@ export default function CaraKerjaPage() {
           </nav>
         </header>
 
-        <section id="interaktif" className="flex scroll-mt-24 flex-col gap-4">
+        <section id="interaktif" className="flex scroll-mt-24 flex-col gap-4 rounded-sheet bg-plate p-5 sm:p-8">
           <h2 className="text-xl font-extrabold tracking-tight">Coba sendiri</h2>
           <p className="max-w-[68ch] text-sm text-ink-muted">
             Sebuah <strong className="text-ink">harmonik</strong> di sini adalah gelombang naik-turun yang dicocokkan ke
@@ -137,7 +137,7 @@ export default function CaraKerjaPage() {
             <dt className="text-ink-muted">Jumlah lokasi</dt>
             <dd>{manifest.generatedFromLocations}</dd>
           </dl>
-          <p className="border border-rule bg-stock p-3 text-xs text-ink-muted">{manifest.datasetStatus}</p>
+          <p className="rounded-card bg-plate p-4 text-xs text-ink-muted">{manifest.datasetStatus}</p>
           <DownloadData records={downloadRecords} />
         </section>
 
