@@ -4,11 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import type { RegimeRecord } from "@/lib/grid/schema";
 import { FAMILY_LABEL, FAMILY_TEXT_CLASS, MONTH_LABELS_ID, type Family } from "@/lib/family";
 import { circularMonthDistance } from "@/lib/harmonic";
-import { CycleCurve } from "@/components/curve/CycleCurve";
 import { CycleTable } from "@/components/table/CycleTable";
-import { MonthGridlines } from "@/components/compare/MonthGridlines";
-import { PeakDisplacementMarkers } from "@/components/compare/PeakDisplacementMarkers";
-import { SharedMonthAxis } from "@/components/compare/SharedMonthAxis";
+import { StackedCompare } from "@/components/compare/StackedCompare";
 import { BANDING_LEAD } from "@/lib/pageCopy";
 
 export interface CompareViewProps {
@@ -43,37 +40,6 @@ function LocationPicker({
         ))}
       </select>
     </label>
-  );
-}
-
-/**
- * One comparison panel's chart only — name, family, and the bars/
- * harmonics. Its own month labels are suppressed: the two panels share
- * one axis, drawn once beneath both by SharedMonthAxis. Its y-axis in
- * mm stays its own — DESIGN-REWORK.md §1.1: the comparison is of shape
- * and timing, not magnitude, so the two panels are never forced onto
- * one y-scale.
- */
-function CyclePanel({ record }: { record: RegimeRecord }) {
-  const family = record.family as Family;
-  return (
-    <div className="flex flex-col gap-1">
-      <div>
-        <h3 className="font-display text-lg font-extrabold tracking-tight">{record.name}</h3>
-        <p className={`text-sm font-medium ${FAMILY_TEXT_CLASS[family]}`}>
-          {FAMILY_LABEL[family]} · {record.subtype}
-        </p>
-        <p className="font-mono text-xs text-ink-muted">Puncak {MONTH_LABELS_ID[Math.round(record.peakMonth) % 12]}</p>
-      </div>
-      <CycleCurve
-        monthlyMm={record.monthlyMm}
-        annualCurveMm={record.annualCurveMm}
-        semiAnnualCurveMm={record.semiAnnualCurveMm}
-        meanMm={record.fit.meanMm}
-        family={family}
-        showMonthLabels={false}
-      />
-    </div>
   );
 }
 
@@ -172,17 +138,7 @@ export function CompareView({ records, defaultLeftId, defaultRightId }: CompareV
       )}
 
       <div className="flex flex-col gap-8">
-        <div className="relative flex flex-col gap-6">
-          <MonthGridlines />
-          <PeakDisplacementMarkers
-            leftPeakMonth={left.peakMonth}
-            rightPeakMonth={right.peakMonth}
-            sameFamily={left.family === right.family}
-          />
-          <CyclePanel record={left} />
-          <CyclePanel record={right} />
-        </div>
-        <SharedMonthAxis />
+        <StackedCompare left={left} right={right} />
         <div className="grid gap-6 sm:grid-cols-2">
           <CycleTable monthlyMm={left.monthlyMm} caption={`Curah hujan bulanan di ${left.name}, mm`} />
           <CycleTable monthlyMm={right.monthlyMm} caption={`Curah hujan bulanan di ${right.name}, mm`} />

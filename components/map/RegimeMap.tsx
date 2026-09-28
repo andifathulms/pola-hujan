@@ -7,7 +7,8 @@ import { INDONESIA_OUTLINE_PATH } from "@/lib/geo/indonesiaOutline";
 export interface RegimeMapProps {
   records: RegimeRecord[];
   selectedId: string | undefined;
-  onSelect: (id: string) => void;
+  /** Omit for a picture-only map (the home page hero): no dot becomes a tab stop or a button. */
+  onSelect?: (id: string) => void;
   /** Drawn as a hairline between the two dots — DESIGN-REWORK.md §3. Optional so the map still renders without it (e.g. fewer than two families present). */
   nearestOppositePair?: Manifest["nearestOppositePair"];
   /**
@@ -119,7 +120,7 @@ export function RegimeMap({
     <svg
       viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
       preserveAspectRatio="xMidYMid meet"
-      role="group"
+      role={onSelect ? "group" : "img"}
       aria-label={ariaLabel}
       className="h-full w-full"
     >
@@ -222,27 +223,29 @@ export function RegimeMap({
             )}
             {/* The interactive target: same centre, invisible, bigger
                 than the dot — see HIT_RADIUS above. */}
-            <circle
-              cx={x}
-              cy={y}
-              r={Math.max(HIT_RADIUS, r)}
-              fill="transparent"
-              className="cursor-pointer focus:outline-none focus-visible:stroke-ink"
-              strokeWidth={2.5}
-              tabIndex={0}
-              role="button"
-              aria-label={`${record.name}, ${FAMILY_LABEL[family]} ${record.subtype}${monthText}${
-                record.agrees === false ? ", berbeda dari keluarga BMKG" : ""
-              }`}
-              aria-pressed={isSelected}
-              onClick={() => onSelect(record.id)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  onSelect(record.id);
-                }
-              }}
-            />
+            {onSelect && (
+              <circle
+                cx={x}
+                cy={y}
+                r={Math.max(HIT_RADIUS, r)}
+                fill="transparent"
+                className="cursor-pointer focus:outline-none focus-visible:stroke-ink"
+                strokeWidth={2.5}
+                tabIndex={0}
+                role="button"
+                aria-label={`${record.name}, ${FAMILY_LABEL[family]} ${record.subtype}${monthText}${
+                  record.agrees === false ? ", berbeda dari keluarga BMKG" : ""
+                }`}
+                aria-pressed={isSelected}
+                onClick={() => onSelect(record.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onSelect(record.id);
+                  }
+                }}
+              />
+            )}
           </g>
         );
       })}

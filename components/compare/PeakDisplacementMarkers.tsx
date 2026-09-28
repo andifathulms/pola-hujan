@@ -1,5 +1,6 @@
 import { circularMonthDistance } from "@/lib/harmonic";
 import { CURVE_WIDTH, monthCenterX } from "@/lib/curveLayout";
+import { formatDecimal } from "@/lib/family";
 
 export interface PeakDisplacementMarkersProps {
   leftPeakMonth: number;
@@ -37,13 +38,13 @@ export function PeakDisplacementMarkers({ leftPeakMonth, rightPeakMonth, sameFam
 
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0">
-      <div className="absolute bottom-0 top-0 w-[1.5px] bg-ink" style={{ left: `${leftX}%` }} />
-      <div className="absolute bottom-0 top-0 w-[1.5px] bg-ink" style={{ left: `${rightX}%` }} />
+      <div className="absolute bottom-0 top-0 border-l-[1.5px] border-dashed border-ink" style={{ left: `${leftX}%` }} />
+      <div className="absolute bottom-0 top-0 border-l-[1.5px] border-dashed border-ink" style={{ left: `${rightX}%` }} />
       <span
-        className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap border border-ink bg-stock px-1.5 py-0.5 font-mono text-xs text-ink"
+        className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full bg-ink px-2.5 py-1 font-mono text-xs text-stock"
         style={{ left: `${labelX}%` }}
       >
-        {distance.toFixed(1)} bulan
+        {formatDecimal(distance)} bulan
       </span>
     </div>
   );

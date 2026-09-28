@@ -148,6 +148,8 @@ The disagreement toggle is the point of it. Where the derived classification dif
 
 ## 6. Layout
 
+**The home page is a story; the atlas is a tool.** `/` is for a reader who has been taught that Indonesia has two seasons: the headline, one story sentence assembled from pipeline fields (`lib/storyCopy.ts`), the year sweep (§7), three family chapters each told through one real city, Jakarta and Ambon on one shared axis, then a search for your own city and three facts about the method (the agreement rate, the period, a link to Cara kerja). The map on the home page is a picture — no dot is a tab stop — and the same derived-not-official caption sits directly under it.
+
 **An atlas spread, not a full-bleed canvas.** This app has two co-equal objects — the map and the curve — and neither should dominate.
 
 **Reading order on the atlas (`/peta`) is: header, filter chips, map with the city reading beside it, the wall.** The header is an eyebrow, the title, one story sentence and the "your location" action — never a stack of cards in front of the atlas.
@@ -164,11 +166,13 @@ The disagreement toggle is the point of it. Where the derived classification dif
 
 ## 7. Motion
 
-**The orchestrated moment is the curve drawing month by month**, January to December, over about 600ms. Slow enough that the reader *reads* the cycle rather than seeing it appear — you follow the rise and the fall.
+**The orchestrated moment is the year sweep on the home page.** The months step January to December (about 900 ms each) and every dot on the map grows or shrinks with that month's normal. The founding claim — that the wet season does not arrive everywhere at once — is shown as movement rather than stated. A big month name and the month's wettest and driest city update with it, and the twelve-button scrubber beneath the map shows the 34-city mean for each month as a small bar, so the controls are also a chart.
 
-**In comparison mode both curves draw simultaneously.** That is the demonstration: two places, two shapes, the inversion visible as it happens rather than as a finished picture.
+The sweep starts on its own only when motion is allowed, pauses while the hero is off screen or the tab is hidden, and stops for good once the reader picks a month.
 
-Everything else is state change — map selection, family filter, mode switch.
+**The curve drawing month by month is now a state transition**, not the orchestrated moment: it still runs (bars rise January to December, the annual harmonic draws, the semi-annual fades in) whenever a city is selected, and in comparison mode both curves draw at once.
+
+**Reduced motion:** no autoplay; the month buttons step through the same frames; curves render complete and instant. Nothing is lost but the movement.
 
 ```
 --dur-fast    120ms

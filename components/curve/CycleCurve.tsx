@@ -33,6 +33,8 @@ export interface CycleCurveProps {
    * (lib/curveLayout.ts) is untouched.
    */
   size?: "default" | "plate";
+  /** Stacked comparisons draw one legend beneath both panels instead of one per panel. */
+  showLegend?: boolean;
 }
 
 /**
@@ -53,6 +55,7 @@ export function CycleCurve({
   family,
   showMonthLabels = true,
   size = "default",
+  showLegend = true,
 }: CycleCurveProps) {
   const isPlate = size === "plate";
   const [drawn, setDrawn] = useState(false);
@@ -176,7 +179,19 @@ export function CycleCurve({
           ))}
       </svg>
 
-      <figcaption className={`flex flex-wrap gap-x-4 gap-y-1 text-ink-muted ${isPlate ? "text-sm" : "text-xs"}`}>
+      {showLegend && (
+        <figcaption>
+          <CurveLegend family={family} large={isPlate} />
+        </figcaption>
+      )}
+    </figure>
+  );
+}
+
+/** What the bars and the two lines are. Exported so a stacked comparison can state it once. */
+export function CurveLegend({ family, large = false }: { family: Family; large?: boolean }) {
+  return (
+    <div className={`flex flex-wrap gap-x-4 gap-y-1 text-ink-muted ${large ? "text-sm" : "text-xs"}`}>
         <span className="flex items-center gap-1.5">
           <span aria-hidden className={`inline-block h-2 w-3 shrink-0 ${FAMILY_FILL_CLASS[family]}`} />
           Batang — curah hujan bulanan aktual
@@ -189,7 +204,6 @@ export function CycleCurve({
           <span aria-hidden className="inline-block h-0 w-3 shrink-0 border-t-[1.5px] border-dashed border-ink-muted" />
           Garis putus-putus — harmonik semi-tahunan (dua gelombang per tahun)
         </span>
-      </figcaption>
-    </figure>
+    </div>
   );
 }

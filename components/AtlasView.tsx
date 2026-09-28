@@ -22,6 +22,8 @@ export interface AtlasViewProps {
   records: RegimeRecord[];
   archetypes: ArchetypeRecord[];
   manifest: Manifest;
+  /** "2006–2015", lib/grid/lookup's PERIOD_LABEL. */
+  periodLabel: string;
 }
 
 /**
@@ -30,7 +32,7 @@ export interface AtlasViewProps {
  * city beneath. One filter state drives the map and the wall; one
  * selection drives the map ring, the reading and the wall cell.
  */
-export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
+export function AtlasView({ records, archetypes, manifest, periodLabel }: AtlasViewProps) {
   const [selectedId, setSelectedId] = useState<string>(records[0]?.id ?? "");
   const selected = records.find((r) => r.id === selectedId) ?? records[0];
   const [hoverId, setHoverId] = useState<string | null>(null);
@@ -95,7 +97,7 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
       <header className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
         <div className="flex max-w-[64ch] flex-col gap-2">
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-ink-muted">
-            Peta · {records.length} kota · normal CHIRPS 2.0
+            Peta · {records.length} kota · normal CHIRPS 2.0, {periodLabel}
           </p>
           <h1 className="text-2xl font-extrabold leading-[1.05] tracking-tight lg:text-3xl">Peta pola hujan</h1>
           <p className="font-story text-lg italic leading-snug">{ATLAS_LEAD}</p>
@@ -173,7 +175,7 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
           )}
 
           <NearestOppositeFinding pair={manifest.nearestOppositePair} onSelect={setSelectedId} />
-          <Legend manifest={manifest} />
+          <Legend manifest={manifest} periodLabel={periodLabel} />
         </div>
 
         <article

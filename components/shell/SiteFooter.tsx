@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { manifest } from "@/lib/grid/lookup";
+import { PERIOD_LABEL, manifest } from "@/lib/grid/lookup";
 import { ROUTES } from "@/lib/routes";
 import { LogoMark } from "@/components/shell/Logo";
 import { MakerSignature } from "@/components/MakerSignature";
@@ -28,7 +28,7 @@ export function SiteFooter() {
             . Istilah Monsunal, Ekuatorial dan Lokal mengikuti kerangka BMKG.
           </p>
           <p className="font-mono text-xs text-ink-muted">
-            CHIRPS 2.0 · {manifest.climatologyPeriod.split(" (")[0]} · {manifest.generatedFromLocations} lokasi
+            CHIRPS 2.0 · normal {PERIOD_LABEL} · {manifest.generatedFromLocations} lokasi
           </p>
         </div>
         <nav aria-label="Navigasi kaki" className="flex flex-wrap content-start gap-x-6 gap-y-2 text-xs lg:justify-end">

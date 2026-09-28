@@ -16,3 +16,6 @@ export const BANDING_LEAD =
 
 export const CARA_KERJA_LEAD =
   "Klasifikasi ini bukan kotak hitam. Coba aturan yang sama yang memproses data asli, lalu periksa dataset, ambang, dan seberapa sering hasilnya cocok dengan BMKG.";
+
+export const STORY_LEAD_META =
+  "Jakarta paling basah di Januari, Ambon di Juni. Atlas tiga pola hujan tahunan Indonesia — Monsunal, Lokal, Ekuatorial — dihitung dari data curah hujan satelit, dibandingkan dengan BMKG.";

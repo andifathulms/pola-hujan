@@ -3,6 +3,8 @@ import { FAMILIES, FAMILY_BG_CLASS, FAMILY_DESCRIPTION, FAMILY_LABEL } from "@/l
 
 export interface LegendProps {
   manifest: Manifest;
+  /** "2006–2015", from lib/grid/lookup's PERIOD_LABEL. */
+  periodLabel: string;
 }
 
 /**
@@ -20,7 +22,7 @@ export interface LegendProps {
  * limitation, not part of the four required statements — is behind a
  * disclosure.
  */
-export function Legend({ manifest }: LegendProps) {
+export function Legend({ manifest, periodLabel }: LegendProps) {
   const agreementPercent = Math.round(manifest.agreement.agreementRate * 100);
 
   return (
@@ -55,7 +57,7 @@ export function Legend({ manifest }: LegendProps) {
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-ink-muted">
         <span className="rounded-[4px] border border-rule bg-stock px-1.5 py-0.5 font-mono tabular-nums">
-          {manifest.datasetName.split(",")[0]} · {manifest.climatologyPeriod.split(" (")[0]}
+          CHIRPS 2.0 · normal {periodLabel}
         </span>
         <span>
           Kecocokan dengan BMKG, dilaporkan bukan diuji:{" "}

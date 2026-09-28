@@ -14,7 +14,18 @@ const SUGGESTED_IDS = ["jakarta", "ambon", "padang"];
  * focuses it from anywhere; arrows move, Enter opens, Escape closes.
  * Matching is lib/citySearch.ts; this only renders it.
  */
-export function CitySearch({ index, className = "" }: { index: CityIndexEntry[]; className?: string }) {
+export function CitySearch({
+  index,
+  className = "",
+  shortcut = true,
+  size = "sm",
+}: {
+  index: CityIndexEntry[];
+  className?: string;
+  /** Only the header instance owns ⌘K and "/"; an inline copy on a page must not steal them. */
+  shortcut?: boolean;
+  size?: "sm" | "lg";
+}) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const listId = useId();
@@ -28,6 +39,7 @@ export function CitySearch({ index, className = "" }: { index: CityIndexEntry[];
   }, [index, query]);
 
   useEffect(() => {
+    if (!shortcut) return;
     function onKey(e: KeyboardEvent) {
       const target = e.target as HTMLElement | null;
       const typing = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
@@ -39,7 +51,7 @@ export function CitySearch({ index, className = "" }: { index: CityIndexEntry[];
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [shortcut]);
 
   function go(entry: CityIndexEntry | undefined) {
     if (!entry) return;
@@ -75,7 +87,11 @@ export function CitySearch({ index, className = "" }: { index: CityIndexEntry[];
       <label htmlFor={`${listId}-input`} className="sr-only">
         Cari kota atau provinsi
       </label>
-      <div className="flex items-center gap-2 rounded-full border border-rule bg-stock py-1.5 pl-3.5 pr-1.5 transition-colors duration-fast focus-within:border-ink">
+      <div
+        className={`flex items-center gap-2 rounded-full border bg-stock transition-colors duration-fast focus-within:border-ink ${
+          size === "lg" ? "border-stitch py-3 pl-5 pr-3" : "border-rule py-1.5 pl-3.5 pr-1.5"
+        }`}
+      >
         <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" className="flex-none stroke-ink-muted" fill="none" strokeWidth="1.8">
           <circle cx="8.5" cy="8.5" r="5.5" />
           <path d="m13 13 4 4" strokeLinecap="round" />
@@ -101,9 +117,9 @@ export function CitySearch({ index, className = "" }: { index: CityIndexEntry[];
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 120)}
           onKeyDown={onKeyDown}
-          className="min-w-0 flex-1 bg-transparent text-xs text-ink placeholder:text-ink-muted focus:outline-none"
+          className={`min-w-0 flex-1 bg-transparent text-ink placeholder:text-ink-muted focus:outline-none ${size === "lg" ? "text-base" : "text-xs"}`}
         />
-        <kbd className="hidden flex-none rounded border border-rule px-1.5 py-0.5 font-mono text-tick text-ink-muted sm:inline">⌘K</kbd>
+        {shortcut && <kbd className="hidden flex-none rounded border border-rule px-1.5 py-0.5 font-mono text-tick text-ink-muted sm:inline">⌘K</kbd>}
       </div>
 
       <ul
