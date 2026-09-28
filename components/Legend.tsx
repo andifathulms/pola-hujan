@@ -26,11 +26,11 @@ export function Legend({ manifest }: LegendProps) {
   return (
     <section aria-label="Keterangan" className="flex flex-col gap-3 border-t border-rule pt-3 text-sm">
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-        <h2 className="font-display text-base font-semibold">Tentang peta ini</h2>
+        <h2 className="font-display text-base font-extrabold tracking-tight">Tentang peta ini</h2>
         {/* The citation stamp: short, monospace, always present where a
             claim is made (DESIGN.md §1). Sentences about the data live in
             the disclosure below, in the body face where they can be read. */}
-        <p className="font-mono text-xs tabular-nums text-ink/70">
+        <p className="font-mono text-xs tabular-nums text-ink-muted">
           {manifest.datasetName} · {manifest.climatologyPeriod}
         </p>
       </div>
@@ -67,7 +67,7 @@ export function Legend({ manifest }: LegendProps) {
         </li>
       </ul>
 
-      <p className="max-w-prose text-ink/70">
+      <p className="max-w-prose text-ink-muted">
         Kecocokan dengan BMKG, dilaporkan dan bukan diuji:{" "}
         <span className="font-mono tabular-nums text-ink">
           {manifest.agreement.agreeingLocations}/{manifest.agreement.comparedLocations} ({agreementPercent}%)
@@ -76,7 +76,7 @@ export function Legend({ manifest }: LegendProps) {
         terverifikasi terhadap dokumen ZOM9120 BMKG, sisanya masih perkiraan — lihat Metode.
       </p>
 
-      <details className="max-w-prose text-ink/70">
+      <details className="max-w-prose text-ink-muted">
         <summary className="cursor-pointer select-none font-medium text-ink">Batas data ini</summary>
         <p className="mt-2">{manifest.datasetStatus}</p>
       </details>

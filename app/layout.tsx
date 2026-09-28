@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Plus_Jakarta_Sans, Newsreader, IBM_Plex_Mono } from "next/font/google";
-import { MakerSignature } from "@/components/MakerSignature";
+import { SiteFooter } from "@/components/shell/SiteFooter";
 import { SITE_ORIGIN, SITE_URL } from "@/lib/metadata";
 import "./globals.css";
 
@@ -75,7 +75,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           Lompat ke konten utama
         </a>
         {children}
-        <MakerSignature />
+        <SiteFooter />
       </body>
     </html>
   );

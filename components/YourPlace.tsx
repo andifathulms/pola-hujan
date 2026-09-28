@@ -61,10 +61,10 @@ export function YourPlace({ records, onFound }: YourPlaceProps) {
           error and found text below is announced to screen readers as
           it appears, without moving focus away from the button. */}
       <div role="status">
-        {status.kind === "loading" && <p className="text-ink/70">Mencari lokasi terdekat…</p>}
-        {status.kind === "error" && <p className="text-ink/70">{status.message}</p>}
+        {status.kind === "loading" && <p className="text-ink-muted">Mencari lokasi terdekat…</p>}
+        {status.kind === "error" && <p className="text-ink-muted">{status.message}</p>}
         {status.kind === "found" && nearest && (
-          <p className="text-ink/70">
+          <p className="text-ink-muted">
             Lokasi pembanding terdekat: <strong>{nearest.name}</strong> (~{Math.round(status.distanceKm)} km) —{" "}
             {FAMILY_LABEL[nearest.family as Family]}, puncak {MONTH_LABELS_ID[Math.round(nearest.peakMonth) % 12]}.
             Ini adalah pembanding terdekat dari data yang tersedia, bukan hasil interpolasi tepat di titikmu.

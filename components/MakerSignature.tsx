@@ -3,7 +3,7 @@ import type { SVGProps } from "react";
 /**
  * Personal maker's mark, not a legal/data notice — kept visually
  * separate from any citation line (DESIGN.md §1's "citation line" is a
- * different, per-view thing). Uses `you` (#8B3A62) as the accent, since
+ * different, per-view thing). Uses `you` as the accent, since
  * DESIGN.md §3 already defines it as the one colour that sits outside
  * the three regime families — the right token for "this is personal,
  * not a classification", not a repurposed family hue.
@@ -60,9 +60,8 @@ export function MakerSignature() {
   const portfolioHref = MAKER.links[0].href;
 
   return (
-    <footer className="border-t border-rule px-4 py-4 lg:px-6">
-      <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
-        <p className="text-xs text-ink/70">
+    <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
+        <p className="text-xs text-ink-muted">
           Designed &amp; built by{" "}
           <a
             href={portfolioHref}
@@ -83,13 +82,12 @@ export function MakerSignature() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={label}
-              className="rounded p-1.5 text-ink/50 transition-colors duration-fast hover:bg-rule/60 hover:text-you"
+              className="rounded-full p-1.5 text-ink-muted transition-colors duration-fast hover:bg-plate hover:text-you"
             >
               <Icon className="h-[18px] w-[18px]" />
             </a>
           ))}
         </div>
-      </div>
-    </footer>
+    </div>
   );
 }

@@ -173,7 +173,7 @@ export function CycleCurve({
           ))}
       </svg>
 
-      <figcaption className={`flex flex-wrap gap-x-4 gap-y-1 text-ink/70 ${isPlate ? "text-sm" : "text-xs"}`}>
+      <figcaption className={`flex flex-wrap gap-x-4 gap-y-1 text-ink-muted ${isPlate ? "text-sm" : "text-xs"}`}>
         <span className="flex items-center gap-1.5">
           <span aria-hidden className={`inline-block h-2 w-3 shrink-0 ${FAMILY_FILL_CLASS[family]}`} />
           Batang — curah hujan bulanan aktual

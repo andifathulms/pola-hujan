@@ -108,18 +108,18 @@ export function RegimeWall({ records, totalCount, selectedId, onSelect }: Regime
     <section aria-labelledby="dinding-rezim" className="flex flex-col gap-3">
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
         <div>
-          <h2 id="dinding-rezim" className="font-display text-lg font-semibold">
+          <h2 id="dinding-rezim" className="font-display text-lg font-extrabold tracking-tight">
             Dinding rezim —{" "}
             <span className="tabular-nums">
               {records.length === totalCount ? `${totalCount} lokasi sekaligus` : `${records.length} dari ${totalCount} lokasi`}
             </span>
           </h2>
-          <p className="text-sm text-ink/70">{SORT_CAPTION[sort]}</p>
+          <p className="text-sm text-ink-muted">{SORT_CAPTION[sort]}</p>
         </div>
 
         <fieldset className="flex flex-wrap items-center gap-2">
           <legend className="sr-only">Urutkan dinding rezim</legend>
-          <span aria-hidden className="font-mono text-xs uppercase tracking-widest text-ink/70">
+          <span aria-hidden className="font-mono text-xs uppercase tracking-widest text-ink-muted">
             Urut
           </span>
           {SORT_MODES.map((mode) => (
@@ -129,7 +129,7 @@ export function RegimeWall({ records, totalCount, selectedId, onSelect }: Regime
               onClick={() => setSort(mode)}
               aria-pressed={sort === mode}
               className={`rounded border px-2 py-1 text-xs transition-colors duration-fast ${
-                sort === mode ? "border-ink bg-ink text-stock" : "border-rule text-ink/70 hover:border-ink hover:text-ink"
+                sort === mode ? "border-ink bg-ink text-stock" : "border-rule text-ink-muted hover:border-ink hover:text-ink"
               }`}
             >
               {SORT_LABEL[mode]}
@@ -139,7 +139,7 @@ export function RegimeWall({ records, totalCount, selectedId, onSelect }: Regime
       </div>
 
       {records.length === 0 && (
-        <p className="border border-dashed border-stitch p-4 text-sm text-ink/70">
+        <p className="border border-dashed border-stitch p-4 text-sm text-ink-muted">
           Tidak ada lokasi yang cocok dengan saringan ini.
         </p>
       )}
@@ -151,10 +151,10 @@ export function RegimeWall({ records, totalCount, selectedId, onSelect }: Regime
               <div
                 className={`flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b-2 pb-1 ${FAMILY_BORDER_CLASS[band.family]}`}
               >
-                <h3 className={`font-display text-base font-semibold ${FAMILY_TEXT_CLASS[band.family]}`}>
+                <h3 className={`font-display text-base font-extrabold tracking-tight ${FAMILY_TEXT_CLASS[band.family]}`}>
                   {FAMILY_LABEL[band.family]}
                 </h3>
-                <p className="text-sm text-ink/70">
+                <p className="text-sm text-ink-muted">
                   {FAMILY_DESCRIPTION[band.family]} <span className="tabular-nums">{band.rows.length} lokasi</span>
                 </p>
               </div>
@@ -196,7 +196,7 @@ export function RegimeWall({ records, totalCount, selectedId, onSelect }: Regime
 
                       <MiniCycle monthlyMm={record.monthlyMm} family={family} maxMm={maxMm(record)} />
 
-                      <span className="font-mono text-xs tabular-nums text-ink/70">
+                      <span className="font-mono text-xs tabular-nums text-ink-muted">
                         {MONTH_LABELS_ID[peakMonthIndex(record)]} · {Math.round(maxMm(record))} mm
                         {disagrees && <span> · beda dari BMKG</span>}
                       </span>
@@ -211,7 +211,7 @@ export function RegimeWall({ records, totalCount, selectedId, onSelect }: Regime
 
       {/* The wall's contract, stated once rather than 34 times: what the
           x-axis is, and that the y-axis is per-cell. */}
-      <p className="border-t border-rule pt-1 font-mono text-xs text-ink/70">
+      <p className="border-t border-rule pt-1 font-mono text-xs text-ink-muted">
         Setiap sel membagi lebarnya jadi dua belas slot bulan yang sama, Januari di kiri sampai Desember di kanan —
         jadi satu bulan jatuh di tempat yang sama di seluruh dinding. Skala mm-nya per sel, dicantumkan di bawah tiap
         grafik.

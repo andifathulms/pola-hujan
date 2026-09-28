@@ -58,7 +58,7 @@ function Slider({
     <div className="flex flex-col gap-1 text-sm">
       <span className="flex justify-between">
         <span id={labelId}>{label}</span>
-        <span aria-hidden="true" className="font-mono tabular-nums text-ink/70">
+        <span aria-hidden="true" className="font-mono tabular-nums text-ink-muted">
           {value.toFixed(1)} {unit}
         </span>
       </span>
@@ -203,7 +203,7 @@ export function HarmonicExplainer({ records }: HarmonicExplainerProps) {
           <p className={`text-lg font-semibold ${FAMILY_TEXT_CLASS[family]}`}>
             {FAMILY_LABEL[family]} · {classification.subtype}
           </p>
-          <p className="text-sm text-ink/70">
+          <p className="text-sm text-ink-muted">
             Diklasifikasikan langsung oleh <code className="font-mono">lib/harmonic</code> yang sama dengan yang
             memproses data nyata — ambang yang sama, kode yang sama.
           </p>
@@ -211,7 +211,7 @@ export function HarmonicExplainer({ records }: HarmonicExplainerProps) {
       </div>
 
       <figure className="flex flex-col gap-1">
-        <p className="text-xs font-medium text-ink/70">
+        <p className="text-xs font-medium text-ink-muted">
           {seedLabel
             ? `Titik awal: data nyata ${seedLabel}. Begitu kamu menggeser slider di atas, kurva ini jadi buatan — hipotetis, bukan lagi data asli.`
             : "Kurva buatan — dibangun langsung dari keempat nilai di kiri, bukan data cuaca asli manapun."}
@@ -257,7 +257,7 @@ export function HarmonicExplainer({ records }: HarmonicExplainerProps) {
           ))}
         </svg>
 
-        <figcaption className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink/70">
+        <figcaption className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-muted">
           <span className="flex items-center gap-1.5">
             <span aria-hidden className={`inline-block h-2 w-3 shrink-0 ${FAMILY_FILL_CLASS[family]}`} />
             Batang — kedua harmonik dijumlahkan

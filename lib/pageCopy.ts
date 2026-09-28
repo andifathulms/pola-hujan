@@ -12,8 +12,7 @@ export const ATLAS_LEAD =
 export const BANDING_LEAD =
   "Bandingkan dua kota berdampingan pada sumbu bulan yang sama, supaya perbedaan pola hujannya terlihat langsung.";
 
-export const METODE_LEAD =
-  "Ini bukti kerjanya: dataset, ambang klasifikasi, dan tingkat kecocokan dengan BMKG — semua bisa diperiksa, bukan sekadar diklaim.";
 
-export const HARMONIK_LEAD =
-  "Klasifikasi ini bukan kotak hitam — inilah aturan yang sama yang memproses data asli, dan kamu bisa mencobanya sendiri.";
+
+export const CARA_KERJA_LEAD =
+  "Klasifikasi ini bukan kotak hitam. Coba aturan yang sama yang memproses data asli, lalu periksa dataset, ambang, dan seberapa sering hasilnya cocok dengan BMKG.";

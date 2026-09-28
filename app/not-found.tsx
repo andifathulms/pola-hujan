@@ -17,12 +17,12 @@ export default function NotFound() {
     <>
       <SiteNav />
       <div id="main-content" className="flex flex-col gap-4 p-4 lg:p-6">
-        <p className="font-mono text-sm text-ink/70">404</p>
-        <h1 className="font-display text-2xl font-semibold lg:text-3xl">Halaman tidak ditemukan</h1>
+        <p className="font-mono text-sm text-ink-muted">404</p>
+        <h1 className="font-display text-2xl font-extrabold tracking-tight lg:text-3xl">Halaman tidak ditemukan</h1>
         <p className="max-w-prose text-lg">
           Alamat ini tidak ada di Pola Hujan. Mungkin tautannya sudah usang, atau ada salah ketik.
         </p>
-        <p className="text-sm text-ink/70">
+        <p className="text-sm text-ink-muted">
           <Link href="/" className="text-ink underline decoration-ink/30 underline-offset-2 hover:decoration-ink">
             Kembali ke peta rezim
           </Link>

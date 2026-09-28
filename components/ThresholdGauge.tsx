@@ -45,7 +45,7 @@ export function ThresholdGauge({
 
   return (
     <div aria-hidden className="flex flex-col gap-1">
-      <div className="flex items-baseline justify-between gap-2 font-mono text-xs text-ink/70">
+      <div className="flex items-baseline justify-between gap-2 font-mono text-xs text-ink-muted">
         <span>{label}</span>
         <span className="tabular-nums">{valueText}</span>
       </div>
@@ -57,7 +57,7 @@ export function ThresholdGauge({
           style={{ left: `${valuePercent}%` }}
         />
       </div>
-      <p className="font-mono text-xs text-ink/70">{thresholdText}</p>
+      <p className="font-mono text-xs text-ink-muted">{thresholdText}</p>
     </div>
   );
 }

@@ -1,45 +1,21 @@
 import type { Metadata } from "next";
-import { regimeRecords } from "@/lib/grid/lookup";
 import { SiteNav } from "@/components/SiteNav";
-import { HarmonicExplainer } from "@/components/harmonic/HarmonicExplainer";
+import { MovedNotice } from "@/components/shell/MovedNotice";
 import { pageMetadata } from "@/lib/metadata";
-import { HARMONIK_LEAD } from "@/lib/pageCopy";
+import { CARA_KERJA_LEAD } from "@/lib/pageCopy";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Harmonik — Pola Hujan",
-  description: HARMONIK_LEAD,
-  path: "/harmonik/",
-});
+// /harmonik merged into /cara-kerja. Kept as a thin page so shared links
+// and search results from before the merge still arrive somewhere.
+export const metadata: Metadata = {
+  ...pageMetadata({ title: "Harmonik — Pola Hujan", description: CARA_KERJA_LEAD, path: "/harmonik/", canonicalPath: "/cara-kerja/" }),
+  robots: { index: false, follow: true },
+};
 
-// M5: the live decomposition explainer (PRD.md §6.7).
 export default function HarmonikPage() {
-  // HarmonicExplainer only seeds itself from id/name/family/fit — not
-  // monthlyMm, the two curve arrays, coordinates, or the BMKG
-  // comparison, all of which regimeRecords also carries. Trimmed here,
-  // server-side, so the unused ~29KB/record-set never crosses into the
-  // client bundle.
-  const harmonicSeeds = regimeRecords.map(({ id, name, family, fit }) => ({ id, name, family, fit }));
-
   return (
     <>
       <SiteNav />
-      <div id="main-content" className="flex flex-col gap-6 p-4 lg:p-6">
-        <header className="flex flex-col gap-2">
-          <h1 className="font-display text-xl font-semibold lg:text-2xl">Bagaimana klasifikasi bekerja</h1>
-          <p className="max-w-prose text-lg">{HARMONIK_LEAD}</p>
-          <p className="text-sm text-ink/70">
-            Sebuah <strong>harmonik</strong> di sini adalah gelombang naik-turun yang dicocokkan ke data curah
-            hujan — <strong>amplitudo</strong>-nya seberapa tinggi gelombang itu, <strong>bulan puncak</strong>-nya
-            kapan gelombang itu berada di titik tertinggi. Setiap siklus tahunan adalah dua gelombang begini
-            dijumlahkan: satu yang naik-turun sekali setahun, satu lagi dua kali setahun.
-          </p>
-          <p className="text-sm text-ink/70">
-            Tarik amplitudo dan bulan puncak harmonik tahunan dan semi-tahunan, dan lihat siklus sintetis berubah
-            keluarga — monsunal, ekuatorial, atau lokal — secara langsung.
-          </p>
-        </header>
-        <HarmonicExplainer records={harmonicSeeds} />
-      </div>
+      <MovedNotice title="Harmonik" href="/cara-kerja/#interaktif" />
     </>
   );
 }

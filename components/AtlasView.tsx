@@ -128,10 +128,10 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
           legend contract is not weakened by this; it moved to where it
           belongs, directly under the map it qualifies. */}
       <header className="flex flex-col gap-2">
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-ink/70">
+        <p className="font-mono text-xs uppercase tracking-[0.2em] text-ink-muted">
           Atlas rezim curah hujan tahunan · Indonesia
         </p>
-        <h1 className="font-display text-2xl font-semibold lg:text-3xl">Pola Hujan</h1>
+        <h1 className="font-display text-2xl font-extrabold tracking-tight lg:text-3xl">Pola Hujan</h1>
         <p className="max-w-prose text-lg">{ATLAS_LEAD}</p>
         <NearestOppositeFinding pair={manifest.nearestOppositePair} onSelect={setSelectedId} />
       </header>
@@ -172,17 +172,17 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
 
         <div className="flex flex-col gap-4 lg:col-span-1">
           <div>
-            <h2 className="font-display text-lg font-semibold">{selected.name}</h2>
-            <p className="text-xs text-ink/70">{selected.province}</p>
+            <h2 className="font-display text-lg font-extrabold tracking-tight">{selected.name}</h2>
+            <p className="text-xs text-ink-muted">{selected.province}</p>
             <p className={`text-sm font-medium ${FAMILY_TEXT_CLASS[family]}`}>
               {FAMILY_LABEL[family]} · {selected.subtype}
             </p>
-            <p className="font-mono text-sm text-ink/70">
+            <p className="font-mono text-sm text-ink-muted">
               Puncak {MONTH_LABELS_ID[Math.round(selected.peakMonth) % 12]} · Terkering{" "}
               {MONTH_LABELS_ID[driestMonthIndex]}
             </p>
             {selected.bmkgFamily && (
-              <p className="text-sm text-ink/70">
+              <p className="text-sm text-ink-muted">
                 BMKG {selected.bmkgFamilySource === "bmkg-zom9120" ? "(terverifikasi ZOM9120)" : "(perkiraan)"}:{" "}
                 <span className="font-medium text-ink">{FAMILY_LABEL[selected.bmkgFamily as Family]}</span>
                 {selected.agrees === false ? " — berbeda dari klasifikasi turunan" : " — cocok"}
@@ -194,9 +194,9 @@ export function AtlasView({ records, archetypes, manifest }: AtlasViewProps) {
                 says what it says. The exact numbers it's paraphrasing
                 stay in the disclosure below for anyone checking the
                 arithmetic itself. */}
-            <p className="mt-1 text-sm text-ink/70">{classificationReason(family, selected.classificationDetail, manifest.thresholds)}</p>
+            <p className="mt-1 text-sm text-ink-muted">{classificationReason(family, selected.classificationDetail, manifest.thresholds)}</p>
 
-            <details className="mt-1 text-sm text-ink/70">
+            <details className="mt-1 text-sm text-ink-muted">
               <summary className="cursor-pointer select-none font-medium text-ink">Lihat angka pastinya</summary>
 
               {/* A value's position relative to the threshold that decided it

@@ -30,7 +30,7 @@ function LocationPicker({
 }) {
   return (
     <label className="flex flex-col gap-1 text-sm">
-      <span className="text-ink/70">{label}</span>
+      <span className="text-ink-muted">{label}</span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -59,11 +59,11 @@ function CyclePanel({ record }: { record: RegimeRecord }) {
   return (
     <div className="flex flex-col gap-1">
       <div>
-        <h3 className="font-display text-lg font-semibold">{record.name}</h3>
+        <h3 className="font-display text-lg font-extrabold tracking-tight">{record.name}</h3>
         <p className={`text-sm font-medium ${FAMILY_TEXT_CLASS[family]}`}>
           {FAMILY_LABEL[family]} · {record.subtype}
         </p>
-        <p className="font-mono text-xs text-ink/70">Puncak {MONTH_LABELS_ID[Math.round(record.peakMonth) % 12]}</p>
+        <p className="font-mono text-xs text-ink-muted">Puncak {MONTH_LABELS_ID[Math.round(record.peakMonth) % 12]}</p>
       </div>
       <CycleCurve
         monthlyMm={record.monthlyMm}
@@ -135,9 +135,9 @@ export function CompareView({ records, defaultLeftId, defaultRightId }: CompareV
   return (
     <div id="main-content" className="flex flex-col gap-6 p-4 lg:p-6">
       <header className="flex flex-col gap-2">
-        <h1 className="font-display text-xl font-semibold lg:text-2xl">Banding dua tempat</h1>
+        <h1 className="font-display text-xl font-extrabold tracking-tight lg:text-2xl">Banding dua tempat</h1>
         <p className="max-w-prose text-lg">{BANDING_LEAD}</p>
-        <p className="text-sm text-ink/70">
+        <p className="text-sm text-ink-muted">
           Sumbu bulan tidak pernah digeser untuk menyelaraskan puncak — perbedaan letak puncak adalah temuannya.
         </p>
       </header>
@@ -162,7 +162,7 @@ export function CompareView({ records, defaultLeftId, defaultRightId }: CompareV
       </div>
 
       {left.family !== right.family && (
-        <p className="text-sm text-ink/70">
+        <p className="text-sm text-ink-muted">
           Puncak {left.name} dan puncak {right.name} terpisah{" "}
           <span className="font-mono tabular-nums">
             {circularMonthDistance(left.peakMonth, right.peakMonth).toFixed(1)}

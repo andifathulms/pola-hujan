@@ -1,10 +1,10 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/metadata";
 
-// "/peta/" is deliberately excluded — it renders byte-identical content
-// to "/" and its canonical points there (see app/peta/page.tsx), so
-// listing both here would send a mixed signal about which one to index.
-const ROUTE_PATHS = ["", "banding/", "metode/", "harmonik/"];
+// "/peta/" is deliberately excluded while it renders byte-identical
+// content to "/" (see app/peta/page.tsx). /metode/ and /harmonik/ are
+// excluded because they merged into /cara-kerja/ and are noindex.
+const ROUTE_PATHS = ["", "banding/", "cara-kerja/"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return ROUTE_PATHS.map((path) => ({

@@ -68,7 +68,7 @@ export function AtlasFilters({ records, filters, onChange, visibleCount }: Atlas
                 onClick={() => toggleFamily(family)}
                 aria-pressed={on}
                 className={`flex items-center gap-1.5 rounded border px-2 py-1 text-sm transition-colors duration-fast ${
-                  on ? "border-ink bg-plate font-medium" : "border-rule text-ink/70 hover:border-ink hover:text-ink"
+                  on ? "border-ink bg-plate font-medium" : "border-rule text-ink-muted hover:border-ink hover:text-ink"
                 }`}
               >
                 <span aria-hidden className={`inline-block h-2 w-2 shrink-0 rounded-full ${FAMILY_BG_CLASS[family]}`} />
@@ -82,7 +82,7 @@ export function AtlasFilters({ records, filters, onChange, visibleCount }: Atlas
             onClick={() => onChange({ ...filters, onlyDisagree: !filters.onlyDisagree })}
             aria-pressed={filters.onlyDisagree}
             className={`flex items-center gap-1.5 rounded border border-dashed px-2 py-1 text-sm transition-colors duration-fast ${
-              filters.onlyDisagree ? "border-ink bg-plate font-medium" : "border-stitch text-ink/70 hover:border-ink hover:text-ink"
+              filters.onlyDisagree ? "border-ink bg-plate font-medium" : "border-stitch text-ink-muted hover:border-ink hover:text-ink"
             }`}
           >
             <span
@@ -108,7 +108,7 @@ export function AtlasFilters({ records, filters, onChange, visibleCount }: Atlas
         </div>
       </div>
 
-      <p aria-live="polite" className="font-mono text-xs tabular-nums text-ink/70">
+      <p aria-live="polite" className="font-mono text-xs tabular-nums text-ink-muted">
         {visibleCount} dari {records.length} lokasi ditampilkan di peta dan dinding rezim
         {filters.onlyDisagree &&
           " · perbedaan dilaporkan apa adanya, bukan diuji — ambang klasifikasinya tidak berubah"}

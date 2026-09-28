@@ -88,7 +88,7 @@ export function ClassificationSpaceDiagram({
         <text x={PLOT_LEFT - 6} y={splitY + 4} textAnchor="end" className="fill-ink font-mono text-tick tabular-nums">{ekuatorialDominanceRatio.toFixed(1)}</text>
         <text x={PLOT_LEFT - 6} y={PLOT_TOP + 4} textAnchor="end" className="fill-ink font-mono text-tick tabular-nums">{ratioMax.toFixed(1)}</text>
       </svg>
-      <figcaption className="text-xs text-ink/70">
+      <figcaption className="text-xs text-ink-muted">
         Sumbu tegak: rasio amplitudo semi-tahunan/tahunan. Sumbu datar: jarak puncak siklus tahunan dari pusat
         monsun. Wilayah Ekuatorial tidak bergantung pada jarak puncak — rasio saja yang memutuskan.
       </figcaption>

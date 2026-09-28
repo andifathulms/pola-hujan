@@ -40,11 +40,11 @@ export function FieldPlate({ name, province, family, subtype, monthlyMm, annualC
         <h2
           id="field-plate-heading"
           aria-labelledby="field-plate-kicker field-plate-heading"
-          className="font-display text-3xl font-semibold leading-none lg:text-4xl"
+          className="font-display text-3xl font-extrabold tracking-tight leading-none lg:text-4xl"
         >
           {name}
         </h2>
-        <p className="font-mono text-sm uppercase tracking-wide text-ink/70">
+        <p className="font-mono text-sm uppercase tracking-wide text-ink-muted">
           {province} · {FAMILY_LABEL[family]} · {subtype}
         </p>
       </div>
