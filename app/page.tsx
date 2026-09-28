@@ -33,7 +33,14 @@ export default function HomePage() {
     <>
       <SiteNav />
       <div id="main-content" className="mx-auto flex max-w-[1280px] flex-col gap-20 px-4 pb-8 pt-8 lg:gap-24 lg:px-6 lg:pt-12">
-        <YearSweep records={regimeRecords} manifest={manifest} lead={storyLead(regimeRecords)} periodLabel={PERIOD_LABEL} />
+        <YearSweep
+          // Trimmed server-side: the sweep draws points sized by monthly
+          // normals, so the two 12-value curves per city never ship.
+          records={regimeRecords.map((r) => ({ ...r, annualCurveMm: [], semiAnnualCurveMm: [] }))}
+          manifest={manifest}
+          lead={storyLead(regimeRecords)}
+          periodLabel={PERIOD_LABEL}
+        />
 
         <FamilyChapters records={regimeRecords} manifest={manifest} />
 

@@ -158,6 +158,8 @@ The disagreement toggle is the point of it. Where the derived classification dif
 
 **Mobile:** map first at full width, then the caption, then the reading, then the wall at two columns. While the reading is off screen, a slim ink bar at the bottom names the selected city and jumps to it.
 
+**The regime mosaic** (on by default in regime mode, a checkbox beside the mode switch) fills each 0.25° land cell inside Indonesia with its derived regime — family hue, sub-type tint, at 55% opacity — under the city dots. The coastline is redrawn over the cells so the land keeps an edge, and each city dot gets a `stock` ring so it separates from a same-hue cell. The cells are derived regime, never zone boundaries (invariant 7); the BMKG hatch stays on cities, the only places a comparison exists. The caption switches to explain the cells when they are shown.
+
 **Month mode** sizes each dot by that month's normal (area ∝ mm) and keeps family hue. Size is a separate channel, so no ramp is introduced and the categorical encoding is untouched.
 
 **Boxes are the last resort, not the default.** Value steps (`stock` → `plate`, `sea` → `land`) and hairline rules separate things; a border around every block leaves nothing in the foreground.

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import type { ArchetypeRecord, Manifest, RegimeRecord } from "@/lib/grid/schema";
+import type { ArchetypeRecord, Manifest, Mosaic, RegimeRecord } from "@/lib/grid/schema";
 import { FAMILY_LABEL, FAMILY_TEXT_CLASS, MONTH_LABELS_ID, MONTH_NAMES_ID, type Family } from "@/lib/family";
 import { RegimeMap } from "@/components/map/RegimeMap";
 import { ArchetypeStrip } from "@/components/archetypes/ArchetypeStrip";
@@ -24,6 +24,8 @@ export interface AtlasViewProps {
   manifest: Manifest;
   /** "2006–2015", lib/grid/lookup's PERIOD_LABEL. */
   periodLabel: string;
+  /** The 0.25° regime mosaic; empty (rows 0) on a build without a grid source. */
+  mosaic: Mosaic;
 }
 
 /**
@@ -32,12 +34,14 @@ export interface AtlasViewProps {
  * city beneath. One filter state drives the map and the wall; one
  * selection drives the map ring, the reading and the wall cell.
  */
-export function AtlasView({ records, archetypes, manifest, periodLabel }: AtlasViewProps) {
+export function AtlasView({ records, archetypes, manifest, periodLabel, mosaic }: AtlasViewProps) {
   const [selectedId, setSelectedId] = useState<string>(records[0]?.id ?? "");
   const selected = records.find((r) => r.id === selectedId) ?? records[0];
   const [hoverId, setHoverId] = useState<string | null>(null);
   const [mapMode, setMapMode] = useState<"regime" | "month">("regime");
   const [month, setMonth] = useState(0);
+  const hasMosaic = mosaic.rows > 0;
+  const [showMosaic, setShowMosaic] = useState(true);
 
   const [filters, setFilters] = useState<AtlasFilterState>(EMPTY_FILTERS);
   const visibleRecords = useMemo(() => applyFilters(records, filters), [records, filters]);
@@ -123,6 +127,7 @@ export function AtlasView({ records, archetypes, manifest, periodLabel }: AtlasV
               month={month}
               highlightId={hoverId}
               maxMonthlyMm={maxMonthlyMm}
+              mosaic={hasMosaic && showMosaic ? mosaic : undefined}
             />
           </div>
 
@@ -148,6 +153,12 @@ export function AtlasView({ records, archetypes, manifest, periodLabel }: AtlasV
                 </button>
               ))}
             </div>
+            {mapMode === "regime" && hasMosaic && (
+              <label className="inline-flex cursor-pointer items-center gap-2 text-xs font-semibold text-ink">
+                <input type="checkbox" checked={showMosaic} onChange={(e) => setShowMosaic(e.target.checked)} className="h-4 w-4 accent-ink" />
+                Mosaik grid 0,25°
+              </label>
+            )}
             {mapMode === "month" && (
               <div role="group" aria-label="Pilih bulan" className="flex flex-wrap gap-0.5">
                 {MONTH_LABELS_ID.map((label, i) => (
@@ -175,7 +186,7 @@ export function AtlasView({ records, archetypes, manifest, periodLabel }: AtlasV
           )}
 
           <NearestOppositeFinding pair={manifest.nearestOppositePair} onSelect={setSelectedId} />
-          <Legend manifest={manifest} periodLabel={periodLabel} />
+          <Legend manifest={manifest} periodLabel={periodLabel} mosaicShown={hasMosaic && showMosaic && mapMode === "regime"} />
         </div>
 
         <article

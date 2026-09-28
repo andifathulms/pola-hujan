@@ -5,6 +5,8 @@ export interface LegendProps {
   manifest: Manifest;
   /** "2006–2015", from lib/grid/lookup's PERIOD_LABEL. */
   periodLabel: string;
+  /** Whether the 0.25° mosaic is on screen, so the caption explains the cells as well as the dots. */
+  mosaicShown?: boolean;
 }
 
 /**
@@ -22,7 +24,7 @@ export interface LegendProps {
  * limitation, not part of the four required statements — is behind a
  * disclosure.
  */
-export function Legend({ manifest, periodLabel }: LegendProps) {
+export function Legend({ manifest, periodLabel, mosaicShown = false }: LegendProps) {
   const agreementPercent = Math.round(manifest.agreement.agreementRate * 100);
 
   return (
@@ -30,7 +32,10 @@ export function Legend({ manifest, periodLabel }: LegendProps) {
       <p className="max-w-[70ch] text-ink">
         <strong className="font-bold">Klasifikasi turunan dari data presipitasi grid terbuka, bukan Zona Musim resmi BMKG.</strong>{" "}
         <span className="text-ink-muted">
-          Titik menunjukkan rezim di lokasi kota, bukan batas zona. Normal jangka panjang, bukan prakiraan.
+          {mosaicShown && manifest.mosaic
+            ? `Sel berwarna: rezim tiap sel grid 0,25° di daratan Indonesia (${manifest.mosaic.cells.toLocaleString("id-ID")} sel), dihitung dengan metode yang sama. Titik: kota. Keduanya menunjukkan rezim, bukan batas zona. `
+            : "Titik menunjukkan rezim di lokasi kota, bukan batas zona. "}
+          Normal jangka panjang, bukan prakiraan.
         </span>
       </p>
 

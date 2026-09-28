@@ -1,7 +1,8 @@
-import type { ArchetypeRecord, Manifest, RegimeRecord } from "./schema";
+import type { ArchetypeRecord, Manifest, Mosaic, RegimeRecord } from "./schema";
 import regimeData from "@/data/grids/regime.json";
 import manifestData from "@/data/grids/manifest.json";
 import archetypeData from "@/data/grids/archetypes.json";
+import mosaicData from "@/data/grids/mosaic.json";
 
 // The pipeline (scripts/build-data.ts) emits these as plain JSON; this
 // module is the one place components read them from, per CLAUDE.md
@@ -9,6 +10,7 @@ import archetypeData from "@/data/grids/archetypes.json";
 export const regimeRecords = regimeData as RegimeRecord[];
 export const manifest = manifestData as Manifest;
 export const archetypeRecords = archetypeData as ArchetypeRecord[];
+export const mosaic = mosaicData as Mosaic;
 
 export function findRegimeRecord(id: string): RegimeRecord | undefined {
   return regimeRecords.find((r) => r.id === id);

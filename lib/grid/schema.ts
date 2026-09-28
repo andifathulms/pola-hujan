@@ -157,6 +157,16 @@ export const manifestSchema = z.object({
    * Undefined only if fewer than two locations classify into different
    * families.
    */
+  /**
+   * The regime mosaic's own coverage: land cells classified, per family.
+   * Absent when the build had no grid source (an offline dev build).
+   */
+  mosaic: z
+    .object({
+      cells: z.number().int(),
+      byFamily: z.record(regimeFamilySchema, z.number().int()),
+    })
+    .optional(),
   nearestOppositePair: z
     .object({
       aId: z.string(),
@@ -170,3 +180,18 @@ export const manifestSchema = z.object({
     .optional(),
 });
 export type Manifest = z.infer<typeof manifestSchema>;
+
+/** data/grids/mosaic.json — the 0.25° regime mosaic. See lib/grid/mosaic.ts for the code alphabet. */
+export const mosaicSchema = z
+  .object({
+    latMax: z.number(),
+    lonMin: z.number(),
+    step: z.number().positive(),
+    rows: z.number().int().min(0),
+    cols: z.number().int().min(0),
+    codes: z.array(z.string().regex(/^[.MmEeLl]*$/)),
+  })
+  .refine((m) => m.codes.length === m.rows && m.codes.every((line) => line.length === m.cols), {
+    message: "mosaic codes must be rows × cols",
+  });
+export type Mosaic = z.infer<typeof mosaicSchema>;

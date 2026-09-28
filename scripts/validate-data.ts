@@ -17,7 +17,8 @@ import {
   WET_MONTH_MIN_MM,
   DRY_MONTH_MAX_MM,
 } from "../lib/harmonic";
-import { archetypeRecordSchema, manifestSchema, regimeRecordSchema } from "../lib/grid/schema";
+import { archetypeRecordSchema, manifestSchema, mosaicSchema, regimeRecordSchema } from "../lib/grid/schema";
+import { mosaicFamilyCounts } from "../lib/grid/mosaic";
 import { z } from "zod";
 
 const gridsDir = path.join(process.cwd(), "data", "grids");
@@ -36,6 +37,7 @@ function readJson(fileName: string): unknown {
 const manifest = manifestSchema.parse(readJson("manifest.json"));
 const records = z.array(regimeRecordSchema).parse(readJson("regime.json"));
 const archetypes = z.array(archetypeRecordSchema).parse(readJson("archetypes.json"));
+const mosaic = mosaicSchema.parse(readJson("mosaic.json"));
 
 const archetypeFamilies = new Set(archetypes.map((a) => a.family));
 for (const family of ["monsunal", "ekuatorial", "lokal"] as const) {
@@ -90,6 +92,15 @@ for (const m of manifest.months) {
   }
 }
 
+// The mosaic's reported coverage must be the mosaic's actual coverage
+// (invariant 12: reports are generated, never hand-written).
+const counted = mosaicFamilyCounts(mosaic);
+const countedTotal = counted.monsunal + counted.ekuatorial + counted.lokal;
+if ((manifest.mosaic?.cells ?? 0) !== countedTotal || (manifest.mosaic && JSON.stringify(manifest.mosaic.byFamily) !== JSON.stringify(counted))) {
+  console.error("data:validate — manifest.mosaic does not match data/grids/mosaic.json. Run `pnpm data:build`.");
+  process.exit(1);
+}
+
 if (manifest.coverage.totalLocations !== records.length) {
   console.error("data:validate — manifest coverage.totalLocations does not match data/grids/regime.json length.");
   process.exit(1);
@@ -97,5 +108,5 @@ if (manifest.coverage.totalLocations !== records.length) {
 
 console.log(
   `data:validate — OK. ${records.length} locations, thresholds current, ` +
-    `agreement ${manifest.agreement.agreeingLocations}/${manifest.agreement.comparedLocations}.`,
+    `agreement ${manifest.agreement.agreeingLocations}/${manifest.agreement.comparedLocations}, mosaic ${countedTotal} cells.`,
 );

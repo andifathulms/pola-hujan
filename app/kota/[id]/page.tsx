@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PERIOD_LABEL, archetypeRecords, manifest, regimeRecords } from "@/lib/grid/lookup";
+import { PERIOD_LABEL, archetypeRecords, manifest, mosaic, regimeRecords } from "@/lib/grid/lookup";
 import { FAMILY_LABEL, type Family } from "@/lib/family";
 import { SiteNav } from "@/components/SiteNav";
 import { CycleCurve } from "@/components/curve/CycleCurve";
@@ -68,7 +68,7 @@ export default function CityPage({ params }: { params: { id: string } }) {
             <FamilyBadges record={record} />
             <p className="max-w-[46ch] font-story text-lg italic leading-snug lg:text-[22px]">{cityLead(record, reference)}</p>
           </div>
-          <CityLocator records={regimeRecords} selectedId={record.id} />
+          <CityLocator records={regimeRecords} selectedId={record.id} mosaic={mosaic.rows > 0 ? mosaic : undefined} />
         </header>
 
         {/* The field plate — DESIGN.md §4.1. One per page. */}

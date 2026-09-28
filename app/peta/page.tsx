@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PERIOD_LABEL, archetypeRecords, manifest, regimeRecords } from "@/lib/grid/lookup";
+import { PERIOD_LABEL, archetypeRecords, manifest, mosaic, regimeRecords } from "@/lib/grid/lookup";
 import { AtlasView } from "@/components/AtlasView";
 import { SiteNav } from "@/components/SiteNav";
 import { pageMetadata } from "@/lib/metadata";
@@ -18,7 +18,7 @@ export default function PetaPage() {
   return (
     <>
       <SiteNav />
-      <AtlasView records={regimeRecords} archetypes={archetypeRecords} manifest={manifest} periodLabel={PERIOD_LABEL} />
+      <AtlasView records={regimeRecords} archetypes={archetypeRecords} manifest={manifest} periodLabel={PERIOD_LABEL} mosaic={mosaic} />
     </>
   );
 }

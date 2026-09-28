@@ -13,7 +13,7 @@
  * (CLAUDE.md invariant 12). Agreement is reported, never asserted —
  * there is no pass/fail threshold on it (PRD.md §8).
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import {
   annualHarmonicMm,
@@ -35,6 +35,7 @@ import { monthStats } from "../lib/climate/monthStats";
 import { mostSimilar } from "../lib/climate/similarity";
 import { locationSourceFileSchema, type ArchetypeRecord, type Manifest, type RegimeRecord } from "../lib/grid/schema";
 import { haversineDistanceKm } from "../lib/geo/nearest";
+import { MOSAIC_EMPTY, mosaicFamilyCounts, subtypeToCode, type MosaicGrid } from "../lib/grid/mosaic";
 
 const sourcePath = path.join(process.cwd(), "data", "source", "locations.json");
 const gridsDir = path.join(process.cwd(), "data", "grids");
@@ -54,12 +55,16 @@ function classificationDetailFor(fit: HarmonicFit, classification: ReturnType<ty
   };
 }
 
+/** Emitted curves are quantised to 0.1 mm — the same stated scale as the monthly normals (CLAUDE.md invariant 13). */
+const CURVE_SCALE_MM = 0.1;
+const quantise = (mm: number) => Math.round(mm / CURVE_SCALE_MM) * CURVE_SCALE_MM;
+
 function evaluateCurves(fit: HarmonicFit) {
   const annualCurveMm: number[] = [];
   const semiAnnualCurveMm: number[] = [];
   for (let t = 0; t < MONTHS_PER_YEAR; t += 1) {
-    annualCurveMm.push(annualHarmonicMm(fit, t));
-    semiAnnualCurveMm.push(semiAnnualHarmonicMm(fit, t));
+    annualCurveMm.push(Number(quantise(annualHarmonicMm(fit, t)).toFixed(1)));
+    semiAnnualCurveMm.push(Number(quantise(semiAnnualHarmonicMm(fit, t)).toFixed(1)));
   }
   return { annualCurveMm, semiAnnualCurveMm };
 }
@@ -197,6 +202,30 @@ for (const [i, a] of records.entries()) {
   }
 }
 
+// The regime mosaic: every 0.25° land cell inside Indonesia, fitted and
+// classified by the same lib/harmonic as the cities — no second method.
+// The source comes from `pnpm data:fetch`; an offline dev build without
+// it still succeeds and ships an empty mosaic, which the map skips.
+const gridSourcePath = path.join(process.cwd(), "data", "source", "grid-climatology.json");
+let mosaic: MosaicGrid = { latMax: 6, lonMin: 95, step: 0.25, rows: 0, cols: 0, codes: [] };
+if (existsSync(gridSourcePath)) {
+  const grid = JSON.parse(readFileSync(gridSourcePath, "utf-8")) as {
+    spec: { latMax: number; lonMin: number; step: number; rows: number; cols: number };
+    cells: Array<{ row: number; col: number; monthlyMm: number[] }>;
+  };
+  const rows = Array.from({ length: grid.spec.rows }, () => Array<string>(grid.spec.cols).fill(MOSAIC_EMPTY));
+  for (const cell of grid.cells) {
+    const row = rows[cell.row];
+    if (!row) continue;
+    row[cell.col] = subtypeToCode(classifyRegime(fitHarmonics(cell.monthlyMm)).subtype);
+  }
+  mosaic = { ...grid.spec, codes: rows.map((r) => r.join("")) };
+} else {
+  console.warn("data:build — no data/source/grid-climatology.json; run `pnpm data:fetch` for the regime mosaic. Shipping an empty one.");
+}
+const mosaicByFamily = mosaicFamilyCounts(mosaic);
+const mosaicCells = mosaicByFamily.monsunal + mosaicByFamily.ekuatorial + mosaicByFamily.lokal;
+
 const compared = records.filter((r) => r.agrees !== undefined);
 const agreeing = compared.filter((r) => r.agrees === true);
 const verifiedComparisons = compared.filter((r) => r.bmkgFamilySource === "bmkg-zom9120");
@@ -230,6 +259,7 @@ const manifest = {
     agreementRate: compared.length > 0 ? agreeing.length / compared.length : 0,
     verifiedComparisons: verifiedComparisons.length,
   },
+  mosaic: mosaicCells > 0 ? { cells: mosaicCells, byFamily: mosaicByFamily } : undefined,
   nearestOppositePair,
 };
 
@@ -237,9 +267,11 @@ mkdirSync(gridsDir, { recursive: true });
 writeFileSync(path.join(gridsDir, "regime.json"), JSON.stringify(records, null, 2));
 writeFileSync(path.join(gridsDir, "manifest.json"), JSON.stringify(manifest, null, 2));
 writeFileSync(path.join(gridsDir, "archetypes.json"), JSON.stringify(archetypes, null, 2));
+writeFileSync(path.join(gridsDir, "mosaic.json"), JSON.stringify(mosaic));
 
 console.log(
   `data:build — wrote ${records.length} location records. ` +
     `Agreement with BMKG family (reported, not asserted): ` +
-    `${agreeing.length}/${compared.length} (${(manifest.agreement.agreementRate * 100).toFixed(0)}%).`,
+    `${agreeing.length}/${compared.length} (${(manifest.agreement.agreementRate * 100).toFixed(0)}%). ` +
+    `Mosaic: ${mosaicCells} cells (M ${mosaicByFamily.monsunal} / E ${mosaicByFamily.ekuatorial} / L ${mosaicByFamily.lokal}).`,
 );

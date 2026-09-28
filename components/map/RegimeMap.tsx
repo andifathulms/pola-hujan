@@ -1,7 +1,8 @@
 "use client";
 
-import type { Manifest, RegimeRecord } from "@/lib/grid/schema";
-import { FAMILY_FILL_CLASS, FAMILY_LABEL, FAMILY_STROKE_CLASS, MONTH_NAMES_ID, formatMm, subtypeFillClass, type Family } from "@/lib/family";
+import type { Manifest, Mosaic, RegimeRecord } from "@/lib/grid/schema";
+import { codeToFamily, isTintCode, mosaicRuns } from "@/lib/grid/mosaic";
+import { FAMILY_FILL_CLASS, FAMILY_LABEL, FAMILY_STROKE_CLASS, FAMILY_TINT_FILL_CLASS, MONTH_NAMES_ID, formatMm, subtypeFillClass, type Family } from "@/lib/family";
 import { INDONESIA_OUTLINE_PATH } from "@/lib/geo/indonesiaOutline";
 
 export interface RegimeMapProps {
@@ -27,6 +28,13 @@ export interface RegimeMapProps {
   /** Largest monthly normal in the whole build, so dot sizes stay comparable while filters change. */
   maxMonthlyMm?: number;
   ariaLabel?: string;
+  /**
+   * The 0.25° regime mosaic, drawn under the cities in "regime" mode.
+   * Same encoding as the dots — family hue, sub-type tint — at lower
+   * opacity so the cities stay the thing you select. Derived cells, not
+   * zone boundaries (CLAUDE.md invariant 7).
+   */
+  mosaic?: Mosaic;
 }
 
 /** Month-mode radius: area proportional to rainfall, with a small floor so a 3 mm month is still findable. */
@@ -103,7 +111,9 @@ export function RegimeMap({
   labelIds = [],
   maxMonthlyMm,
   ariaLabel = "Peta rezim curah hujan, per lokasi",
+  mosaic,
 }: RegimeMapProps) {
+  const showMosaic = mode === "regime" && mosaic !== undefined && mosaic.rows > 0;
   const oppositeA = nearestOppositePair && records.find((r) => r.id === nearestOppositePair.aId);
   const oppositeB = nearestOppositePair && records.find((r) => r.id === nearestOppositePair.bId);
   const monthScale = maxMonthlyMm ?? Math.max(1, ...records.map((r) => Math.max(...r.monthlyMm)));
@@ -145,6 +155,30 @@ export function RegimeMap({
       </g>
 
       <path d={INDONESIA_OUTLINE_PATH} className="fill-land stroke-stitch" strokeWidth={0.6} strokeLinejoin="round" aria-hidden="true" />
+
+      {showMosaic && mosaic && (
+        <g aria-hidden="true" className="pointer-events-none" shapeRendering="crispEdges">
+          {mosaicRuns(mosaic).map((run) => {
+            const family = codeToFamily(run.code);
+            if (!family) return null;
+            const nw = project(mosaic.latMax - run.row * mosaic.step, mosaic.lonMin + run.col * mosaic.step);
+            const se = project(mosaic.latMax - (run.row + 1) * mosaic.step, mosaic.lonMin + (run.col + run.length) * mosaic.step);
+            return (
+              <rect
+                key={`${run.row}-${run.col}`}
+                x={nw.x}
+                y={nw.y}
+                width={se.x - nw.x}
+                height={se.y - nw.y}
+                className={isTintCode(run.code) ? FAMILY_TINT_FILL_CLASS[family] : FAMILY_FILL_CLASS[family]}
+                fillOpacity={0.55}
+              />
+            );
+          })}
+          {/* The coast again, over the cells, so the land still has an edge. */}
+          <path d={INDONESIA_OUTLINE_PATH} fill="none" className="stroke-ink/40" strokeWidth={0.5} strokeLinejoin="round" />
+        </g>
+      )}
 
       {/* The equator, over the coastline — it is the axis the
           classification turns on, not background furniture. */}
@@ -197,6 +231,7 @@ export function RegimeMap({
             {disagrees && (
               <circle cx={x} cy={y} r={r + 3.4} fill="url(#disagree-hatch)" className="pointer-events-none stroke-ink" strokeWidth={0.6} />
             )}
+            {showMosaic && <circle cx={x} cy={y} r={r + 1.6} aria-hidden="true" className="pointer-events-none fill-stock" />}
             <circle
               cx={x}
               cy={y}
