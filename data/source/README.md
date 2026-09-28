@@ -6,7 +6,7 @@ from **real CHIRPS 2.0 precipitation data** — not a placeholder. CHIRPS
 no-login-required Indonesia-region monthly product at 0.05° as small
 per-month archives; the fetch script downloads, decodes (`lib/geo/bil.ts`,
 `lib/geo/tar.ts` — no GDAL, no new dependency), and nearest-cell-samples
-each of the 34 cities below. Download cost is dominated by the number of
+each of the 86 cities below. Download cost is dominated by the number of
 months (120 archives, fixed), not locations — adding a city is just
 another coordinate sampled from rasters already being fetched, so this
 list grew from an initial 15 at effectively no extra cost.
@@ -68,6 +68,52 @@ comparison label to raise this number. Two verified comparisons now
 *disagree*: Medan (BMKG Ekuatorial, derived Lokal) and Palu (BMKG Lokal,
 derived Monsunal — see the table above for a plausible reason). Both are
 left as reported disagreements, not "fixed" — see the method page.
+
+## Third pass: 86 cities, and a policy for new comparisons
+
+Coverage grew from 34 to 86 locations: every province capital not yet
+covered (Serang, Tanjungpinang, Pangkalpinang, Mamuju, Sofifi, Tanjung
+Selor, Banjarbaru, Nabire, Wamena) plus regional cities chosen to fill
+gaps in Nusa Tenggara, Sulawesi, Maluku, Kalimantan and Papua.
+
+**New policy for this pass:** a new location gets a `bmkgFamily` only
+when ZOM9120 states it outright. Otherwise the field is left out and the
+location is not part of the agreement comparison at all. Adding more
+unverified guesses would move the reported rate without adding evidence.
+The 20 earlier estimates are kept unchanged, since changing them now
+would also move the rate for no methodological reason.
+
+| New cities | Family | Citation |
+|---|---|---|
+| Serang, Bogor, Cirebon, Cilacap, Surakarta, Malang, Banyuwangi | Monsunal | Table 7: Jawa 487/487 Monsunal. |
+| Singaraja | Monsunal | Table 7: Bali 20/20 Monsunal. |
+| Sumbawa Besar, Bima | Monsunal | Table 7: NTB 27/27 Monsunal. |
+| Labuan Bajo, Ende, Maumere, Waingapu | Monsunal | Table 7: NTT 28/28 Monsunal. |
+| Sofifi, Tobelo, Labuha | Ekuatorial | p.40: Maluku Utara is 100% Ekuatorial-2. |
+| Fakfak | Lokal | p.32: Fak-fak named as a Lokal-type example region. |
+
+**Reported agreement moved 62% (21/34) → 71% (37/52)** because 18 cited
+comparisons were added (16 agree), not because anything was tuned. Two
+of the new cited comparisons **disagree**: Tobelo and Labuha both derive
+as Lokal, while ZOM9120 states the whole province is Ekuatorial-2. Like
+Medan and Palu, they are left as reported findings.
+
+Sampling now uses the nearest *valid* CHIRPS cell within two cells
+(0.1°) when the nearest cell is sea, so a coastal city is not dropped
+for sitting one cell offshore. The original 34 cities' values are
+byte-identical to the previous pass.
+
+## Regime mosaic
+
+`pnpm data:fetch` also averages each monthly raster into 0.25° cells
+over the map's extent (95–141°E, 11°S–6°N), keeping only cells whose
+centre falls inside Indonesia's Natural Earth outline and that are at
+least half land. It writes `grid-climatology.json` here — **gitignored**,
+because it is a derived grid (CLAUDE.md invariant 13); CI regenerates
+it. `pnpm data:build` fits and classifies each of the ~2,400 cells with
+the same `lib/harmonic` used for cities and emits a one-character-per-
+cell mosaic (`data/grids/mosaic.json`, see `lib/grid/mosaic.ts`). Cells
+are regime, not zone boundaries.
 
 ## Precipitation source
 

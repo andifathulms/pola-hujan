@@ -31,5 +31,7 @@ export function monthStats(monthlyMm: readonly number[]): MonthStats {
     if (mm > WET_MONTH_MIN_MM) wetMonths += 1;
     if (mm < DRY_MONTH_MAX_MM) dryMonths += 1;
   });
-  return { annualTotalMm, wettestMonth, driestMonth, wetMonths, dryMonths };
+  // Summing 0.1 mm normals accumulates float noise (1999.3999…); the
+  // total is stated at the same 0.1 mm scale as its inputs.
+  return { annualTotalMm: Math.round(annualTotalMm * 10) / 10, wettestMonth, driestMonth, wetMonths, dryMonths };
 }

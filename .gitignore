@@ -6,6 +6,9 @@ out
 # grids committed" rule — see CLAUDE.md invariant 13). Regenerate locally
 # before `pnpm dev` or `pnpm build`.
 data/grids
+# The 0.25° mosaic climatology from `pnpm data:fetch` — a derived grid,
+# regenerated in CI, never committed (CLAUDE.md invariant 13).
+data/source/grid-climatology.json
 .DS_Store
 *.tsbuildinfo
 .env

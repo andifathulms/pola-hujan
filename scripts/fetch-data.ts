@@ -23,7 +23,9 @@
 import { gunzipSync } from "node:zlib";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { parseBilHeader, sampleBilNearest, type BilHeader } from "../lib/geo/bil";
+import { aggregateBilToGrid, gridCellCentre, parseBilHeader, sampleBilNearestValid, type BilHeader, type GridSpec } from "../lib/geo/bil";
+import { parseOutlineRings, pointInRings, projectToOutline } from "../lib/geo/outline";
+import { INDONESIA_OUTLINE_PATH } from "../lib/geo/indonesiaOutline";
 import { extractTarEntries } from "../lib/geo/tar";
 import { locationSourceFileSchema, type LocationSource } from "../lib/grid/schema";
 
@@ -98,7 +100,80 @@ const LOCATIONS: Array<Omit<LocationSource, "monthlyMm">> = [
   { id: "tual", name: "Tual", province: "Maluku", lat: -5.6323, lon: 132.7517, bmkgFamily: "lokal", bmkgFamilySource: "estimate" },
   { id: "merauke", name: "Merauke", province: "Papua Selatan", lat: -8.4667, lon: 140.4, bmkgFamily: "monsunal", bmkgFamilySource: "estimate" },
   { id: "timika", name: "Timika", province: "Papua Tengah", lat: -4.5453, lon: 136.8874, bmkgFamily: "ekuatorial", bmkgFamilySource: "estimate" },
+
+  // Third pass: every province capital not yet covered, plus regional
+  // cities chosen to fill gaps in Nusa Tenggara, Sulawesi, Maluku,
+  // Kalimantan and Papua. Policy change for this pass: a new location
+  // gets a bmkgFamily ONLY when ZOM9120 states it outright — Table 7
+  // (Jawa 487/487, Bali 20/20, NTB 27/27, NTT 28/28 Monsunal), p.40
+  // (Maluku Utara is 100% Ekuatorial-2), p.32 (Fak-fak named as a Lokal
+  // example). Everywhere else the field is left out, so the location is
+  // simply not part of the agreement comparison — adding more unverified
+  // guesses would move the reported rate without adding any evidence.
+  // (The 20 earlier estimates are kept as they were; changing them now
+  // would also move the rate for no methodological reason.)
+  { id: "serang", name: "Serang", province: "Banten", lat: -6.12, lon: 106.1503, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "bogor", name: "Bogor", province: "Jawa Barat", lat: -6.595, lon: 106.8166, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "cirebon", name: "Cirebon", province: "Jawa Barat", lat: -6.7063, lon: 108.557, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "cilacap", name: "Cilacap", province: "Jawa Tengah", lat: -7.7267, lon: 109.0098, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "surakarta", name: "Surakarta", province: "Jawa Tengah", lat: -7.5755, lon: 110.8243, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "malang", name: "Malang", province: "Jawa Timur", lat: -7.9666, lon: 112.6326, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "banyuwangi", name: "Banyuwangi", province: "Jawa Timur", lat: -8.2192, lon: 114.3691, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "singaraja", name: "Singaraja", province: "Bali", lat: -8.112, lon: 115.0882, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "sumbawa-besar", name: "Sumbawa Besar", province: "Nusa Tenggara Barat", lat: -8.493, lon: 117.42, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "bima", name: "Bima", province: "Nusa Tenggara Barat", lat: -8.4606, lon: 118.727, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "labuan-bajo", name: "Labuan Bajo", province: "Nusa Tenggara Timur", lat: -8.4964, lon: 119.8877, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "ende", name: "Ende", province: "Nusa Tenggara Timur", lat: -8.8432, lon: 121.6623, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "maumere", name: "Maumere", province: "Nusa Tenggara Timur", lat: -8.6199, lon: 122.2111, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "waingapu", name: "Waingapu", province: "Nusa Tenggara Timur", lat: -9.6567, lon: 120.2641, bmkgFamily: "monsunal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "sofifi", name: "Sofifi", province: "Maluku Utara", lat: 0.7366, lon: 127.558, bmkgFamily: "ekuatorial", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "tobelo", name: "Tobelo", province: "Maluku Utara", lat: 1.7284, lon: 128.0095, bmkgFamily: "ekuatorial", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "labuha", name: "Labuha", province: "Maluku Utara", lat: -0.6333, lon: 127.4833, bmkgFamily: "ekuatorial", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "fakfak", name: "Fakfak", province: "Papua Barat", lat: -2.926, lon: 132.296, bmkgFamily: "lokal", bmkgFamilySource: "bmkg-zom9120" },
+  { id: "lhokseumawe", name: "Lhokseumawe", province: "Aceh", lat: 5.1801, lon: 97.1507 },
+  { id: "meulaboh", name: "Meulaboh", province: "Aceh", lat: 4.1363, lon: 96.1285 },
+  { id: "sibolga", name: "Sibolga", province: "Sumatra Utara", lat: 1.7427, lon: 98.7792 },
+  { id: "pematangsiantar", name: "Pematangsiantar", province: "Sumatra Utara", lat: 2.9595, lon: 99.0687 },
+  { id: "bukittinggi", name: "Bukittinggi", province: "Sumatra Barat", lat: -0.3055, lon: 100.3692 },
+  { id: "dumai", name: "Dumai", province: "Riau", lat: 1.6667, lon: 101.45 },
+  { id: "batam", name: "Batam", province: "Kepulauan Riau", lat: 1.0456, lon: 104.0305 },
+  { id: "tanjungpinang", name: "Tanjungpinang", province: "Kepulauan Riau", lat: 0.9186, lon: 104.4554 },
+  { id: "pangkalpinang", name: "Pangkalpinang", province: "Kepulauan Bangka Belitung", lat: -2.1316, lon: 106.1169 },
+  { id: "lubuklinggau", name: "Lubuklinggau", province: "Sumatra Selatan", lat: -3.2967, lon: 102.8617 },
+  { id: "singkawang", name: "Singkawang", province: "Kalimantan Barat", lat: 0.906, lon: 108.9872 },
+  { id: "ketapang", name: "Ketapang", province: "Kalimantan Barat", lat: -1.85, lon: 109.9833 },
+  { id: "putussibau", name: "Putussibau", province: "Kalimantan Barat", lat: 0.8333, lon: 112.9333 },
+  { id: "sampit", name: "Sampit", province: "Kalimantan Tengah", lat: -2.532, lon: 112.95 },
+  { id: "banjarbaru", name: "Banjarbaru", province: "Kalimantan Selatan", lat: -3.4406, lon: 114.8305 },
+  { id: "balikpapan", name: "Balikpapan", province: "Kalimantan Timur", lat: -1.2379, lon: 116.8529 },
+  { id: "tanjung-selor", name: "Tanjung Selor", province: "Kalimantan Utara", lat: 2.8375, lon: 117.3653 },
+  { id: "mamuju", name: "Mamuju", province: "Sulawesi Barat", lat: -2.6786, lon: 118.8933 },
+  { id: "parepare", name: "Parepare", province: "Sulawesi Selatan", lat: -4.0135, lon: 119.6255 },
+  { id: "palopo", name: "Palopo", province: "Sulawesi Selatan", lat: -2.9925, lon: 120.1969 },
+  { id: "watampone", name: "Watampone", province: "Sulawesi Selatan", lat: -4.5386, lon: 120.3279 },
+  { id: "baubau", name: "Baubau", province: "Sulawesi Tenggara", lat: -5.47, lon: 122.61 },
+  { id: "poso", name: "Poso", province: "Sulawesi Tengah", lat: -1.3967, lon: 120.7524 },
+  { id: "luwuk", name: "Luwuk", province: "Sulawesi Tengah", lat: -0.95, lon: 122.7833 },
+  { id: "tolitoli", name: "Tolitoli", province: "Sulawesi Tengah", lat: 1.0333, lon: 120.8167 },
+  { id: "kotamobagu", name: "Kotamobagu", province: "Sulawesi Utara", lat: 0.7244, lon: 124.3199 },
+  { id: "bitung", name: "Bitung", province: "Sulawesi Utara", lat: 1.4404, lon: 125.1217 },
+  { id: "namlea", name: "Namlea", province: "Maluku", lat: -3.25, lon: 127.1 },
+  { id: "masohi", name: "Masohi", province: "Maluku", lat: -3.3, lon: 128.9667 },
+  { id: "saumlaki", name: "Saumlaki", province: "Maluku", lat: -7.95, lon: 131.32 },
+  { id: "kaimana", name: "Kaimana", province: "Papua Barat", lat: -3.6445, lon: 133.695 },
+  { id: "nabire", name: "Nabire", province: "Papua Tengah", lat: -3.3667, lon: 135.4833 },
+  { id: "biak", name: "Biak", province: "Papua", lat: -1.176, lon: 136.082 },
+  { id: "wamena", name: "Wamena", province: "Papua Pegunungan", lat: -4.0956, lon: 138.9453 },
 ];
+
+/**
+ * The regime mosaic's grid: 0.25° cells over the map's own extent
+ * (95–141°E, 11°S–6°N), so every cell lines up with the map. 0.25° is
+ * five CHIRPS cells a side — coarse enough to average out single-cell
+ * noise, fine enough to show the Lokal pockets of Maluku and Papua.
+ * Only cells whose centre falls inside Indonesia's own outline are kept.
+ */
+const MOSAIC_SPEC: GridSpec = { latMax: 6, lonMin: 95, step: 0.25, rows: 68, cols: 184 };
 
 interface MonthTarget {
   year: number;
@@ -163,13 +238,35 @@ async function main() {
   const sums = new Map<string, number[]>(LOCATIONS.map((l) => [l.id, Array(12).fill(0)]));
   const counts = new Map<string, number[]>(LOCATIONS.map((l) => [l.id, Array(12).fill(0)]));
 
+  // Mosaic accumulators, [cell][month], for cells inside Indonesia only.
+  const rings = parseOutlineRings(INDONESIA_OUTLINE_PATH);
+  const cellCount = MOSAIC_SPEC.rows * MOSAIC_SPEC.cols;
+  const inIndonesia = new Uint8Array(cellCount);
+  for (let row = 0; row < MOSAIC_SPEC.rows; row += 1) {
+    for (let col = 0; col < MOSAIC_SPEC.cols; col += 1) {
+      const { lat, lon } = gridCellCentre(MOSAIC_SPEC, row, col);
+      const { x, y } = projectToOutline(lat, lon);
+      if (pointInRings(rings, x, y)) inIndonesia[row * MOSAIC_SPEC.cols + col] = 1;
+    }
+  }
+  const gridSums = new Float64Array(cellCount * 12);
+  const gridCounts = new Uint16Array(cellCount * 12);
+
   let completed = 0;
   await runPool(targets, CONCURRENCY, async (target) => {
     const result = await fetchMonth(target);
     if (result) {
       const { header, data } = result;
+      const monthGrid = aggregateBilToGrid(data, header, MOSAIC_SPEC);
+      for (let i = 0; i < cellCount; i += 1) {
+        const v = monthGrid[i] as number;
+        if (!inIndonesia[i] || Number.isNaN(v)) continue;
+        const k = i * 12 + (target.month - 1);
+        gridSums[k] = (gridSums[k] ?? 0) + v;
+        gridCounts[k] = (gridCounts[k] ?? 0) + 1;
+      }
       for (const location of LOCATIONS) {
-        const value = sampleBilNearest(data, header, location.lat, location.lon);
+        const value = sampleBilNearestValid(data, header, location.lat, location.lon);
         if (value !== null) {
           const monthIdx = target.month - 1;
           const locSums = sums.get(location.id)!;
@@ -206,8 +303,9 @@ async function main() {
     `CHIRPS 2.0 (Climate Hazards Center, UCSB), Indonesia-region monthly product, ${FIRST_YEAR}-01 to ${LAST_YEAR}-12 ` +
     `(${LAST_YEAR - FIRST_YEAR + 1}-year average, not the 30-year WMO-normal period — the regional archive itself stops ` +
     `at 2016-10). Real satellite-gauge-blended precipitation at each city's coordinates, nearest-cell sampled at 0.05°. ` +
-    `bmkgFamily is a best-effort per-city assignment based on each region's documented regime, not scraped from a ` +
-    `specific BMKG bulletin. See data/source/README.md.`;
+    `bmkgFamily is cited against BMKG's ZOM 1991-2020 document where marked "bmkg-zom9120", a best-effort estimate ` +
+    `where marked "estimate", and absent (no comparison made) for the locations added in the third pass without a ` +
+    `citation. See data/source/README.md.`;
 
   const outFile = {
     _status: status,
@@ -222,6 +320,33 @@ async function main() {
   writeFileSync(outPath, JSON.stringify(outFile, null, 2));
 
   console.log(`data:fetch — wrote real CHIRPS climatology for ${locations.length} locations to ${outPath}`);
+
+  // The mosaic source: one twelve-month normal per land cell, rounded to
+  // 0.1 mm like the city normals. A cell is kept only if every month has
+  // enough samples. Written next to locations.json but gitignored — it
+  // is a derived grid, and CLAUDE.md invariant 13 keeps grids out of git;
+  // CI regenerates it on every build.
+  const cells: Array<{ row: number; col: number; monthlyMm: number[] }> = [];
+  for (let i = 0; i < cellCount; i += 1) {
+    if (!inIndonesia[i]) continue;
+    const monthlyMm: number[] = [];
+    let ok = true;
+    for (let m = 0; m < 12; m += 1) {
+      const n = gridCounts[i * 12 + m] ?? 0;
+      if (n < MIN_SAMPLES_PER_MONTH) {
+        ok = false;
+        break;
+      }
+      monthlyMm.push(Math.round(((gridSums[i * 12 + m] ?? 0) / n) * 10) / 10);
+    }
+    if (ok) cells.push({ row: Math.floor(i / MOSAIC_SPEC.cols), col: i % MOSAIC_SPEC.cols, monthlyMm });
+  }
+  const gridPath = path.join(process.cwd(), "data", "source", "grid-climatology.json");
+  writeFileSync(
+    gridPath,
+    JSON.stringify({ spec: MOSAIC_SPEC, period: outFile._climatologyPeriod, cells }),
+  );
+  console.log(`data:fetch — wrote ${cells.length} mosaic cells (0.25°, inside Indonesia) to ${gridPath}`);
 }
 
 main().catch((error) => {

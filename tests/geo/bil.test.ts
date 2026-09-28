@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { latLonToRowCol, parseBilHeader, sampleBilNearest } from "@/lib/geo/bil";
+import { aggregateBilToGrid, latLonToRowCol, parseBilHeader, sampleBilNearest, sampleBilNearestValid } from "@/lib/geo/bil";
 
 const SAMPLE_HDR = `NROWS           4
 NCOLS           4
@@ -85,5 +85,48 @@ describe("sampleBilNearest", () => {
 
   it("returns null outside the grid", () => {
     expect(sampleBilNearest(data, header, 90, 100.025)).toBeNull();
+  });
+});
+
+describe("sampleBilNearestValid", () => {
+  const header = parseBilHeader(SAMPLE_HDR);
+  const N = -32768;
+
+  it("returns the nearest cell when it has data", () => {
+    const data = bufferFromGrid([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
+    expect(sampleBilNearestValid(data, header, 5.975, 100.025)).toBe(1);
+  });
+
+  it("steps to the closest valid neighbour over nodata (a coastal city)", () => {
+    const data = bufferFromGrid([N, N, N, N, N, N, 42, N, N, N, N, N, N, N, N, 99]);
+    // Nearest cell is (0,0), nodata; (1,2) is the closest valid within 2 cells.
+    expect(sampleBilNearestValid(data, header, 5.975, 100.025)).toBe(42);
+  });
+
+  it("gives up beyond the radius", () => {
+    const data = bufferFromGrid([N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, 99]);
+    expect(sampleBilNearestValid(data, header, 5.975, 100.025, 1)).toBeNull();
+  });
+});
+
+describe("aggregateBilToGrid", () => {
+  const header = parseBilHeader(SAMPLE_HDR);
+  const N = -32768;
+  // Source cell centres: lon 100.025..100.175, lat 5.975..5.825 → a 0.1° grid
+  // from 6.0°N / 100.0°E is 2 × 2 output cells of 2 × 2 source cells each.
+  const spec = { latMax: 6.0, lonMin: 100.0, step: 0.1, rows: 2, cols: 2 };
+
+  it("averages the source cells inside each output cell", () => {
+    const data = bufferFromGrid([1, 3, 10, 10, 5, 7, 10, 10, 0, 0, 20, 40, 0, 0, 60, 80]);
+    expect(Array.from(aggregateBilToGrid(data, header, spec))).toEqual([4, 10, 0, 50]);
+  });
+
+  it("ignores nodata but drops a cell that is mostly missing", () => {
+    const data = bufferFromGrid([8, N, N, N, N, N, N, N, 2, 4, 1, 1, N, 6, 1, 1]);
+    const out = Array.from(aggregateBilToGrid(data, header, spec));
+    expect(Number.isNaN(out[0])).toBe(true); // 1 of 4 valid: below 50%
+    expect(Number.isNaN(out[1])).toBe(true); // 0 of 4
+    expect(out[2]).toBe(4); // 3 of 4 valid: (2 + 4 + 6) / 3
+    expect(out[3]).toBe(1);
   });
 });
