@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compareCaption, storyLead } from "@/lib/storyCopy";
+import { cityLead, compareCaption, referenceCityId, storyLead } from "@/lib/storyCopy";
 import type { RegimeRecord } from "@/lib/grid/schema";
 
 function city(id: string, name: string, monthlyMm: number[], wettestMonth: number, driestMonth: number): RegimeRecord {
@@ -54,5 +54,25 @@ describe("compareCaption", () => {
   it("quotes the first city's rain in the second city's wettest month", () => {
     const caption = compareCaption(city("jakarta", "Jakarta", months(0, 432), 0, 8), city("ambon", "Ambon", months(5, 741), 5, 10));
     expect(caption).toBe("Jakarta mencatat 432 mm di Januari. Ambon mencatat 741 mm di Juni, ketika Jakarta hanya menerima 10 mm.");
+  });
+});
+
+describe("cityLead", () => {
+  const ambon = city("ambon", "Ambon", months(5, 741), 5, 10);
+  const jakarta = city("jakarta", "Jakarta", months(0, 432), 0, 8);
+
+  it("states the wettest and driest month and the reference city's rain in that month", () => {
+    expect(cityLead(ambon, jakarta)).toBe(
+      "Ambon paling basah di Juni (741 mm) dan paling kering di November (10 mm). Pada bulan yang sama, Jakarta menerima 10 mm.",
+    );
+  });
+
+  it("never compares a city with itself", () => {
+    expect(cityLead(jakarta, jakarta)).not.toContain("Pada bulan yang sama");
+  });
+
+  it("picks Ambon as Jakarta's reference and Jakarta for everyone else", () => {
+    expect(referenceCityId("jakarta")).toBe("ambon");
+    expect(referenceCityId("padang")).toBe("jakarta");
   });
 });

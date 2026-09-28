@@ -16,7 +16,7 @@ import { CycleTable } from "@/components/table/CycleTable";
 import { CityStats, FamilyBadges, SimilarPlaces, WhyThisFamily } from "@/components/atlas/CityReading";
 import { EMPTY_FILTERS, applyFilters, type AtlasFilterState } from "@/lib/atlasFilters";
 import { ATLAS_LEAD } from "@/lib/pageCopy";
-import { compareHref, explainerHref } from "@/lib/routes";
+import { cityHref, compareHref, explainerHref } from "@/lib/routes";
 
 export interface AtlasViewProps {
   records: RegimeRecord[];
@@ -217,6 +217,12 @@ export function AtlasView({ records, archetypes, manifest, periodLabel }: AtlasV
           <SimilarPlaces record={selected} lookup={(id) => byId.get(id)} onSelect={setSelectedId} />
 
           <div className="flex flex-wrap gap-2 border-t border-rule pt-4">
+            <Link
+              href={cityHref(selected.id)}
+              className="inline-flex items-center gap-2 rounded-full border border-stitch px-4 py-2 text-xs font-bold text-ink no-underline hover:border-ink"
+            >
+              Halaman {selected.name}
+            </Link>
             {compareName && (
               <Link
                 href={compareHref(selected.id, compareWith)}

@@ -30,3 +30,23 @@ export function compareCaption(a: RegimeRecord, b: RegimeRecord): string {
     b.monthlyMm[bPeak] ?? 0,
   )} mm di ${MONTH_NAMES_ID[bPeak]}, ketika ${a.name} hanya menerima ${formatMm(a.monthlyMm[bPeak] ?? 0)} mm.`;
 }
+
+/**
+ * A city page's lead: its wettest and driest months of the normal year,
+ * then the reference city's rain in that same wettest month (Jakarta,
+ * or Ambon for Jakarta itself). Normals only; nothing reads forward.
+ */
+export function cityLead(record: RegimeRecord, reference: RegimeRecord | undefined): string {
+  const wet = record.wettestMonth;
+  const dry = record.driestMonth;
+  const own = `${record.name} paling basah di ${MONTH_NAMES_ID[wet]} (${formatMm(record.monthlyMm[wet] ?? 0)} mm) dan paling kering di ${
+    MONTH_NAMES_ID[dry]
+  } (${formatMm(record.monthlyMm[dry] ?? 0)} mm).`;
+  if (!reference || reference.id === record.id) return own;
+  return `${own} Pada bulan yang sama, ${reference.name} menerima ${formatMm(reference.monthlyMm[wet] ?? 0)} mm.`;
+}
+
+/** The reference a city page compares against: Jakarta, or Ambon when the page is Jakarta. */
+export function referenceCityId(id: string): string {
+  return id === "jakarta" ? "ambon" : "jakarta";
+}

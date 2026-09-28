@@ -41,11 +41,17 @@ export function FamilyBadges({ record }: { record: RegimeRecord }) {
         <span className="font-mono font-normal text-ink-muted">{record.subtype}</span>
       </span>
       {record.bmkgFamily && (
-        <span className="inline-flex items-center gap-2 rounded-full border border-rule bg-stock px-3 py-1 text-xs font-semibold">
+        <span
+          className="inline-flex items-center gap-2 rounded-full border border-rule bg-stock px-3 py-1 text-xs font-semibold"
+          title={record.bmkgFamilySource === "bmkg-zom9120" ? "Terverifikasi terhadap dokumen ZOM 1991–2020 BMKG" : "Perkiraan, belum diverifikasi"}
+        >
           {disagrees && <HatchSwatch className="h-2.5 w-2.5" />}
-          BMKG {record.bmkgFamilySource === "bmkg-zom9120" ? "(terverifikasi ZOM9120)" : "(perkiraan)"}:{" "}
-          {FAMILY_LABEL[record.bmkgFamily as Family]}
-          <span className="font-normal text-ink-muted">· {disagrees ? "berbeda" : "cocok"}</span>
+          <span>
+            BMKG: {FAMILY_LABEL[record.bmkgFamily as Family]}{" "}
+            <span className="font-normal text-ink-muted">
+              ({record.bmkgFamilySource === "bmkg-zom9120" ? "ZOM9120" : "perkiraan"}) · {disagrees ? "berbeda" : "cocok"}
+            </span>
+          </span>
         </span>
       )}
     </div>

@@ -10,8 +10,13 @@ export const ROUTES = {
   method: "/cara-kerja/",
 } as const;
 
-/** Where a city name links to from search, the wall, and the story. */
+/** A city's own page — where search, the story and "pola serupa" links go. */
 export function cityHref(id: string): string {
+  return `/kota/${encodeURIComponent(id)}/`;
+}
+
+/** The atlas with a city selected. */
+export function atlasHref(id: string): string {
   return `${ROUTES.atlas}?lokasi=${encodeURIComponent(id)}`;
 }
 

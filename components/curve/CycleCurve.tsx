@@ -104,7 +104,7 @@ export function CycleCurve({
               x={PAD_LEFT - 6}
               y={yFor(tick) + 4}
               textAnchor="end"
-              className={`fill-ink font-mono tabular-nums ${isPlate ? "text-xs" : "text-tick"}`}
+              className="fill-ink font-mono text-tick tabular-nums"
             >
               {Math.round(tick)}
             </text>
@@ -172,7 +172,7 @@ export function CycleCurve({
               x={xFor(t)}
               y={HEIGHT - PAD_BOTTOM + 16}
               textAnchor="middle"
-              className={`fill-ink font-mono ${isPlate ? "text-xs tracking-widest" : "text-tick"}`}
+              className={`fill-ink font-mono text-tick ${isPlate ? "tracking-[0.12em]" : ""}`}
             >
               {isPlate ? label.toUpperCase() : label}
             </text>
