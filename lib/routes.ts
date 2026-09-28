@@ -19,3 +19,8 @@ export function cityHref(id: string): string {
 export function compareHref(aId: string, bId: string): string {
   return `${ROUTES.compare}?kiri=${encodeURIComponent(aId)}&kanan=${encodeURIComponent(bId)}`;
 }
+
+/** The harmonic explainer, seeded with a city's own fit. */
+export function explainerHref(id: string): string {
+  return `${ROUTES.method}?dari=${encodeURIComponent(id)}#interaktif`;
+}

@@ -113,18 +113,15 @@ A tinted mark is always stroked in its canonical family hue, so its edge keeps t
 The core object. Twelve monthly bars for a location, with the fitted annual and semi-annual harmonics drawn over them as thin curves.
 
 - Bars in the family hue, ink hairline baseline, month labels beneath.
-- **The two harmonics drawn separately, not summed** — seeing the annual and semi-annual components individually is what makes the classification legible rather than asserted.
+- **The two harmonics drawn separately, not summed** — the annual as a solid ink line, the semi-annual as a dashed `ink-muted` line. The dashes are in user units: an earlier version normalised the path with `pathLength`, which scaled the dash pattern past the line's length and drew it solid — seeing the annual and semi-annual components individually is what makes the classification legible rather than asserted.
 - Y-axis in mm, tabular figures, always labelled.
 - **Fixed month order Jan–Dec, always.** Never rotated to centre a peak; the whole point is that peaks sit in different months in different places, and re-centring would destroy the comparison.
 
 ### 4.1 The field plate
 
-**"Almanac, Intensified" — the one signature element.** On the atlas, the selected location's curve is restated once, full width, beneath the map-and-meta row, as a mounted plate rather than a chart squeezed into a third-width column. Same `CycleCurve`/`CycleTable`, not a new chart — the ambition is spent on presentation, in one place, rather than spread thin across the page.
+**The one signature element, now on the city page.** Each `/kota/[id]` page restates the city's curve full width as a mounted plate — `--plate` ground, `--stitch` seam, the name at `--text-4xl`, heavier harmonic strokes and letterspaced month labels. It no longer appears on the atlas, where the city card carries the standard curve beside the map: a second copy of the same curve beneath the first was repetition, not emphasis.
 
-- Ground is `--plate` (`#F0ECE3`), one value-step darker than `--stock` — a value-step of the same warm-neutral family, not a new hue. A `--stitch` (`#B9B09C`) hairline stands in for elevation, since the app uses no box-shadow anywhere and this keeps it that way.
-- The location name sets in the display serif at `--text-4xl` (58px) — the one place in the app that goes above the 46px ceiling elsewhere in the type scale (§8), scoped to this single heading.
-- The two harmonics draw heavier here (2.5px / 1.75px vs. the standard 1.5px / 1px) and the month labels set uppercase, letterspaced, mono — an instrument-plate register for this one reading, not a change to `CycleCurve`'s default appearance anywhere else it's used (`CompareView` is untouched).
-- One plate, one location, one moment. It does not appear per-row in a list or repeat anywhere else — repeating it would make it wallpaper, not a signature.
+One plate per page, one location. It is never repeated in a list.
 
 ## 5. The archetype strip
 
@@ -139,7 +136,8 @@ Small, quiet, permanent. Not a legend that expands; a fixed part of the page.
 - One cell per location: twelve bars, month gridlines, the name, the peak month and the wettest month's value. **Every cell divides its width into the same twelve slots**, Jan at the left, so a month sits at the same place across the whole wall. This is §1.1 of `DESIGN-REWORK.md` — one shared axis — applied to 34 panels instead of two.
 - **Each cell keeps its own mm scale and states it.** A shared y-scale across the archipelago would flatten the dry places to nothing; the comparison here is of shape and timing, not magnitude.
 - **The two harmonics are not drawn at wall size.** They are the evidence for the classification (§4) and need room to be read as two separate lines; at thumbnail size they overlap into one smudge, which would assert the fit rather than show it. The reading panel and the field plate still draw them apart.
-- Sortable by family, by peak month, or by annual rainfall. **Sorting by peak month is the proof**: the Monsunal cells bunch at the two ends of the year and the Lokal ones sit in the middle of it, with no interaction and no copy required.
+- Cards on the page ground (`rounded-card`, `rule` border, ink border on hover and selection). Hovering or focusing a card rings its dot on the map, so the wall and the map read as one view.
+- Sortable by peak month (the default), by family, or by annual rainfall. Peak-month sorting orders by the wettest month the card is labelled with, then by fitted phase. **Sorting by peak month is the proof**: the Monsunal cells bunch at the two ends of the year and the Lokal ones sit in the middle of it, with no interaction and no copy required.
 - Month order stays fixed Jan–Des in every cell, never rotated (§4).
 
 ### 5.2 The filter bar
@@ -152,11 +150,13 @@ The disagreement toggle is the point of it. Where the derived classification dif
 
 **An atlas spread, not a full-bleed canvas.** This app has two co-equal objects — the map and the curve — and neither should dominate.
 
-**Reading order on the atlas is: masthead, filter bar, map spread, field plate, wall.** The masthead is an eyebrow, the name, one sentence and the nearest-opposite finding — **never a stack of cards in front of the atlas.** Explanation that is not one of §9's required statements goes into a disclosure, not into a paragraph above the fold.
+**Reading order on the atlas (`/peta`) is: header, filter chips, map with the city reading beside it, the wall.** The header is an eyebrow, the title, one story sentence and the "your location" action — never a stack of cards in front of the atlas.
 
-**Desktop:** map on the left two-thirds with the legend (§9) set directly beneath it as the map's own caption, the selected location's meta panel and archetype strip on the right third. The field plate (§4.1) runs full width beneath that row — a third tier, not a third column, so it doesn't compete with the map/meta split above it. The regime wall (§5.1) runs full width beneath the plate. Comparison mode splits the curve panel into two stacked curves sharing one month axis.
+**Desktop:** the map takes the left column (about 60%), sticky while the page scrolls, with the mode switch (Rezim / Hujan per bulan), the nearest-opposite finding and the legend beneath it as its caption. The right column is the **city reading**: province and name, family and BMKG badges, four numbers of the normal year, the curve with its table, why this family (a sentence, two gauges, the exact figures in a disclosure), similar places, two actions, and the archetype strip. The wall runs full width beneath.
 
-**Mobile:** map at 45vh, legend, meta panel and archetypes beneath, the field plate beneath that, the wall last at two columns.
+**Mobile:** map first at full width, then the caption, then the reading, then the wall at two columns. While the reading is off screen, a slim ink bar at the bottom names the selected city and jumps to it.
+
+**Month mode** sizes each dot by that month's normal (area ∝ mm) and keeps family hue. Size is a separate channel, so no ramp is introduced and the categorical encoding is untouched.
 
 **Boxes are the last resort, not the default.** Value steps (`stock` → `plate`, `sea` → `land`) and hairline rules separate things; a border around every block leaves nothing in the foreground.
 

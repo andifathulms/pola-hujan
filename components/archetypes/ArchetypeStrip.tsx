@@ -33,24 +33,30 @@ function sparkline(monthlyMm: number[]): string {
  */
 export function ArchetypeStrip({ archetypes, activeFamily }: ArchetypeStripProps) {
   return (
-    <div className="flex gap-4 overflow-x-auto border-t border-rule pt-3">
-      {archetypes.map((archetype) => {
-        const isActive = archetype.family === activeFamily;
-        return (
-          <div key={archetype.family} className={`flex min-w-[140px] flex-col gap-1 ${isActive ? "rounded border border-ink/30 p-1" : ""}`}>
-            <span className={`text-xs font-medium ${FAMILY_TEXT_CLASS[archetype.family as Family]}`}>
-              {FAMILY_LABEL[archetype.family as Family]}
-              {isActive && " — bentuknya seperti ini"}
-            </span>
-            <svg viewBox={`0 0 ${SPARK_WIDTH} ${SPARK_HEIGHT}`} role="img" aria-label={`Kurva acuan rezim ${FAMILY_LABEL[archetype.family as Family]} (contoh sintetis, bukan data lokasi nyata)`}>
-              <path d={sparkline(archetype.monthlyMm)} fill="none" className={FAMILY_TEXT_CLASS[archetype.family as Family]} stroke="currentColor" strokeWidth={1.5} />
-            </svg>
-            <span className="font-mono text-tick text-ink-muted">
-              {MONTH_LABELS_ID[0]}–{MONTH_LABELS_ID[11]} · contoh sintetis
-            </span>
-          </div>
-        );
-      })}
+    <div className="flex flex-col gap-2 border-t border-rule pt-4">
+      <p className="text-xs text-ink-muted">
+        <strong className="font-semibold text-ink">Tiga bentuk acuan</strong> — contoh sintetis, bukan data lokasi nyata
+      </p>
+      <div className="grid grid-cols-3 gap-2">
+        {archetypes.map((archetype) => {
+          const family = archetype.family as Family;
+          const isActive = family === activeFamily;
+          return (
+            <div
+              key={family}
+              className={`flex flex-col gap-1 rounded-card border px-2.5 py-2 ${isActive ? "border-ink bg-stock" : "border-rule"}`}
+            >
+              <span className={`text-xs font-bold ${FAMILY_TEXT_CLASS[family]}`}>{FAMILY_LABEL[family]}</span>
+              <svg viewBox={`0 0 ${SPARK_WIDTH} ${SPARK_HEIGHT}`} role="img" aria-label={`Kurva acuan rezim ${FAMILY_LABEL[family]} (contoh sintetis, bukan data lokasi nyata)`}>
+                <path d={sparkline(archetype.monthlyMm)} fill="none" className={FAMILY_TEXT_CLASS[family]} stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span className="font-mono text-tick text-ink-muted">
+                {MONTH_LABELS_ID[0]}–{MONTH_LABELS_ID[11]}{isActive ? " · kota ini" : ""}
+              </span>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

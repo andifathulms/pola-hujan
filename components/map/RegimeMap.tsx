@@ -1,7 +1,7 @@
 "use client";
 
 import type { Manifest, RegimeRecord } from "@/lib/grid/schema";
-import { FAMILY_FILL_CLASS, FAMILY_LABEL, type Family } from "@/lib/family";
+import { FAMILY_FILL_CLASS, FAMILY_LABEL, FAMILY_STROKE_CLASS, MONTH_NAMES_ID, formatMm, subtypeFillClass, type Family } from "@/lib/family";
 import { INDONESIA_OUTLINE_PATH } from "@/lib/geo/indonesiaOutline";
 
 export interface RegimeMapProps {
@@ -10,7 +10,28 @@ export interface RegimeMapProps {
   onSelect: (id: string) => void;
   /** Drawn as a hairline between the two dots — DESIGN-REWORK.md §3. Optional so the map still renders without it (e.g. fewer than two families present). */
   nearestOppositePair?: Manifest["nearestOppositePair"];
+  /**
+   * "regime" draws family (hue), sub-type (tint) and BMKG disagreement
+   * (hatch). "month" sizes each dot by that month's normal rainfall —
+   * size is a separate channel from hue, so the categorical encoding is
+   * untouched and no colour ramp is introduced (CLAUDE.md invariant 11).
+   */
+  mode?: "regime" | "month";
+  /** Month index 0–11, used only in "month" mode. */
+  month?: number;
+  /** A location to ring lightly without selecting it — the wall's hover. */
+  highlightId?: string | null;
+  /** Locations whose names are drawn on the map. The selected one is always labelled. */
+  labelIds?: string[];
+  /** Largest monthly normal in the whole build, so dot sizes stay comparable while filters change. */
+  maxMonthlyMm?: number;
+  ariaLabel?: string;
 }
+
+/** Month-mode radius: area proportional to rainfall, with a small floor so a 3 mm month is still findable. */
+const MONTH_MIN_RADIUS = 1.8;
+const MONTH_MAX_RADIUS = 20;
+const REGIME_RADIUS = 6.5;
 
 // Indonesia's rough bounding box, used to place points on a plain SVG
 // canvas and to pre-project the coastline outline below — there is no
@@ -70,86 +91,77 @@ function project(lat: number, lon: number) {
  * (DESIGN.md §3). Each point carries a text label so colour is never the
  * only channel (DESIGN.md §10).
  */
-export function RegimeMap({ records, selectedId, onSelect, nearestOppositePair }: RegimeMapProps) {
+export function RegimeMap({
+  records,
+  selectedId,
+  onSelect,
+  nearestOppositePair,
+  mode = "regime",
+  month = 0,
+  highlightId = null,
+  labelIds = [],
+  maxMonthlyMm,
+  ariaLabel = "Peta rezim curah hujan, per lokasi",
+}: RegimeMapProps) {
   const oppositeA = nearestOppositePair && records.find((r) => r.id === nearestOppositePair.aId);
   const oppositeB = nearestOppositePair && records.find((r) => r.id === nearestOppositePair.bId);
+  const monthScale = maxMonthlyMm ?? Math.max(1, ...records.map((r) => Math.max(...r.monthlyMm)));
+  const radiusFor = (record: RegimeRecord) =>
+    mode === "month"
+      ? MONTH_MIN_RADIUS + Math.sqrt((record.monthlyMm[month] ?? 0) / monthScale) * (MONTH_MAX_RADIUS - MONTH_MIN_RADIUS)
+      : REGIME_RADIUS;
+  // In month mode the big dots draw first so the small ones stay on top
+  // and clickable; in regime mode source order is kept.
+  const drawOrder = mode === "month" ? [...records].sort((a, b) => radiusFor(b) - radiusFor(a)) : records;
+  const labelled = new Set([...labelIds, ...(selectedId ? [selectedId] : [])]);
 
   return (
     <svg
       viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
       preserveAspectRatio="xMidYMid meet"
       role="group"
-      aria-label="Peta rezim curah hujan, per lokasi"
+      aria-label={ariaLabel}
       className="h-full w-full"
     >
       <defs>
-        <pattern id="disagree-hatch" width={4} height={4} patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
-          <line x1={0} y1={0} x2={0} y2={4} className="stroke-ink" strokeWidth={1.5} />
+        <pattern id="disagree-hatch" width={3.2} height={3.2} patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+          <rect width={3.2} height={3.2} className="fill-stock" />
+          <rect width={1.3} height={3.2} className="fill-ink" />
         </pattern>
       </defs>
 
-      {/* Sea, then land, then the graticule over both — three value-steps
-          of the same warm neutral, so the coast reads as an edge rather
-          than as a stroke around a grey shape on the page ground. */}
-      <rect x={0} y={0} width={WIDTH} height={HEIGHT} className="fill-sea stroke-rule" strokeWidth={0.5} />
+      {/* Sea, graticule, land: the sea is the one cool neutral, so the
+          coast reads as an edge without a heavy stroke. */}
+      <rect x={0} y={0} width={WIDTH} height={HEIGHT} className="fill-sea" />
 
       <g aria-hidden="true" className="pointer-events-none">
         {MERIDIANS.map((lon) => (
-          <line
-            key={lon}
-            x1={project(0, lon).x}
-            y1={0}
-            x2={project(0, lon).x}
-            y2={HEIGHT}
-            className="stroke-stitch/60"
-            strokeWidth={0.5}
-          />
+          <line key={lon} x1={project(0, lon).x} y1={0} x2={project(0, lon).x} y2={HEIGHT} className="stroke-rule" strokeWidth={0.5} />
         ))}
         {PARALLELS.filter((lat) => lat !== 0).map((lat) => (
-          <line
-            key={lat}
-            x1={0}
-            y1={project(lat, 0).y}
-            x2={WIDTH}
-            y2={project(lat, 0).y}
-            className="stroke-stitch/60"
-            strokeWidth={0.5}
-          />
+          <line key={lat} x1={0} y1={project(lat, 0).y} x2={WIDTH} y2={project(lat, 0).y} className="stroke-rule" strokeWidth={0.5} />
         ))}
       </g>
 
-      {/* Orientation only — quiet enough that family colour (the actual
-          data channel) still reads as the strongest thing on the
-          canvas. Decorative: not part of the classification, so it
-          carries no label of its own. */}
-      <path d={INDONESIA_OUTLINE_PATH} className="fill-land stroke-stitch" strokeWidth={0.6} aria-hidden="true" />
+      <path d={INDONESIA_OUTLINE_PATH} className="fill-land stroke-stitch" strokeWidth={0.6} strokeLinejoin="round" aria-hidden="true" />
 
-      {/* The equator, over the coastline rather than under it — it is the
-          axis the classification turns on, not background furniture. */}
+      {/* The equator, over the coastline — it is the axis the
+          classification turns on, not background furniture. */}
       <g aria-hidden="true" className="pointer-events-none">
-        <line
-          x1={0}
-          y1={project(0, 0).y}
-          x2={WIDTH}
-          y2={project(0, 0).y}
-          className="stroke-ink/55"
-          strokeWidth={0.75}
-          strokeDasharray="6 4"
-        />
-        {PARALLELS.map((lat) => (
-          <text key={lat} x={5} y={project(lat, 0).y - 4} className="fill-ink/70 font-mono text-tick">
+        <line x1={0} y1={project(0, 0).y} x2={WIDTH} y2={project(0, 0).y} className="stroke-ink/50" strokeWidth={0.75} strokeDasharray="5 4" />
+        <text x={WIDTH - 8} y={project(0, 0).y - 5} textAnchor="end" className="fill-ink-muted font-mono text-tick tracking-[0.1em]">
+          KHATULISTIWA
+        </text>
+        {PARALLELS.filter((lat) => lat !== 0).map((lat) => (
+          <text key={lat} x={WIDTH - 6} y={project(lat, 0).y - 4} textAnchor="end" className="fill-ink-muted font-mono text-tick">
             {parallelLabel(lat)}
           </text>
         ))}
       </g>
 
-      {/* The sharpest local instance of PRD.md §1's founding claim, drawn
-          rather than only stated in NearestOppositeFinding's paragraph
-          above the map (DESIGN-REWORK.md §3). `ink`, not a family hue —
-          this is a relationship between two regimes, not a regime
-          (CLAUDE.md invariant 10). aria-hidden: the paragraph already
-          carries this as text. */}
-      {oppositeA && oppositeB && nearestOppositePair && (
+      {/* The nearest opposite pair, drawn (DESIGN-REWORK.md §3). `ink`,
+          not a family hue — a relationship between regimes, not a regime. */}
+      {mode === "regime" && oppositeA && oppositeB && nearestOppositePair && (
         <g aria-hidden="true" className="pointer-events-none">
           {(() => {
             const a = project(oppositeA.lat, oppositeA.lon);
@@ -159,9 +171,9 @@ export function RegimeMap({ records, selectedId, onSelect, nearestOppositePair }
             const distanceLabel = nearestOppositePair.distanceKm < 1 ? "<1 km" : `${Math.round(nearestOppositePair.distanceKm)} km`;
             return (
               <>
-                <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} className="stroke-ink" strokeWidth={1} />
-                <rect x={midX - distanceLabel.length * 3 - 2} y={midY - 7} width={distanceLabel.length * 6 + 4} height={10} className="fill-sea" />
-                <text x={midX} y={midY + 1} textAnchor="middle" className="fill-ink font-mono text-tick">
+                <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} className="stroke-ink" strokeWidth={1} strokeDasharray="2 2" />
+                <rect x={midX - distanceLabel.length * 3 - 3} y={midY - 7} width={distanceLabel.length * 6 + 6} height={11} rx={2} className="fill-stock" />
+                <text x={midX} y={midY + 1.5} textAnchor="middle" className="fill-ink font-mono text-tick">
                   {distanceLabel}
                 </text>
               </>
@@ -170,36 +182,58 @@ export function RegimeMap({ records, selectedId, onSelect, nearestOppositePair }
         </g>
       )}
 
-      {records.map((record) => {
+      {drawOrder.map((record) => {
         const { x, y } = project(record.lat, record.lon);
         const isSelected = record.id === selectedId;
+        const isHighlighted = record.id === highlightId;
         const family = record.family as Family;
+        const r = radiusFor(record);
+        const disagrees = mode === "regime" && record.agrees === false;
+        const ringR = r + (disagrees ? 7 : 4);
+        const monthText = mode === "month" ? `, ${formatMm(record.monthlyMm[month] ?? 0)} mm di ${MONTH_NAMES_ID[month]}` : "";
         return (
           <g key={record.id}>
-            <circle
-              cx={x}
-              cy={y}
-              r={isSelected ? 9 : 7}
-              aria-hidden="true"
-              className={`pointer-events-none ${FAMILY_FILL_CLASS[family]} transition-[r] duration-fast ${
-                isSelected ? "stroke-ink" : ""
-              }`}
-              strokeWidth={isSelected ? 3 : 0}
-            />
-            {record.agrees === false && (
-              <circle cx={x} cy={y} r={isSelected ? 9 : 7} fill="url(#disagree-hatch)" className="pointer-events-none" />
+            {disagrees && (
+              <circle cx={x} cy={y} r={r + 3.4} fill="url(#disagree-hatch)" className="pointer-events-none stroke-ink" strokeWidth={0.6} />
             )}
-            {/* The actual interactive target: same centre, invisible,
-                bigger — see HIT_RADIUS above. */}
             <circle
               cx={x}
               cy={y}
-              r={HIT_RADIUS}
+              r={r}
+              aria-hidden="true"
+              className={`pointer-events-none transition-[r] duration-state ${
+                mode === "month"
+                  ? `${FAMILY_FILL_CLASS[family]} stroke-stock`
+                  : `${subtypeFillClass(family, record.subtype)} ${FAMILY_STROKE_CLASS[family]}`
+              }`}
+              fillOpacity={mode === "month" ? 0.82 : 1}
+              strokeWidth={mode === "month" ? 1 : 1.4}
+            />
+            {(isSelected || isHighlighted) && (
+              <circle
+                cx={x}
+                cy={y}
+                r={ringR}
+                fill="none"
+                className="pointer-events-none stroke-ink"
+                strokeWidth={isSelected ? 2 : 1.2}
+                strokeDasharray={isSelected ? undefined : "2 2"}
+              />
+            )}
+            {/* The interactive target: same centre, invisible, bigger
+                than the dot — see HIT_RADIUS above. */}
+            <circle
+              cx={x}
+              cy={y}
+              r={Math.max(HIT_RADIUS, r)}
               fill="transparent"
-              className="cursor-pointer"
+              className="cursor-pointer focus:outline-none focus-visible:stroke-ink"
+              strokeWidth={2.5}
               tabIndex={0}
               role="button"
-              aria-label={`${record.name}, ${FAMILY_LABEL[family]}${record.agrees === false ? ", berbeda dari klasifikasi BMKG" : ""}`}
+              aria-label={`${record.name}, ${FAMILY_LABEL[family]} ${record.subtype}${monthText}${
+                record.agrees === false ? ", berbeda dari keluarga BMKG" : ""
+              }`}
               aria-pressed={isSelected}
               onClick={() => onSelect(record.id)}
               onKeyDown={(e) => {
@@ -213,21 +247,36 @@ export function RegimeMap({ records, selectedId, onSelect, nearestOppositePair }
         );
       })}
 
-      {/* Distances on this map are readable, not decorative: the nearest
-          opposite pair is drawn with a km label, and this is what makes
-          that number checkable against the rest of the archipelago. */}
+      {/* Names, over every dot, with a stock halo so they read on land or sea. */}
       <g aria-hidden="true" className="pointer-events-none">
-        <line
-          x1={WIDTH - SCALE_BAR_WIDTH - 12}
-          y1={HEIGHT - 14}
-          x2={WIDTH - 12}
-          y2={HEIGHT - 14}
-          className="stroke-ink"
-          strokeWidth={1}
-        />
-        <line x1={WIDTH - SCALE_BAR_WIDTH - 12} y1={HEIGHT - 17} x2={WIDTH - SCALE_BAR_WIDTH - 12} y2={HEIGHT - 11} className="stroke-ink" strokeWidth={1} />
-        <line x1={WIDTH - 12} y1={HEIGHT - 17} x2={WIDTH - 12} y2={HEIGHT - 11} className="stroke-ink" strokeWidth={1} />
-        <text x={WIDTH - 12} y={HEIGHT - 20} textAnchor="end" className="fill-ink/70 font-mono text-tick tabular-nums">
+        {records
+          .filter((record) => labelled.has(record.id))
+          .map((record) => {
+            const { x, y } = project(record.lat, record.lon);
+            const r = radiusFor(record) + (mode === "regime" && record.agrees === false ? 7 : 4);
+            const flip = x > WIDTH - 90;
+            return (
+              <text
+                key={record.id}
+                x={flip ? x - r - 3 : x + r + 3}
+                y={y + 4}
+                textAnchor={flip ? "end" : "start"}
+                className="fill-ink stroke-stock text-[12px] font-bold"
+                strokeWidth={3.5}
+                paintOrder="stroke"
+                strokeLinejoin="round"
+              >
+                {record.name}
+              </text>
+            );
+          })}
+      </g>
+
+      {/* Scale bar: makes the drawn km distance checkable. */}
+      <g aria-hidden="true" className="pointer-events-none">
+        <rect x={14} y={HEIGHT - 14} width={SCALE_BAR_WIDTH} height={3} className="fill-ink" />
+        <rect x={14 + SCALE_BAR_WIDTH / 2} y={HEIGHT - 14} width={SCALE_BAR_WIDTH / 2} height={3} className="fill-stock stroke-ink" strokeWidth={0.6} />
+        <text x={14} y={HEIGHT - 19} className="fill-ink-muted font-mono text-tick tabular-nums">
           {SCALE_BAR_KM} km di khatulistiwa
         </text>
       </g>

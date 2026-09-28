@@ -78,3 +78,56 @@ export const FAMILY_STROKE_CLASS: Record<Family, string> = {
 };
 
 export const MONTH_LABELS_ID = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+
+/**
+ * Sub-type = tint (DESIGN.md §3). The first sub-type of each family is
+ * drawn in the canonical hue; the second is a lighter value of the same
+ * hue, always stroked in the canonical one so its edge keeps 3:1.
+ */
+const TINTED_SUBTYPES = new Set(["monsunal-2", "ekuatorial-4", "lokal-2"]);
+
+export function isTintedSubtype(subtype: string): boolean {
+  return TINTED_SUBTYPES.has(subtype);
+}
+
+export const FAMILY_TINT_FILL_CLASS: Record<Family, string> = {
+  monsunal: "fill-monsunal-tint",
+  ekuatorial: "fill-ekuatorial-tint",
+  lokal: "fill-lokal-tint",
+};
+
+export const FAMILY_TINT_BG_CLASS: Record<Family, string> = {
+  monsunal: "bg-monsunal-tint",
+  ekuatorial: "bg-ekuatorial-tint",
+  lokal: "bg-lokal-tint",
+};
+
+/** Fill class for a mark that encodes both family (hue) and sub-type (tint). */
+export function subtypeFillClass(family: Family, subtype: string): string {
+  return isTintedSubtype(subtype) ? FAMILY_TINT_FILL_CLASS[family] : FAMILY_FILL_CLASS[family];
+}
+
+export const MONTH_NAMES_ID = [
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
+];
+
+/** Indonesian number formatting for millimetres: 3718 → "3.718". */
+export function formatMm(mm: number): string {
+  return Math.round(mm).toLocaleString("id-ID");
+}
+
+/** One decimal with an Indonesian decimal comma: 4.64 → "4,6". */
+export function formatDecimal(value: number, digits = 1): string {
+  return value.toLocaleString("id-ID", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+}

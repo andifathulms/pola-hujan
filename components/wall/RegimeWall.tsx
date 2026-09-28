@@ -21,6 +21,8 @@ export interface RegimeWallProps {
   totalCount: number;
   selectedId: string | undefined;
   onSelect: (id: string) => void;
+  /** Called with a location id while a cell is hovered or focused, and null when it leaves — rings the dot on the map. */
+  onHover?: (id: string | null) => void;
 }
 
 type SortMode = "keluarga" | "puncak" | "curah";
@@ -34,32 +36,25 @@ const SORT_LABEL: Record<SortMode, string> = {
 const SORT_CAPTION: Record<SortMode, string> = {
   keluarga: "Dikelompokkan per keluarga, lalu diurutkan menurut bulan puncaknya.",
   puncak:
-    "Diurutkan menurut bulan puncak hujan, Januari ke Desember. Warna keluarga tidak ikut diurutkan — kalau warnanya tetap mengelompok, itu temuannya.",
+    "Diurutkan menurut bulan terbasah, Januari ke Desember. Warna keluarga tidak ikut diurutkan — kalau warnanya tetap mengelompok, itu temuannya.",
   curah: "Diurutkan menurut total curah hujan tahunan, dari yang paling basah.",
 };
 
-const SORT_MODES: SortMode[] = ["keluarga", "puncak", "curah"];
+const SORT_MODES: SortMode[] = ["puncak", "keluarga", "curah"];
 
-/** Peak month as a whole month index. `peakMonth` is the fitted phase in months and can be fractional; the label needs a month. */
-function peakMonthIndex(record: RegimeRecord): number {
-  return Math.round(record.peakMonth) % 12;
+
+/** The wettest month's value — emitted by the pipeline; sets the cell's own y-scale. */
+function maxMm(record: RegimeRecord): number {
+  return record.monthlyMm[record.wettestMonth] ?? 0;
 }
 
 /**
- * Presentation aggregates only — the wettest month's value sets the
- * cell's own y-scale, and the annual total is a sort key. Neither is a
- * classification quantity: the fit, the family and the sub-type all
- * arrive already decided from the pipeline (CLAUDE.md invariant 15).
+ * By the wettest month each cell is labelled with, Jan to Des, then by
+ * the fitted peak phase within a month, then name. Sorting on the same
+ * month the cell shows keeps the order readable at a glance.
  */
-function maxMm(record: RegimeRecord): number {
-  return Math.max(...record.monthlyMm);
-}
-function annualMm(record: RegimeRecord): number {
-  return record.monthlyMm.reduce((total, mm) => total + mm, 0);
-}
-
 function byPeakThenName(a: RegimeRecord, b: RegimeRecord): number {
-  return peakMonthIndex(a) - peakMonthIndex(b) || a.name.localeCompare(b.name, "id");
+  return a.wettestMonth - b.wettestMonth || a.peakMonth - b.peakMonth || a.name.localeCompare(b.name, "id");
 }
 
 /**
@@ -77,8 +72,11 @@ function byPeakThenName(a: RegimeRecord, b: RegimeRecord): number {
  * (DESIGN-REWORK.md §1.1, the same reason CompareView labels two
  * scales).
  */
-export function RegimeWall({ records, totalCount, selectedId, onSelect }: RegimeWallProps) {
-  const [sort, setSort] = useState<SortMode>("keluarga");
+export function RegimeWall({ records, totalCount, selectedId, onSelect, onHover }: RegimeWallProps) {
+  // Peak month first: it is the sort that proves the finding with no
+  // interaction — Monsunal gathers at both ends of the year, Lokal in
+  // the middle (DESIGN.md §5.1).
+  const [sort, setSort] = useState<SortMode>("puncak");
 
   const sorted = useMemo(() => {
     const copy = [...records];
@@ -86,7 +84,7 @@ export function RegimeWall({ records, totalCount, selectedId, onSelect }: Regime
       case "puncak":
         return copy.sort(byPeakThenName);
       case "curah":
-        return copy.sort((a, b) => annualMm(b) - annualMm(a));
+        return copy.sort((a, b) => b.annualTotalMm - a.annualTotalMm);
       case "keluarga":
         return copy.sort(byPeakThenName);
       default: {
@@ -105,31 +103,28 @@ export function RegimeWall({ records, totalCount, selectedId, onSelect }: Regime
       : [{ family: null, rows: sorted }];
 
   return (
-    <section aria-labelledby="dinding-rezim" className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <div>
-          <h2 id="dinding-rezim" className="font-display text-lg font-extrabold tracking-tight">
-            Dinding rezim —{" "}
-            <span className="tabular-nums">
-              {records.length === totalCount ? `${totalCount} lokasi sekaligus` : `${records.length} dari ${totalCount} lokasi`}
+    <section aria-labelledby="dinding-rezim" className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+        <div className="flex flex-col gap-1">
+          <h2 id="dinding-rezim" className="text-xl font-extrabold tracking-tight">
+            Semua kota{" "}
+            <span className="font-mono text-sm font-normal tabular-nums text-ink-muted">
+              {records.length === totalCount ? totalCount : `${records.length} dari ${totalCount}`}
             </span>
           </h2>
-          <p className="text-sm text-ink-muted">{SORT_CAPTION[sort]}</p>
+          <p className="max-w-[70ch] text-xs text-ink-muted">{SORT_CAPTION[sort]}</p>
         </div>
 
-        <fieldset className="flex flex-wrap items-center gap-2">
-          <legend className="sr-only">Urutkan dinding rezim</legend>
-          <span aria-hidden className="font-mono text-xs uppercase tracking-widest text-ink-muted">
-            Urut
-          </span>
+        <fieldset className="inline-flex rounded-full bg-plate p-1">
+          <legend className="sr-only">Urutkan</legend>
           {SORT_MODES.map((mode) => (
             <button
               key={mode}
               type="button"
               onClick={() => setSort(mode)}
               aria-pressed={sort === mode}
-              className={`rounded border px-2 py-1 text-xs transition-colors duration-fast ${
-                sort === mode ? "border-ink bg-ink text-stock" : "border-rule text-ink-muted hover:border-ink hover:text-ink"
+              className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors duration-fast ${
+                sort === mode ? "bg-stock text-ink shadow-[0_1px_2px_rgba(20,23,31,0.12)]" : "text-ink-muted hover:text-ink"
               }`}
             >
               {SORT_LABEL[mode]}
@@ -139,67 +134,63 @@ export function RegimeWall({ records, totalCount, selectedId, onSelect }: Regime
       </div>
 
       {records.length === 0 && (
-        <p className="border border-dashed border-stitch p-4 text-sm text-ink-muted">
-          Tidak ada lokasi yang cocok dengan saringan ini.
-        </p>
+        <p className="rounded-card border border-dashed border-stitch p-4 text-sm text-ink-muted">Tidak ada lokasi yang cocok dengan saringan ini.</p>
       )}
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-6">
         {bands.map((band) => (
-          <div key={band.family ?? "semua"} className="flex flex-col">
+          <div key={band.family ?? "semua"} className="flex flex-col gap-3">
             {band.family && (
-              <div
-                className={`flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b-2 pb-1 ${FAMILY_BORDER_CLASS[band.family]}`}
-              >
-                <h3 className={`font-display text-base font-extrabold tracking-tight ${FAMILY_TEXT_CLASS[band.family]}`}>
-                  {FAMILY_LABEL[band.family]}
-                </h3>
-                <p className="text-sm text-ink-muted">
+              <div className={`flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b-2 pb-1.5 ${FAMILY_BORDER_CLASS[band.family]}`}>
+                <h3 className={`text-base font-extrabold tracking-tight ${FAMILY_TEXT_CLASS[band.family]}`}>{FAMILY_LABEL[band.family]}</h3>
+                <p className="text-xs text-ink-muted">
                   {FAMILY_DESCRIPTION[band.family]} <span className="tabular-nums">{band.rows.length} lokasi</span>
                 </p>
               </div>
             )}
 
-            <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
+            <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7">
               {band.rows.map((record) => {
                 const family = record.family as Family;
                 const isSelected = record.id === selectedId;
                 const disagrees = record.agrees === false;
+                const wettest = MONTH_LABELS_ID[record.wettestMonth] ?? "";
                 return (
-                  <li key={record.id} className="-mr-px -mb-px border border-rule">
+                  <li key={record.id}>
                     <button
                       type="button"
                       onClick={() => onSelect(record.id)}
+                      onMouseEnter={() => onHover?.(record.id)}
+                      onMouseLeave={() => onHover?.(null)}
+                      onFocus={() => onHover?.(record.id)}
+                      onBlur={() => onHover?.(null)}
                       aria-pressed={isSelected}
-                      aria-label={`${record.name}, ${FAMILY_LABEL[family]}, puncak ${MONTH_LABELS_ID[peakMonthIndex(record)]}, ${Math.round(
-                        maxMm(record),
-                      )} milimeter di bulan terbasah${disagrees ? ", berbeda dari klasifikasi BMKG" : ""}`}
-                      className={`flex w-full flex-col gap-1 px-2 py-2 text-left transition-colors duration-fast ${
-                        isSelected ? "bg-plate ring-1 ring-inset ring-stitch" : "hover:bg-plate/50"
+                      aria-label={`${record.name}, ${FAMILY_LABEL[family]}, terbasah ${wettest}, ${Math.round(maxMm(record))} milimeter${
+                        disagrees ? ", berbeda dari keluarga BMKG" : ""
+                      }`}
+                      className={`flex w-full flex-col gap-1.5 rounded-card border bg-stock px-2.5 pb-2 pt-2 text-left transition duration-fast hover:-translate-y-px hover:border-ink ${
+                        isSelected ? "border-ink ring-1 ring-inset ring-ink" : "border-rule"
                       }`}
                     >
-                      <span className="flex items-center gap-1.5">
-                        <span
-                          aria-hidden
-                          className={`inline-block h-2 w-2 shrink-0 rounded-full ${FAMILY_BG_CLASS[family]}`}
-                          style={
-                            disagrees
-                              ? {
-                                  backgroundImage:
-                                    "repeating-linear-gradient(45deg, transparent, transparent 1px, var(--color-ink) 1px, var(--color-ink) 2px)",
-                                }
-                              : undefined
-                          }
-                        />
-                        <span className="truncate text-sm">{record.name}</span>
+                      <span className="flex items-center justify-between gap-2">
+                        <span className="flex min-w-0 items-center gap-1.5">
+                          {disagrees ? (
+                            <span
+                              aria-hidden
+                              className="inline-block h-2.5 w-2.5 shrink-0 rounded-full outline outline-1 outline-ink"
+                              style={{ backgroundImage: "repeating-linear-gradient(45deg, var(--color-ink) 0 1.2px, var(--color-stock) 1.2px 3px)" }}
+                            />
+                          ) : (
+                            <span aria-hidden className={`inline-block h-2.5 w-2.5 shrink-0 rounded-full ${FAMILY_BG_CLASS[family]}`} />
+                          )}
+                          <span className="truncate text-xs font-bold">{record.name}</span>
+                        </span>
+                        <span className="flex-none font-mono text-tick uppercase text-ink-muted">{wettest}</span>
                       </span>
 
-                      <MiniCycle monthlyMm={record.monthlyMm} family={family} maxMm={maxMm(record)} />
+                      <MiniCycle monthlyMm={record.monthlyMm} family={family} maxMm={maxMm(record)} wettestMonth={record.wettestMonth} />
 
-                      <span className="font-mono text-xs tabular-nums text-ink-muted">
-                        {MONTH_LABELS_ID[peakMonthIndex(record)]} · {Math.round(maxMm(record))} mm
-                        {disagrees && <span> · beda dari BMKG</span>}
-                      </span>
+                      <span className="font-mono text-tick tabular-nums text-ink-muted">maks {Math.round(maxMm(record))} mm</span>
                     </button>
                   </li>
                 );
@@ -209,12 +200,9 @@ export function RegimeWall({ records, totalCount, selectedId, onSelect }: Regime
         ))}
       </div>
 
-      {/* The wall's contract, stated once rather than 34 times: what the
-          x-axis is, and that the y-axis is per-cell. */}
-      <p className="border-t border-rule pt-1 font-mono text-xs text-ink-muted">
-        Setiap sel membagi lebarnya jadi dua belas slot bulan yang sama, Januari di kiri sampai Desember di kanan —
-        jadi satu bulan jatuh di tempat yang sama di seluruh dinding. Skala mm-nya per sel, dicantumkan di bawah tiap
-        grafik.
+      <p className="font-mono text-xs text-ink-muted">
+        Tiap sel: Januari di kiri, Desember di kanan, jadi satu bulan jatuh di tempat yang sama di semua sel. Skala mm per sel.
+        Titik berarsir: berbeda dengan keluarga BMKG.
       </p>
     </section>
   );

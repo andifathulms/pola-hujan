@@ -5,6 +5,8 @@ export interface MiniCycleProps {
   family: Family;
   /** The cell's own y-scale, in mm, so the caller can state it next to the chart. */
   maxMm: number;
+  /** Drawn at full strength; the other months are lighter, so the peak reads first. */
+  wettestMonth?: number;
 }
 
 // A wall cell, not a chart: twelve slots wide, no axis, no ticks, no
@@ -32,7 +34,7 @@ const SLOT = WIDTH / 12;
  * reading panel and the field plate draw them at a size where they can
  * actually be told apart.
  */
-export function MiniCycle({ monthlyMm, family, maxMm }: MiniCycleProps) {
+export function MiniCycle({ monthlyMm, family, maxMm, wettestMonth }: MiniCycleProps) {
   const scale = maxMm > 0 ? maxMm : 1;
 
   return (
@@ -47,7 +49,7 @@ export function MiniCycle({ monthlyMm, family, maxMm }: MiniCycleProps) {
           x2={(i + 1) * SLOT}
           y2={HEIGHT - 1}
           className="stroke-rule"
-          strokeWidth={0.5}
+          strokeWidth={(i + 1) % 3 === 0 ? 0.75 : 0.35}
         />
       ))}
 
@@ -60,7 +62,9 @@ export function MiniCycle({ monthlyMm, family, maxMm }: MiniCycleProps) {
             y={HEIGHT - 1 - height}
             width={SLOT - BAR_GAP * 2}
             height={height}
+            rx={1}
             className={FAMILY_FILL_CLASS[family]}
+            fillOpacity={wettestMonth === undefined || wettestMonth === month ? 1 : 0.6}
           />
         );
       })}

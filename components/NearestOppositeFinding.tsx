@@ -20,16 +20,16 @@ export function NearestOppositeFinding({ pair, onSelect }: NearestOppositeFindin
     // A left rule instead of a box: the finding is the sharpest single
     // sentence on the page and still needs to stand out, but it was one
     // of four stacked cards a reader met before reaching the atlas.
-    <p className="max-w-prose border-l-2 border-ink/40 pl-3 text-base">
-      Titik terdekat: <strong>{pair.distanceKm < 1 ? "<1" : Math.round(pair.distanceKm)} km</strong> memisahkan{" "}
-      <button type="button" onClick={() => onSelect(pair.aId)} className="font-medium underline decoration-ink/30 underline-offset-2 hover:decoration-ink">
+    <p className="max-w-[70ch] border-l-2 border-ink pl-3 font-story text-base italic leading-snug">
+      Hanya <strong className="font-sans font-bold not-italic">{pair.distanceKm < 1 ? "<1" : Math.round(pair.distanceKm)} km</strong> memisahkan{" "}
+      <button type="button" onClick={() => onSelect(pair.aId)} className="font-sans text-sm font-bold not-italic underline decoration-ink/30 underline-offset-2 hover:decoration-ink">
         {pair.aName}
       </button>{" "}
       ({FAMILY_LABEL[pair.aFamily as Family]}) dari{" "}
-      <button type="button" onClick={() => onSelect(pair.bId)} className="font-medium underline decoration-ink/30 underline-offset-2 hover:decoration-ink">
+      <button type="button" onClick={() => onSelect(pair.bId)} className="font-sans text-sm font-bold not-italic underline decoration-ink/30 underline-offset-2 hover:decoration-ink">
         {pair.bName}
       </button>{" "}
-      ({FAMILY_LABEL[pair.bFamily as Family]}) — dua pola musim hujan yang berlawanan, sedekat itu.
+      ({FAMILY_LABEL[pair.bFamily as Family]}) — dua pola musim hujan yang berbeda, sedekat itu.
     </p>
   );
 }

@@ -24,62 +24,51 @@ export function Legend({ manifest }: LegendProps) {
   const agreementPercent = Math.round(manifest.agreement.agreementRate * 100);
 
   return (
-    <section aria-label="Keterangan" className="flex flex-col gap-3 border-t border-rule pt-3 text-sm">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-        <h2 className="font-display text-base font-extrabold tracking-tight">Tentang peta ini</h2>
-        {/* The citation stamp: short, monospace, always present where a
-            claim is made (DESIGN.md §1). Sentences about the data live in
-            the disclosure below, in the body face where they can be read. */}
-        <p className="font-mono text-xs tabular-nums text-ink-muted">
-          {manifest.datasetName} · {manifest.climatologyPeriod}
-        </p>
-      </div>
-
-      <p className="max-w-prose">
-        Klasifikasi ini <strong>diturunkan dari data presipitasi grid terbuka</strong>, bukan Zona Musim resmi BMKG.
-        Peta ini menunjukkan <strong>rezim, bukan batas zona</strong>.
+    <section aria-label="Keterangan peta" className="flex flex-col gap-3 text-xs">
+      <p className="max-w-[70ch] text-ink">
+        <strong className="font-bold">Klasifikasi turunan dari data presipitasi grid terbuka, bukan Zona Musim resmi BMKG.</strong>{" "}
+        <span className="text-ink-muted">
+          Titik menunjukkan rezim di lokasi kota, bukan batas zona. Normal jangka panjang, bukan prakiraan.
+        </span>
       </p>
 
-      <ul className="grid gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="grid gap-x-5 gap-y-1.5 sm:grid-cols-2">
         {FAMILIES.map((family) => (
           <li key={family} className="flex items-baseline gap-2">
-            <span
-              aria-hidden
-              className={`relative top-[0.35em] inline-block h-2 w-2 shrink-0 rounded-full ${FAMILY_BG_CLASS[family]}`}
-            />
-            <span>
-              <strong>{FAMILY_LABEL[family]}</strong> — {FAMILY_DESCRIPTION[family]}
+            <span aria-hidden className={`relative top-[0.2em] inline-block h-2.5 w-2.5 shrink-0 rounded-full ${FAMILY_BG_CLASS[family]}`} />
+            <span className="text-ink-muted">
+              <strong className="font-semibold text-ink">{FAMILY_LABEL[family]}</strong> — {FAMILY_DESCRIPTION[family]}
             </span>
           </li>
         ))}
         <li className="flex items-baseline gap-2">
           <span
             aria-hidden
-            className="relative top-[0.35em] inline-block h-2 w-2 shrink-0 rounded-full bg-ink"
-            style={{
-              backgroundImage:
-                "repeating-linear-gradient(45deg, transparent, transparent 1px, var(--color-stock) 1px, var(--color-stock) 2px)",
-            }}
+            className="relative top-[0.2em] inline-block h-2.5 w-2.5 shrink-0 rounded-full outline outline-1 outline-ink"
+            style={{ backgroundImage: "repeating-linear-gradient(45deg, var(--color-ink) 0 1.2px, var(--color-stock) 1.2px 3px)" }}
           />
-          <span>
-            <strong>Arsir</strong> — klasifikasi turunan berbeda dari keluarga BMKG untuk lokasi itu.
+          <span className="text-ink-muted">
+            <strong className="font-semibold text-ink">Lingkar arsir</strong> — berbeda dengan keluarga BMKG. Warna muda: sub-tipe kedua.
           </span>
         </li>
       </ul>
 
-      <p className="max-w-prose text-ink-muted">
-        Kecocokan dengan BMKG, dilaporkan dan bukan diuji:{" "}
-        <span className="font-mono tabular-nums text-ink">
-          {manifest.agreement.agreeingLocations}/{manifest.agreement.comparedLocations} ({agreementPercent}%)
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-ink-muted">
+        <span className="rounded-[4px] border border-rule bg-stock px-1.5 py-0.5 font-mono tabular-nums">
+          {manifest.datasetName.split(",")[0]} · {manifest.climatologyPeriod.split(" (")[0]}
         </span>
-        . <span className="font-mono tabular-nums text-ink">{manifest.agreement.verifiedComparisons}</span> di antaranya
-        terverifikasi terhadap dokumen ZOM9120 BMKG, sisanya masih perkiraan — lihat Metode.
-      </p>
-
-      <details className="max-w-prose text-ink-muted">
-        <summary className="cursor-pointer select-none font-medium text-ink">Batas data ini</summary>
-        <p className="mt-2">{manifest.datasetStatus}</p>
-      </details>
+        <span>
+          Kecocokan dengan BMKG, dilaporkan bukan diuji:{" "}
+          <span className="font-mono tabular-nums text-ink">
+            {manifest.agreement.agreeingLocations}/{manifest.agreement.comparedLocations} ({agreementPercent}%)
+          </span>
+          , {manifest.agreement.verifiedComparisons} terverifikasi ZOM9120.
+        </span>
+        <details>
+          <summary className="cursor-pointer select-none font-semibold text-ink">Batas data</summary>
+          <p className="mt-2 max-w-[70ch]">{manifest.datasetStatus}</p>
+        </details>
+      </div>
     </section>
   );
 }

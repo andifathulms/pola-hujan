@@ -49,12 +49,16 @@ export function YourPlace({ records, onFound }: YourPlaceProps) {
   }
 
   return (
-    <div className="flex flex-col gap-2 text-sm">
+    <div className="flex max-w-[44ch] flex-col items-start gap-2 text-xs">
       <button
         type="button"
         onClick={locate}
-        className="self-start rounded border border-ink px-2 py-1 text-sm font-medium transition-colors duration-fast hover:bg-ink hover:text-stock"
+        className="inline-flex items-center gap-2 rounded-full border border-you px-4 py-2 text-xs font-bold text-you transition-colors duration-fast hover:bg-you hover:text-stock"
       >
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <circle cx="8" cy="8" r="5.5" />
+          <circle cx="8" cy="8" r="1.6" fill="currentColor" />
+        </svg>
         Gunakan lokasi saya
       </button>
       {/* role="status" is an implicit polite live region — the loading,

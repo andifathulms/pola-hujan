@@ -44,20 +44,22 @@ export function ThresholdGauge({
   const thresholdPercent = toPercent(threshold);
 
   return (
-    <div aria-hidden className="flex flex-col gap-1">
-      <div className="flex items-baseline justify-between gap-2 font-mono text-xs text-ink-muted">
+    <div aria-hidden className="flex flex-col gap-1.5">
+      <div className="flex items-baseline justify-between gap-3 text-xs text-ink-muted">
         <span>{label}</span>
-        <span className="tabular-nums">{valueText}</span>
+        <span className="font-mono font-medium tabular-nums text-ink">{valueText}</span>
       </div>
-      <div className="relative h-4">
-        <div className="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-ink/30" />
-        <div className="absolute top-0 h-full w-px bg-ink" style={{ left: `${thresholdPercent}%` }} />
+      <div className="relative h-5">
+        <div className="absolute left-0 right-0 top-1/2 h-[3px] -translate-y-1/2 rounded-full bg-rule" />
+        <div className="absolute top-0 h-full border-l border-dashed border-ink" style={{ left: `${thresholdPercent}%` }} />
         <div
-          className={`absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-ink ${FAMILY_BG_CLASS[family]}`}
+          className={`absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-stock ring-1 ring-ink ${FAMILY_BG_CLASS[family]}`}
           style={{ left: `${valuePercent}%` }}
         />
       </div>
-      <p className="font-mono text-xs text-ink-muted">{thresholdText}</p>
+      <p className="font-mono text-tick uppercase tracking-[0.08em] text-ink-muted" style={{ paddingLeft: `max(0px, calc(${thresholdPercent}% - 3rem))` }}>
+        {thresholdText}
+      </p>
     </div>
   );
 }

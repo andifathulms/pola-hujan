@@ -149,13 +149,16 @@ export function CycleCurve({
         <path
           d={semiAnnualPath}
           fill="none"
-          className="stroke-ink/50"
-          strokeWidth={isPlate ? 1.75 : 1}
-          strokeDasharray="3 2"
-          pathLength={1}
+          className="stroke-ink-muted"
+          strokeWidth={isPlate ? 1.9 : 1.4}
+          // No pathLength here: pathLength rescales the dash pattern too,
+          // and a normalised length of 1 turned "4 3" into one dash longer
+          // than the line — it rendered solid, indistinguishable from the
+          // annual harmonic. It fades in instead of drawing.
+          strokeDasharray="4 3"
           style={{
-            strokeDashoffset: drawn ? 0 : 1,
-            transition: "stroke-dashoffset 600ms cubic-bezier(0.2,0,0,1) 100ms",
+            opacity: drawn ? 1 : 0,
+            transition: "opacity 600ms cubic-bezier(0.2,0,0,1) 200ms",
           }}
         />
 
@@ -183,7 +186,7 @@ export function CycleCurve({
           Garis penuh — harmonik tahunan (satu gelombang per tahun)
         </span>
         <span className="flex items-center gap-1.5">
-          <span aria-hidden className="inline-block h-0 w-3 shrink-0 border-t border-dashed border-ink/50" />
+          <span aria-hidden className="inline-block h-0 w-3 shrink-0 border-t-[1.5px] border-dashed border-ink-muted" />
           Garis putus-putus — harmonik semi-tahunan (dua gelombang per tahun)
         </span>
       </figcaption>

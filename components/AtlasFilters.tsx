@@ -13,7 +13,7 @@ export interface AtlasFiltersProps {
 }
 
 /**
- * Search, three family toggles, and the disagreement toggle, driving the
+ * Three family toggles and the disagreement toggle, driving the
  * map and the regime wall together.
  *
  * The disagreement filter is the point of this bar. Where the derived
@@ -41,77 +41,48 @@ export function AtlasFilters({ records, filters, onChange, visibleCount }: Atlas
     });
   };
 
+  const chip = (on: boolean) =>
+    `inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors duration-fast ${
+      on ? "border-ink bg-ink text-stock" : "border-rule bg-stock text-ink hover:border-ink"
+    }`;
+
   return (
-    <section aria-label="Saring lokasi" className="flex flex-col gap-2 border-y border-rule py-3">
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <div className="flex items-center gap-2">
-          <label htmlFor="atlas-cari" className="sr-only">
-            Cari kota atau provinsi
-          </label>
-          <input
-            id="atlas-cari"
-            type="search"
-            value={filters.query}
-            onChange={(event) => onChange({ ...filters, query: event.target.value })}
-            placeholder="Cari kota atau provinsi…"
-            className="w-56 rounded border border-stitch bg-stock px-2 py-1 text-sm placeholder:text-ink/50"
-          />
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          {familyCounts.map(({ family, count }) => {
-            const on = filters.families.includes(family);
-            return (
-              <button
-                key={family}
-                type="button"
-                onClick={() => toggleFamily(family)}
-                aria-pressed={on}
-                className={`flex items-center gap-1.5 rounded border px-2 py-1 text-sm transition-colors duration-fast ${
-                  on ? "border-ink bg-plate font-medium" : "border-rule text-ink-muted hover:border-ink hover:text-ink"
-                }`}
-              >
-                <span aria-hidden className={`inline-block h-2 w-2 shrink-0 rounded-full ${FAMILY_BG_CLASS[family]}`} />
-                {FAMILY_LABEL[family]} <span className="font-mono text-xs tabular-nums">{count}</span>
-              </button>
-            );
-          })}
-
-          <button
-            type="button"
-            onClick={() => onChange({ ...filters, onlyDisagree: !filters.onlyDisagree })}
-            aria-pressed={filters.onlyDisagree}
-            className={`flex items-center gap-1.5 rounded border border-dashed px-2 py-1 text-sm transition-colors duration-fast ${
-              filters.onlyDisagree ? "border-ink bg-plate font-medium" : "border-stitch text-ink-muted hover:border-ink hover:text-ink"
-            }`}
-          >
-            <span
-              aria-hidden
-              className="inline-block h-2 w-2 shrink-0 rounded-full bg-ink"
-              style={{
-                backgroundImage:
-                  "repeating-linear-gradient(45deg, transparent, transparent 1px, var(--color-stock) 1px, var(--color-stock) 2px)",
-              }}
-            />
-            Beda dari BMKG <span className="font-mono text-xs tabular-nums">{disagreeCount}</span>
-          </button>
-
-          {active && (
-            <button
-              type="button"
-              onClick={() => onChange(EMPTY_FILTERS)}
-              className="text-sm text-ink underline decoration-ink/30 underline-offset-2 hover:decoration-ink"
-            >
-              Tampilkan semua
+    <section aria-label="Saring lokasi" className="flex flex-col gap-2">
+      <div className="flex flex-wrap items-center gap-1.5">
+        {familyCounts.map(({ family, count }) => {
+          const on = filters.families.includes(family);
+          return (
+            <button key={family} type="button" onClick={() => toggleFamily(family)} aria-pressed={on} className={chip(on)}>
+              <span aria-hidden className={`inline-block h-2.5 w-2.5 shrink-0 rounded-full ring-1 ring-stock ${FAMILY_BG_CLASS[family]}`} />
+              {FAMILY_LABEL[family]} <span className="font-mono font-normal tabular-nums opacity-75">{count}</span>
             </button>
-          )}
-        </div>
+          );
+        })}
+
+        <button
+          type="button"
+          onClick={() => onChange({ ...filters, onlyDisagree: !filters.onlyDisagree })}
+          aria-pressed={filters.onlyDisagree}
+          className={chip(filters.onlyDisagree)}
+        >
+          <span
+            aria-hidden
+            className="inline-block h-2.5 w-2.5 shrink-0 rounded-[2px] outline outline-1 outline-current"
+            style={{ backgroundImage: "repeating-linear-gradient(45deg, currentColor 0 1.2px, transparent 1.2px 3.2px)" }}
+          />
+          Beda dengan BMKG <span className="font-mono font-normal tabular-nums opacity-75">{disagreeCount}</span>
+        </button>
+
+        {active && (
+          <button type="button" onClick={() => onChange(EMPTY_FILTERS)} className="px-2 text-xs font-semibold text-ink underline underline-offset-4">
+            Tampilkan semua
+          </button>
+        )}
       </div>
 
       <p aria-live="polite" className="font-mono text-xs tabular-nums text-ink-muted">
-        {visibleCount} dari {records.length} lokasi ditampilkan di peta dan dinding rezim
-        {filters.onlyDisagree &&
-          " · perbedaan dilaporkan apa adanya, bukan diuji — ambang klasifikasinya tidak berubah"}
+        {visibleCount} dari {records.length} lokasi
+        {filters.onlyDisagree && " · perbedaan dilaporkan apa adanya, bukan diuji — ambang klasifikasinya tidak berubah"}
       </p>
     </section>
   );
