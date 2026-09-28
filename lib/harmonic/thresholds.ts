@@ -63,3 +63,32 @@ export const EKUATORIAL_4_RATIO = 1.5;
  * noticeable secondary shoulder, as opposed to a clean single-peak "-1".
  */
 export const SECONDARY_HARMONIC_SUBTYPE_RATIO = 0.5;
+
+/*
+ * ---------------------------------------------------------------------
+ * Descriptive month criteria — these do NOT feed classification.
+ *
+ * Added for the wet/dry month counts shown beside each city's curve.
+ * They change no family, sub-type or agreement figure; nothing in
+ * classify.ts reads them. They live here because CLAUDE.md invariant 2
+ * puts every named, cited cut-off in this one file.
+ *
+ * Source: the Mohr criteria (Mohr, E. C. J., 1933, "De bodem der tropen
+ * in het algemeen, en die van Nederlandsch-Indië in het bijzonder"), as
+ * adopted by Schmidt, F. H. & Ferguson, J. H. A. (1951), "Rainfall types
+ * based on wet and dry period ratios for Indonesia with Western New
+ * Guinea", Verhandelingen No. 42, Djawatan Meteorologi dan Geofisika,
+ * Jakarta — the classification taught in Indonesian school geography.
+ *
+ * Caveat stated wherever the counts appear: Schmidt–Ferguson count wet
+ * and dry months year by year and average the counts. This app only has
+ * a climatological normal, so its counts are of the normal year, which
+ * is not the same number and is never presented as an S–F Q value.
+ * ---------------------------------------------------------------------
+ */
+
+/** A month with normal rainfall above this is a wet month (bulan basah). */
+export const WET_MONTH_MIN_MM = 100;
+
+/** A month with normal rainfall below this is a dry month (bulan kering). */
+export const DRY_MONTH_MAX_MM = 60;

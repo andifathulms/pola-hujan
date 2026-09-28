@@ -27,8 +27,12 @@ import {
   MONTHS_PER_YEAR,
   SECONDARY_HARMONIC_SUBTYPE_RATIO,
   semiAnnualHarmonicMm,
+  WET_MONTH_MIN_MM,
+  DRY_MONTH_MAX_MM,
   type HarmonicFit,
 } from "../lib/harmonic";
+import { monthStats } from "../lib/climate/monthStats";
+import { mostSimilar } from "../lib/climate/similarity";
 import { locationSourceFileSchema, type ArchetypeRecord, type Manifest, type RegimeRecord } from "../lib/grid/schema";
 import { haversineDistanceKm } from "../lib/geo/nearest";
 
@@ -60,6 +64,9 @@ function evaluateCurves(fit: HarmonicFit) {
   return { annualCurveMm, semiAnnualCurveMm };
 }
 
+/** How many "pola serupa" each location lists. */
+const SIMILAR_COUNT = 3;
+
 const records: RegimeRecord[] = source.locations.map((location) => {
   const fit = fitHarmonics(location.monthlyMm);
   const classification = classifyRegime(fit);
@@ -87,6 +94,8 @@ const records: RegimeRecord[] = source.locations.map((location) => {
     bmkgFamily: location.bmkgFamily,
     bmkgFamilySource: location.bmkgFamilySource,
     agrees,
+    ...monthStats(location.monthlyMm),
+    similarIds: mostSimilar(location, source.locations, SIMILAR_COUNT),
   };
 });
 
@@ -135,9 +144,26 @@ const archetypes: ArchetypeRecord[] = (Object.keys(REFERENCE_PARAMS) as Array<ke
       subtype: classification.subtype,
       peakMonth: classification.peakMonth,
       classificationDetail: classificationDetailFor(fit, classification),
+      ...monthStats(monthlyMm),
     };
   },
 );
+
+// The year sweep (DESIGN.md §7): per month, the archipelago mean and the
+// wettest/driest location. Computed here so the home page only reads it.
+// Ties resolve to the earlier record in source order, deterministically.
+const months: Manifest["months"] = Array.from({ length: MONTHS_PER_YEAR }, (_, m) => {
+  let wettest = records[0] as RegimeRecord;
+  let driest = records[0] as RegimeRecord;
+  let sum = 0;
+  for (const r of records) {
+    const mm = r.monthlyMm[m] as number;
+    sum += mm;
+    if (mm > (wettest.monthlyMm[m] as number)) wettest = r;
+    if (mm < (driest.monthlyMm[m] as number)) driest = r;
+  }
+  return { meanMm: sum / records.length, wettestId: wettest.id, driestId: driest.id };
+});
 
 const byFamily: Record<string, number> = {};
 const bySubtype: Record<string, number> = {};
@@ -188,6 +214,11 @@ const manifest = {
     ekuatorial4Ratio: EKUATORIAL_4_RATIO,
     secondaryHarmonicSubtypeRatio: SECONDARY_HARMONIC_SUBTYPE_RATIO,
   },
+  monthCriteria: {
+    wetMonthMinMm: WET_MONTH_MIN_MM,
+    dryMonthMaxMm: DRY_MONTH_MAX_MM,
+  },
+  months,
   coverage: {
     totalLocations: records.length,
     byFamily,

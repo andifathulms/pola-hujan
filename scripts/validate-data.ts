@@ -14,6 +14,8 @@ import {
   MONSOON_PEAK_CENTER_MONTH,
   MONSUNAL_MAX_DISPLACEMENT_MONTHS,
   SECONDARY_HARMONIC_SUBTYPE_RATIO,
+  WET_MONTH_MIN_MM,
+  DRY_MONTH_MAX_MM,
 } from "../lib/harmonic";
 import { archetypeRecordSchema, manifestSchema, regimeRecordSchema } from "../lib/grid/schema";
 import { z } from "zod";
@@ -62,6 +64,30 @@ if (staleKeys.length > 0) {
       "Run `pnpm data:build` to regenerate.",
   );
   process.exit(1);
+}
+
+if (manifest.monthCriteria.wetMonthMinMm !== WET_MONTH_MIN_MM || manifest.monthCriteria.dryMonthMaxMm !== DRY_MONTH_MAX_MM) {
+  console.error(
+    "data:validate — manifest monthCriteria are stale vs lib/harmonic/thresholds.ts. Run `pnpm data:build` to regenerate.",
+  );
+  process.exit(1);
+}
+
+// Every "pola serupa" id must name a real location in this build, and
+// never the location itself — a dangling id would render a dead link.
+const ids = new Set(records.map((r) => r.id));
+for (const r of records) {
+  const bad = r.similarIds.filter((id) => id === r.id || !ids.has(id));
+  if (bad.length > 0) {
+    console.error(`data:validate — ${r.id}.similarIds has invalid ids: ${bad.join(", ")}. Run \`pnpm data:build\`.`);
+    process.exit(1);
+  }
+}
+for (const m of manifest.months) {
+  if (!ids.has(m.wettestId) || !ids.has(m.driestId)) {
+    console.error("data:validate — manifest.months names a location missing from regime.json. Run `pnpm data:build`.");
+    process.exit(1);
+  }
 }
 
 if (manifest.coverage.totalLocations !== records.length) {

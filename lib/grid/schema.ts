@@ -74,6 +74,19 @@ export const regimeRecordSchema = z.object({
   bmkgFamily: regimeFamilySchema.optional(),
   bmkgFamilySource: z.enum(["bmkg-zom9120", "estimate"]).optional(),
   agrees: z.boolean().optional(),
+  /**
+   * Descriptive statistics of the normal year, emitted by the pipeline
+   * (lib/climate/monthStats.ts) so no component computes them. Wet and
+   * dry counts use the Mohr criteria in lib/harmonic/thresholds.ts and
+   * are counts of the *normal* year, not a Schmidt–Ferguson Q.
+   */
+  annualTotalMm: z.number().min(0),
+  wettestMonth: z.number().int().min(0).max(11),
+  driestMonth: z.number().int().min(0).max(11),
+  wetMonths: z.number().int().min(0).max(12),
+  dryMonths: z.number().int().min(0).max(12),
+  /** Ids of the three places with the most similar monthly shape (lib/climate/similarity.ts). Shape only — never a shared zone. */
+  similarIds: z.array(z.string()),
 });
 export type RegimeRecord = z.infer<typeof regimeRecordSchema>;
 
@@ -85,7 +98,9 @@ export const archetypeRecordSchema = regimeRecordSchema.omit({
   lat: true,
   lon: true,
   bmkgFamily: true,
+  bmkgFamilySource: true,
   agrees: true,
+  similarIds: true,
 });
 export type ArchetypeRecord = z.infer<typeof archetypeRecordSchema>;
 
@@ -102,6 +117,25 @@ export const manifestSchema = z.object({
     ekuatorial4Ratio: z.number(),
     secondaryHarmonicSubtypeRatio: z.number(),
   }),
+  /** The descriptive Mohr cut-offs the wet/dry counts used — recorded so data:validate can catch a stale build. */
+  monthCriteria: z.object({
+    wetMonthMinMm: z.number(),
+    dryMonthMaxMm: z.number(),
+  }),
+  /**
+   * Per calendar month, Jan first: the mean normal across every location
+   * in the build, and which location is wettest and driest that month.
+   * Drives the home page's year sweep without computing in a component.
+   */
+  months: z
+    .array(
+      z.object({
+        meanMm: z.number(),
+        wettestId: z.string(),
+        driestId: z.string(),
+      }),
+    )
+    .length(12),
   coverage: z.object({
     totalLocations: z.number().int(),
     byFamily: z.record(regimeFamilySchema, z.number().int()),

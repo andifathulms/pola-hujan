@@ -20,6 +20,12 @@ function record(partial: Partial<RegimeRecord> & Pick<RegimeRecord, "id" | "name
     subtype: `${partial.family}-1`,
     peakMonth: 0,
     classificationDetail: { semiToAnnualRatio: 0.1, displacementMonths: 0 },
+    annualTotalMm: 1200,
+    wettestMonth: 0,
+    driestMonth: 0,
+    wetMonths: 0,
+    dryMonths: 0,
+    similarIds: [],
     ...partial,
   };
 }
