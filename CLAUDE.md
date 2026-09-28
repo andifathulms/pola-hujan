@@ -47,13 +47,18 @@ pnpm lint
 
 ```
 app/
-  [locale]/                 # id (default), en
-    peta/                   # regime map + curve + archetypes
-    banding/                # two-place comparison
-    metode/                 # dataset, thresholds, agreement rate, limitations
-    harmonik/               # the live decomposition explainer
+  page.tsx                  # Beranda — the story: year sweep, three families, Jakarta vs Ambon
+  peta/                     # the atlas: map + mosaic + city reading + wall
+  kota/[id]/                # one static page per city, with the field plate
+  banding/                  # two-place comparison, data-derived presets
+  cara-kerja/               # explainer + dataset, thresholds, agreement, limitations
+  metode/  harmonik/        # noindex stubs pointing into cara-kerja
+  # [locale]/ (id, en) is still deferred — Indonesian is served flat
 components/
-  map/                      # categorical regime rendering, selection
+  shell/                    # top bar, city search (⌘K), footer, logo
+  story/                    # home page: YearSweep, FamilyChapters
+  atlas/  city/             # city reading (stats, gauges, pola serupa), locator
+  map/                      # categorical regime rendering, mosaic, selection
   curve/                    # twelve monthly bars + the two harmonics
   archetypes/               # the three reference curves, permanent
   compare/                  # stacked curves, shared month axis
@@ -65,7 +70,9 @@ lib/
     phase.ts
     classify.ts             # family + sub-type from amplitude ratio and phase
     thresholds.ts           # named, cited constants — ONE place
-  grid/                     # decode, lookup
+  grid/                     # decode, lookup, mosaic codes
+  climate/                  # month stats (Mohr wet/dry), shape similarity — pure
+  geo/                      # BIL/tar decoders, outline mask, nearest
 scripts/
   build-data.ts             # DEV/CI — climatology → fit → classify → emit
 data/
@@ -214,30 +221,37 @@ the map as its caption. `DESIGN.md` §3, §5.1, §5.2, §6, §9 and §11 were
 updated to match — the wall and the filter bar are now specified there,
 not just implemented.
 
-**The palette and the type stack were replaced.** Both had a measurable
-problem, not a taste problem. The three family hues sat within 0.061 of
-each other in relative luminance, so in greyscale — the print stylesheet
-included — they collapsed into one grey, and under tritanopia the
-closest pair was ΔE 12.4, inside the range where two colours stop being
-tellable apart. Alegreya and Alegreya Sans were a superfamily, one
-skeleton drawn twice, so headings and body shared a voice and only size
-marked the difference.
+**Redesign and data expansion (2026-09-29).** The palette is now
+**Pesisir Terang** — Pekalongan indigo `#1F3F99`, leaf green `#3B7A1F`,
+turmeric `#B86A00` on mori primissima `#FAF8F3` — replacing Batik
+Pesisir, whose colours were sogan in spirit and read as mud on the map.
+Every floor in `tests/design/palette.test.ts` moved up (spread 0.120 →
+0.144; deuteranopia 33.6 → 56.9, protanopia 27.9 → 44.9, tritanopia
+21.4 → 22.8), and sub-type tints exist and are tested for the first
+time. Type is Plus Jakarta Sans for structure, Newsreader italic for
+story sentences only, IBM Plex Mono for figures. Radius: 2px on data
+marks, `rounded-card` / `rounded-sheet` / pills on UI (a recorded
+per-app deviation from the house layer).
 
-The palette is now **Batik Pesisir** — nila indigo `#2B477B`, olive
-`#527030`, soga gold `#977121` on unbleached mori `#F1EADD`. Every value
-is solved rather than picked: the families span the widest luminance
-range that still clears 3:1 against `land`, the darkest surface a map
-dot sits on. Spread 0.061 → 0.120; tritanopia ΔE 12.4 → 21.4;
-deuteranopia 28.4 → 33.8; protanopia 30.0 → 27.8 (the one number that
-moved the wrong way, reported rather than hidden — it stays far clear of
-the ~10 merge point). `tests/design/palette.test.ts` asserts all of it
-and fails on the old palette. The type stack is Fraunces / Karla / IBM
-Plex Mono, with font variables renamed to their roles. `DESIGN.md` §2,
-§3, §8 and §11 carry all of this.
+Structure: `/` is now a story (the year sweeps across the map — the new
+orchestrated moment), `/peta` is the atlas with a city reading beside
+the map, every city has a page at `/kota/[id]`, `/banding` has
+data-derived presets, and `/harmonik` + `/metode` merged into
+`/cara-kerja`. A global city search sits in the top bar.
+
+Data: **86 cities** (was 34) and a **0.25° regime mosaic** of 2,414 land
+cells inside Indonesia, classified by the same `lib/harmonic`. The
+pipeline also emits wet/dry month counts (Mohr criteria, new cited
+descriptive constants in `thresholds.ts` that classification never
+reads), similar-shape cities, and per-month extremes. New cities get a
+BMKG family only where ZOM9120 states it outright; agreement moved
+62% (21/34) → **71% (37/52)** from 18 new cited comparisons, with no
+threshold touched. Verified disagreements now: Medan, Palu, Tobelo,
+Labuha — all reported, none smoothed. Also fixed: the semi-annual
+harmonic had always rendered solid (a `pathLength` bug), not dashed.
 
 Still open: `app/[locale]/` locale routing (English is deferred —
 Indonesian is served flat at the app root), the ZOM-polygon licence
-question (§4, still unverified and still unused), and further
-milestone-6 depth (the disagreement layer is a hatch on point markers,
-not yet a polygon layer; sharing/print/a11y are a first pass, not
-exhaustive).
+question (§4, still unverified and still unused), per-city share
+images (every page uses the one mosaic card), and the 20 older
+`estimate` BMKG families, which still count toward agreement.
