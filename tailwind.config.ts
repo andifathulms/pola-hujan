@@ -12,56 +12,62 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // "Batik Pesisir" — indigo (nila), olive and soga gold on
-        // unbleached mori cloth, the north-coast dye triad. It replaces a
-        // palette whose three family hues sat within 0.06 of each other
-        // in relative luminance: hue is the primary channel, but strip
-        // the colour (greyscale, the print stylesheet, or one form of
-        // colour-vision deficiency) and the encoding collapsed into one
-        // grey. Every value below is solved, not picked — see
-        // tests/design/palette.test.ts, which asserts the floors.
+        // "Pesisir Terang" — the bright coastal dyes of Pekalongan and
+        // Lasem on mori primissima, the fine white cotton good batik is
+        // drawn on. It replaces "Batik Pesisir", whose muted indigo,
+        // olive and soga gold were really the sogan palette of the Solo
+        // and Yogya courts: correct in value, dull in chroma (mean
+        // CIELAB chroma 40 → 59 here). Every value is solved against the
+        // floors in tests/design/palette.test.ts, and every one of those
+        // floors moved up rather than down — see DESIGN.md §3.
         //
-        // The warm-neutral ramp, cloth rather than bleached paper.
-        // Relative luminance in brackets.
-        stock: "#F1EADD", // [0.828] page ground
-        sea: "#ECE3D2", // [0.774] the map's water
-        plate: "#E7DECA", // [0.735] the field plate's mount
-        land: "#E1D7C2", // [0.685] the map's landmass
-        rule: "#DBD1BD", // [0.643] hairlines, month gridlines
-        stitch: "#BFB092", // [0.442] the plate's seam, the coastline
-        ink: "#231D17", // 13.94:1 on stock, 12.46:1 on plate
-        // Equivalent to the old ink/70%, but declared rather than
-        // derived so its contrast is checkable: 6.01:1 on stock.
-        "ink-muted": "#605648",
+        // The neutral ramp. Relative luminance in brackets. `sea` is the
+        // one cool step: a faint water tint lets the coastline read
+        // without a heavy stroke, and the ramp still descends
+        // monotonically.
+        stock: "#FAF8F3", // [0.939] page ground — mori primissima
+        sea: "#EDF1F2", // [0.873] the map's water
+        plate: "#F0ECE3", // [0.841] the field plate's mount, cards
+        land: "#E8E2D4", // [0.763] the map's landmass
+        rule: "#DDD7CA", // [0.682] hairlines, month gridlines
+        stitch: "#B9B09C", // [0.438] the plate's seam, the coastline
+        ink: "#14171F", // jelaga, 16.88:1 on stock, 15.20:1 on plate
+        // Declared rather than derived so its contrast is checkable:
+        // 6.53:1 on stock, 5.88:1 on plate.
+        "ink-muted": "#545A66",
 
-        // Family = hue (DESIGN.md §3). Spaced across the widest
-        // luminance range that still clears 3:1 against `land`, the
-        // darkest surface a map dot ever sits on — 0.065 / 0.136 / 0.185,
-        // a spread of 0.120 against the old palette's 0.061.
-        monsunal: "#2B477B", // nila indigo   [0.065] 7.67:1 stock, 6.42:1 land
-        ekuatorial: "#527030", // olive green   [0.136] 4.72:1 stock, 3.95:1 land
-        lokal: "#977121", // soga gold     [0.185] 3.73:1 stock, 3.13:1 land
-        // Darker variants for TEXT only. The canonical hues above clear
-        // the 3:1 a dot fill needs but not the 4.5:1 normal-weight text
-        // needs on both `stock` and `plate`. These clear both (5.05:1 /
-        // 4.52:1 and 5.08:1 / 4.55:1). `monsunal` needs no variant.
-        "ekuatorial-text": "#4F6B2E",
-        "lokal-text": "#7D5D1B",
-        // Your location — a batik plum, outside all three families so it
-        // is findable on any regime. 7.46:1 on stock.
-        you: "#763254",
+        // Family = hue (DESIGN.md §3). Spread 0.144 in luminance
+        // (0.061 / 0.149 / 0.205), against the previous palette's 0.120.
+        // The green leans yellow on purpose: a teal green scored ΔE 8.8
+        // against the indigo under tritanopia and would fail the floor.
+        monsunal: "#1F3F99", // nila Pekalongan  8.88:1 stock, 7.29:1 land
+        ekuatorial: "#3B7A1F", // hijau daun     4.96:1 stock, 4.08:1 land
+        lokal: "#B86A00", // kunyit (turmeric)   3.88:1 stock, 3.19:1 land
+        // Darker variants for TEXT only — the canonical ekuatorial and
+        // lokal hues clear the 3:1 a dot needs, not the 4.5:1 text needs.
+        // 6.19:1 / 5.57:1 and 6.02:1 / 5.42:1 on stock / plate.
+        "ekuatorial-text": "#2F6A18",
+        "lokal-text": "#8A5200",
+        // Sub-type = tint (DESIGN.md §3). The second sub-type of each
+        // family is a lighter value of the same hue, always drawn with a
+        // stroke in the canonical hue so the mark keeps its 3:1 edge.
+        "monsunal-tint": "#8FA2D6",
+        "ekuatorial-tint": "#A6C794",
+        "lokal-tint": "#E6BC7E",
+        // Your location — magenta Lasem, outside all three families so
+        // it is findable on any regime. Not a red. 5.37:1 on land.
+        you: "#A1286A",
       },
       fontFamily: {
-        // Fraunces / Karla / IBM Plex Mono. Named for the role rather
-        // than the face — see app/layout.tsx. Alegreya and Alegreya Sans
-        // were a superfamily, one skeleton drawn twice, so a heading and
-        // the paragraph under it shared proportions, rhythm and voice
-        // and nothing read as a heading except size. These two share no
-        // skeleton at all, which is the point. Plex Mono is unchanged:
-        // it is the house data face carried across the sibling projects.
-        display: ["var(--font-display)", "serif"],
-        sans: ["var(--font-body)", "sans-serif"],
-        mono: ["var(--font-mono)", "monospace"],
+        // Plus Jakarta Sans for structure, Newsreader for story, IBM Plex
+        // Mono for figures — see app/layout.tsx and DESIGN.md §8.
+        // `display` and `sans` are the same face (headings are set apart
+        // by weight and tracking); `story` is the italic serif used only
+        // for sentences that carry a finding.
+        display: ["var(--font-body)", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["var(--font-body)", "ui-sans-serif", "system-ui", "sans-serif"],
+        story: ["var(--font-story)", "Georgia", "serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       fontSize: {
         // Below the 16px floor, so scoped to axis ticks and month labels
@@ -94,7 +100,12 @@ const config: Config = {
         32: "128px",
       },
       borderRadius: {
+        // 2px stays the default and the only radius on data marks.
+        // Cards, sheets and panels take `card`; chips and pills take
+        // Tailwind's built-in `rounded-full`. DESIGN.md §1.
         DEFAULT: "2px",
+        card: "10px",
+        sheet: "22px",
       },
       transitionDuration: {
         fast: "120ms",

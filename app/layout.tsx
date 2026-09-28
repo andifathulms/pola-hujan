@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Fraunces, Karla, IBM_Plex_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Newsreader, IBM_Plex_Mono } from "next/font/google";
 import { MakerSignature } from "@/components/MakerSignature";
 import { SITE_ORIGIN, SITE_URL } from "@/lib/metadata";
 import "./globals.css";
@@ -9,22 +9,26 @@ import "./globals.css";
 // from the app's own origin — no runtime request to Google Fonts, per
 // DESIGN.md §1 ("self-hosted fonts") and CLAUDE.md invariant 14 (zero
 // runtime network).
-// The variables are named for the role, not the face — display, body,
+// The variables are named for the role, not the face — body, story,
 // mono — so the next time a typeface changes, nothing downstream has to
 // be renamed with it.
 //
-// Both of these are variable fonts, so `weight` is deliberately omitted:
-// next/font ships the whole axis and the weights used across the app
-// (400, 500, 600) come from one file each rather than three static cuts.
-const display = Fraunces({
+// Plus Jakarta Sans (Tokotype, drawn for Jakarta's own city identity)
+// does all the structural work: headings, controls, labels and body.
+// Headings are set apart from body by weight and tracking, not by a
+// second face. Newsreader italic is the story voice — only the sentences
+// that carry a finding (DESIGN.md §8). Both are variable fonts, so
+// `weight` is omitted and the whole axis ships in one file each.
+const body = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-display",
+  variable: "--font-body",
   display: "swap",
 });
 
-const body = Karla({
+const story = Newsreader({
   subsets: ["latin"],
-  variable: "--font-body",
+  style: ["italic"],
+  variable: "--font-story",
   display: "swap",
 });
 
@@ -65,7 +69,7 @@ export const metadata: Metadata = {
 // language implemented so far, served flat at the app root.
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="id" className={`${display.variable} ${body.variable} ${mono.variable}`}>
+    <html lang="id" className={`${body.variable} ${story.variable} ${mono.variable}`}>
       <body className="bg-stock text-ink font-sans text-base antialiased">
         <a href="#main-content" className="skip-link">
           Lompat ke konten utama

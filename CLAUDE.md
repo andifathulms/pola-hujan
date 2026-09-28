@@ -129,9 +129,9 @@ tests/
 - Comments cite the dataset version or the source of any threshold.
 - Indonesian first in UI copy; family names in BMKG's form.
 - Tabular figures on every rainfall value.
-- Tailwind tokens exactly as in `DESIGN.md` — neutrals `stock`, `sea`, `plate`, `land`, `rule`, `stitch`, `ink`, `ink-muted`; families `monsunal`, `ekuatorial`, `lokal` with text-only variants `ekuatorial-text` and `lokal-text`; plus `you`. Never raw hex in components.
+- Tailwind tokens exactly as in `DESIGN.md` — neutrals `stock`, `sea`, `plate`, `land`, `rule`, `stitch`, `ink`, `ink-muted`; families `monsunal`, `ekuatorial`, `lokal` with text-only variants `ekuatorial-text` and `lokal-text` and sub-type tints `*-tint`; plus `you`. Never raw hex in components.
 - **A family hue is a fill; its `-text` variant is text.** Never the other way round — the split exists because the canonical hues clear the 3:1 a dot needs and not the 4.5:1 text needs.
-- Faces are addressed by role — `font-display` (Fraunces), `font-sans` (Karla), `font-mono` (IBM Plex Mono). Fraunces never below `--text-base`.
+- Faces are addressed by role — `font-display` and `font-sans` (both Plus Jakarta Sans), `font-story` (Newsreader italic, story sentences only, never below `--text-base`), `font-mono` (IBM Plex Mono).
 
 ## Testing rules
 

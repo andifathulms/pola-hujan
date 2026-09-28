@@ -182,3 +182,20 @@ describe("the neutral ramp descends in one direction", () => {
     }
   });
 });
+
+describe("sub-types are tints of their family, never new hues", () => {
+  // DESIGN.md §3: "Monsunal-1 and Monsunal-2 are two values of the same
+  // blue." A tint must be lighter than its family and keep its hue
+  // angle, or the sub-type channel starts leaking into the family one.
+  function hueDegrees(name: string): number {
+    const [, a, b] = lab(linear(name));
+    return ((Math.atan2(b, a) * 180) / Math.PI + 360) % 360;
+  }
+
+  it.each([...FAMILIES])("%s-tint is lighter than %s and within 20° of its hue", (family) => {
+    const tint = `${family}-tint`;
+    expect(luminance(tint)).toBeGreaterThan(luminance(family));
+    const diff = Math.abs(hueDegrees(tint) - hueDegrees(family));
+    expect(Math.min(diff, 360 - diff)).toBeLessThanOrEqual(20);
+  });
+});

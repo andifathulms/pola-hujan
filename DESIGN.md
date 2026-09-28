@@ -13,7 +13,7 @@ These projects should read as siblings — recognisably from the same hand — w
 ```
 space    4 8 12 16 24 32 48 64 96 128     4px base
 motion   fast 120ms · state 240ms · orchestrated 500–600ms · ease cubic-bezier(0.2,0,0,1)
-edge     hairline 0.5px · radius 2px only
+edge     hairline 0.5px · radius 2px on data marks
 ```
 
 - **One orchestrated moment per app.** Everything else is state change.
@@ -24,15 +24,17 @@ edge     hairline 0.5px · radius 2px only
 - **Reduced motion gets a complete alternative**, never a degraded one.
 - **No component library.**
 
+**Per-app deviation, recorded:** Pola Hujan softens the radius rule. Data marks (bars, dots, gauges, swatches) stay at 2px; cards, panels and sheets take `rounded-card` (10px) or `rounded-sheet` (22px); chips and pills are `rounded-full`. The atlas is read by a general public audience on phones, and controls that look like controls earn that.
+
 **Per-app:** colour, typeface, layout, and the instrument.
 
 ## 2. This app's identity — and why it's light
 
 The two sibling atlases (lightning, currents) are dark field animations. **This one is deliberately light and categorical**, because the data is a different shape and because a portfolio of three dark canvases reads as one idea repeated.
 
-The material world is **batik pesisir** — the north-coast cloth, dyed in indigo, olive and soga gold on unbleached mori. The almanac reference this replaced was a real one, and the twelve-month grid it gave the product stays; what it could not survive was being a *Western* almanac wrapped around an atlas of Indonesian rainfall. The register is still the same: printed, ruled, hand-tinted, annual. The material is now the one the subject belongs to.
+The material world is **batik pesisir** — and specifically its bright side. The coastal batik of Pekalongan and Lasem is known for vivid dyes brought by trade; the brown *sogan* palette belongs to the Solo and Yogya courts. An earlier version of this palette (indigo, olive and soga gold on unbleached mori) was sogan in spirit, and on a map it read as mud. **Pesisir Terang** takes the coastal dyes — Pekalongan indigo, leaf green, turmeric — on *mori primissima*, the fine white cotton good batik is drawn on.
 
-Practically this means warm cloth rather than bleached paper, three dye colours rather than three pigments, and no red — which the dye triad happens to agree with (§3).
+The register is still printed, ruled and annual. What changed is that it is now allowed to be bright, because the audience is the general public and the first screen has to earn a second look.
 
 ## 3. Colour — three families, three channels
 
@@ -45,24 +47,24 @@ Three channels, three meanings, no overload.
 ### Ground
 
 ```
---stock       #F1EADD  [0.828]  unbleached mori — the page ground
---sea         #ECE3D2  [0.774]  the map's water
---plate       #E7DECA  [0.735]  the field plate's mount
---land        #E1D7C2  [0.685]  the map's landmass
---rule        #DBD1BD  [0.643]  hairlines, month gridlines
---stitch      #BFB092  [0.442]  the plate's seam, the coastline hairline
---ink         #231D17           13.94:1 on stock, 12.46:1 on plate
---ink-muted   #605648           6.01:1 on stock — declared, not ink/70%
+--stock       #FAF8F3  [0.939]  mori primissima — the page ground
+--sea         #EDF1F2  [0.873]  the map's water — the one cool step
+--plate       #F0ECE3  [0.841]  the field plate's mount, cards
+--land        #E8E2D4  [0.763]  the map's landmass
+--rule        #DDD7CA  [0.682]  hairlines, month gridlines
+--stitch      #B9B09C  [0.438]  the plate's seam, the coastline hairline
+--ink         #14171F           jelaga — 16.88:1 on stock, 15.20:1 on plate
+--ink-muted   #545A66           6.53:1 on stock — declared, not ink/70%
 ```
 
-Bracketed figures are relative luminance. The neutrals are **value-steps of one warm family, not new hues** — they give the page a floor, a mount and a map ground without a box-shadow or a border doing the work, and the ramp descends monotonically.
+Bracketed figures are relative luminance. The ramp descends monotonically. `--sea` is the one neutral with a cool bias: a faint water tint lets the coast read against warm land without a heavy stroke.
 
 ### The three families
 
 ```
---monsunal    #2B477B  [0.065]  nila indigo
---ekuatorial  #527030  [0.136]  olive green
---lokal       #977121  [0.185]  soga gold
+--monsunal    #1F3F99  [0.061]  nila Pekalongan
+--ekuatorial  #3B7A1F  [0.149]  hijau daun
+--lokal       #B86A00  [0.205]  kunyit
 ```
 
 **None of them reads as good or bad** — these are climate regimes, not scores, and a red-to-green ramp would imply a ranking that does not exist.
@@ -71,21 +73,29 @@ Bracketed figures are relative luminance. The neutrals are **value-steps of one 
 
 Family is encoded as hue, but a reader may be receiving that hue through greyscale, through the print stylesheet, or through a colour-vision deficiency. So the three hues carry **two constraints beyond being three different colours**, and both are asserted in `tests/design/palette.test.ts` rather than trusted to this document:
 
-1. **They stay apart in value.** The three luminances span 0.120 with no adjacent pair closer than 0.04. The palette this replaced spanned 0.061, and in greyscale the three families collapsed into one grey.
-2. **They stay apart under dichromacy.** The closest pair is ΔE 33.8 under deuteranopia, 27.8 under protanopia, 21.4 under tritanopia. Below about 10 two colours stop being tellable apart. The previous palette sat at 12.4 under tritanopia.
+1. **They stay apart in value.** The three luminances span 0.144 with no adjacent pair closer than 0.04. The first palette spanned 0.061 and collapsed into one grey; the sogan palette after it spanned 0.120.
+2. **They stay apart under dichromacy.** The closest pair is ΔE 56.9 under deuteranopia, 44.9 under protanopia, 22.8 under tritanopia. Below about 10 two colours stop being tellable apart.
 
-The olive is what buys most of this: a green pulled toward yellow separates from indigo in a way a blue-green does not.
+The green is pulled toward yellow on purpose: a teal green scored ΔE 8.8 against the indigo under tritanopia and would fail. A leaf green separates from indigo in a way a blue-green does not.
 
 **The value spread is bounded by the map, not by taste.** The lightest family hue has to keep 3:1 against `--land`, the darkest surface a map dot is ever drawn on, which is what fixes the top of the range.
 
-Two of the three also carry a **text-only variant** — `--ekuatorial-text` `#4F6B2E` and `--lokal-text` `#7D5D1B`. The canonical hues clear the 3:1 a dot fill needs but not the 4.5:1 normal-weight text needs on both `stock` and `plate`. `--monsunal` needs no variant. A text variant is never used as a fill and a fill hue is never used as text.
+Two of the three also carry a **text-only variant** — `--ekuatorial-text` `#2F6A18` and `--lokal-text` `#8A5200`. The canonical hues clear the 3:1 a dot fill needs but not the 4.5:1 normal-weight text needs on both `stock` and `plate`. `--monsunal` needs no variant. A text variant is never used as a fill and a fill hue is never used as text.
 
 **Sub-types are tints of the family hue**, never new colours. Monsunal-1 and Monsunal-2 are two values of the same blue. This keeps the three-family structure readable at a glance while the sub-type stays available on inspection.
+
+```
+--monsunal-tint    #8FA2D6    monsunal-2
+--ekuatorial-tint  #A6C794    ekuatorial-4
+--lokal-tint       #E6BC7E    lokal-2
+```
+
+A tinted mark is always stroked in its canonical family hue, so its edge keeps the 3:1 a dot needs. The test asserts each tint is lighter than its family and within 20° of its hue.
 
 ### Overlays
 
 ```
---you         #763254    your location — batik plum, outside all three families
+--you         #A1286A    your location — magenta Lasem, outside all three families
 --disagree    hatch      diagonal, over the family colour
 ```
 
@@ -111,7 +121,7 @@ The core object. Twelve monthly bars for a location, with the fitted annual and 
 
 **"Almanac, Intensified" — the one signature element.** On the atlas, the selected location's curve is restated once, full width, beneath the map-and-meta row, as a mounted plate rather than a chart squeezed into a third-width column. Same `CycleCurve`/`CycleTable`, not a new chart — the ambition is spent on presentation, in one place, rather than spread thin across the page.
 
-- Ground is `--plate` (`#E8E2D0`), one value-step darker than `--stock` — a value-step of the same warm-neutral family, not a new hue. A `--stitch` (`#B7AE95`) hairline stands in for elevation, since the app uses no box-shadow anywhere and this keeps it that way.
+- Ground is `--plate` (`#F0ECE3`), one value-step darker than `--stock` — a value-step of the same warm-neutral family, not a new hue. A `--stitch` (`#B9B09C`) hairline stands in for elevation, since the app uses no box-shadow anywhere and this keeps it that way.
 - The location name sets in the display serif at `--text-4xl` (58px) — the one place in the app that goes above the 46px ceiling elsewhere in the type scale (§8), scoped to this single heading.
 - The two harmonics draw heavier here (2.5px / 1.75px vs. the standard 1.5px / 1px) and the month labels set uppercase, letterspaced, mono — an instrument-plate register for this one reading, not a change to `CycleCurve`'s default appearance anywhere else it's used (`CompareView` is untouched).
 - One plate, one location, one moment. It does not appear per-row in a list or repeat anywhere else — repeating it would make it wallpaper, not a signature.
@@ -171,26 +181,28 @@ Everything else is state change — map selection, family filter, mode switch.
 ## 8. Type
 
 ```
-Fraunces          display, headings — high-contrast serif with a voice
-Karla             body, controls, labels — squared grotesque, tall x-height
-IBM Plex Mono     millimetres, month codes, thresholds, citations
+Plus Jakarta Sans   structure — headings, controls, labels, body
+Newsreader Italic   story — only sentences that carry a finding
+IBM Plex Mono       millimetres, month codes, thresholds, citations
 ```
 
-Self-hosted via `next/font`, addressed through role-named variables (`--font-display`, `--font-body`, `--font-mono`) rather than face-named ones, so the next change renames nothing downstream.
+Self-hosted via `next/font`, addressed through role-named variables (`--font-body`, `--font-story`, `--font-mono`) and Tailwind roles (`font-display`, `font-sans`, `font-story`, `font-mono`). `font-display` and `font-sans` point at the same face.
 
-**The display and body faces must not share a skeleton.** Alegreya and Alegreya Sans did — one superfamily, drawn twice — and the result was that a heading and the paragraph under it had the same proportions, the same rhythm and the same voice, so nothing read as a heading except size. Fraunces and Karla share nothing, which is the requirement, not a preference.
+**Structure and story never share a face.** This replaces the older rule that display and body must not share a skeleton. The problem that rule solved was headings with no voice. Here, headings get their voice from weight (800) and tight tracking, and the sentences that state a finding — the hero lead, chapter takeaways, comparison captions — get a different face altogether. A reader learns fast that italic serif means "this is what the data says".
 
-**Fraunces is scoped to display sizes.** Its stroke contrast is what gives a heading a voice; at label size it becomes decoration. Nothing below `--text-base` is ever set in it.
+**Plus Jakarta Sans** was drawn by Tokotype for Jakarta's own city identity. The subject is Indonesian, and so is the typeface.
 
-**IBM Plex Mono does not change with the rest.** It is the house data face carried across the sibling projects — the citation line, the figures, the month codes — and a change there would cost identity without buying legibility.
+**Newsreader is scoped.** It is never a label, never a control, never a number, and never below `--text-base`.
+
+**IBM Plex Mono does not change.** It is the house data face carried across the sibling projects.
 
 ```
-14  16  18  22  28  36  46  (58)    1.25 ratio
+14  16  18  22  28  36  46  (58)  (64)
 ```
 
-58 (`--text-4xl`) is scoped to the field plate's location name only (§4.1) — not a general step in the scale.
+58 is the field plate's location name; 64 is the home page headline only.
 
-Light ground, so no dark-mode weight correction — body 400, headings 600.
+Light ground, so no dark-mode weight correction — body 400, headings 800, sub-headings 700.
 
 Tabular figures on every rainfall value and threshold.
 
@@ -230,5 +242,5 @@ The dataset and period are a **short monospace stamp**. Sentences about the data
 - No border where a value-step will do.
 - No monospace paragraph — monospace is for figures, codes and citations.
 - No family hue that collapses into another in greyscale or under dichromacy — the floors in §3 are tested, not aspirational.
-- No display serif below `--text-base`.
-- No superfamily pairing for display and body.
+- No story serif below `--text-base`, and never on a label, control or number.
+- No second face for structure — story is the only other voice.
